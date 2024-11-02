@@ -8,8 +8,8 @@ def _get_requirements():
         return f.read().split()
 
 setup(
-    name='app',
+    name='Gateway',
     version='1.0.0',
-    packages=['app'],
+    packages=['gateway'],
     install_requires=_get_requirements(),
 )

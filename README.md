@@ -1,4 +1,4 @@
-## To run app
+## To run Gateway
 ### Create python venv using python 3.12 and activate it
 ```bash
 python3.12 -m venv myenv
@@ -9,9 +9,9 @@ source ./myenv/bin/activate
 pip install -r "requirements.txt"
 ```
 
-### Run the app
+### Run the Gateway
 ```
-python -m app
+python -m gateway
 ```
 
 ## To test
