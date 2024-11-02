@@ -2,3 +2,4 @@
 /gatewayApp/.pytest_cache
 /gatewayApp/tests/__pycache__
 /gatewayApp/gateway/__pycache__
+gatewayApp/utils/__pycache__
