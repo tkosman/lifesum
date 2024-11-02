@@ -22,4 +22,5 @@ jobs:
         pip install -r requirements-test.txt
     - name: Test with pytest
       run: |
+        cd gatewayApp
         pytest

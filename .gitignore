@@ -1,4 +1,4 @@
-/myenv
-/.pytest_cache
-/tests/__pycache__
-/app/__pycache__
+/gatewayApp/myenv
+/gatewayApp/.pytest_cache
+/gatewayApp/tests/__pycache__
+/gatewayApp/gateway/__pycache__

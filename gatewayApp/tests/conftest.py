@@ -10,7 +10,7 @@ import pytest
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..')) # to import main module
 print(os.path.join(os.path.dirname(__file__), '..'))
-from app.__main__ import create_app
+from gateway.__main__ import create_app
 
 @pytest.fixture(scope='session')
 def args():
