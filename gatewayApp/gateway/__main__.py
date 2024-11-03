@@ -5,10 +5,13 @@ import argparse
 import hashlib
 import random
 import warnings
+from dataclasses import dataclass
 
 import sanic
 from sanic import response
 from sanic import request
+from sanic_ext import openapi
+from sanic_ext import validate
 from sanic_jwt import exceptions
 from sanic_jwt import initialize
 from sanic_jwt.decorators import protected
@@ -34,12 +37,21 @@ def get_args():
 
     return argument_parser.parse_args()
 
-def register(request):
+@dataclass
+class ValidUser:
+    user_id: str
+    public_key: str
+
+@dataclass
+class ValidChallengeRequest:
+    user_id: str
+
+def register(request_body):
     """
     Register a new user with user_id and his public key.
     """
-    user_id = request.json.get("user_id")
-    public_key_pem = request.json.get("public_key")
+    user_id = request_body.user_id
+    public_key_pem = request_body.public_key
 
     if not user_id or not public_key_pem:
         return response.json({"error": "user_id and public_key are required."}, status=400)
@@ -56,13 +68,13 @@ def register(request):
     return response.json({"message": "User registered successfully."}, status=201)
 
 
-def generate_challenge(request):
+def generate_challenge(request, request_body):
     """
     Generate a challenge for a given user_id.
     Store the challenge in the app context.
     Respond with the challenge and user_id.
     """
-    user_id = request.json.get("user_id", None)
+    user_id = request_body.user_id
     if not user_id:
         return response.json({"error": "Missing user_id."})
 
@@ -123,18 +135,41 @@ def attach_endpoints(app):
 
 
     @app.route('/register', methods=["POST"])
-    def handle_register(request):
-        return register(request)
+    @openapi.definition(
+        body=ValidUser,
+        summary="Register a new user with user_id and public key.",
+        response={
+            201: {"description": "User registered successfully."},
+            400: {"description": "Error due to missing user_id or public_key."}
+        }
+    )
+    @validate(json=ValidUser)
+    def handle_register(request, body: ValidUser):
+        return register(body)
 
     @app.route('/challenge', methods=["POST"])
-    def handle_challenge(request):
-        return generate_challenge(request)
+    @openapi.definition(
+        body=ValidChallengeRequest,
+        summary="Generate a challenge for a given user_id.",
+        response={
+            200: {"description": "Challenge generated successfully."},
+            400: {"description": "Error due to missing user_id."}
+        }
+    )
+    @validate(json=ValidChallengeRequest)
+    def handle_challenge(request, body: ValidChallengeRequest):
+        return generate_challenge(request, body)
 
     @app.route('/protected')
+    @openapi.definition(
+        summary="Protected test endpoint.",
+        response={
+            200: {"description": "This is a protected endpoint."}
+        }
+    )
     @protected()
     def protected_endpoint(request):
         return response.json({"message": "This is a protected endpoint."})
-
 
 def create_app(arguments):
     "Sanic app factory."
