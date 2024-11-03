@@ -4,11 +4,10 @@ Sanic app.
 import argparse
 
 import sanic
-from sanic import response
-from sanic import request
+from sanic import response, request
 from sanic_ext import openapi
 from sanic_ext import validate
-
+from sanic_ext.exceptions import ValidationError
 from .auth import protected
 from .auth import authenticate
 from .auth import register
@@ -87,6 +86,16 @@ def attach_endpoints(app):
     @validate(json=ValidAuthRequest)
     def handle_authentication(request, body: ValidAuthRequest):
         return authenticate(request, body)
+
+    @app.exception(ValidationError)
+    def handle_invalid_request(request, exception):
+        return response.json(
+            {
+                "error": "ValidationError",
+                "message": exception.message
+            },
+            status=exception.status_code
+        )
 
     @app.route('/protected')
     @openapi.definition(
