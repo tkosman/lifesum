@@ -3,3 +3,4 @@
 /gatewayApp/tests/__pycache__
 /gatewayApp/gateway/__pycache__
 gatewayApp/utils/__pycache__
+gatewayApp/utils/key.priv

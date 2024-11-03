@@ -34,7 +34,7 @@ def test_protected_endpoint_without_token(test_client):
     """ Test no access the protected endpoint without a token."""
     _, response = test_client.get("/protected")
     assert response.status == 401
-    assert response.json["exception"] == "Unauthorized"
+    assert response.json["error"] == "You are unauthorized."
 
 def test_full_authentication_flow(private_key, public_key, sign_challenge_func_fixture, test_client):
     """
