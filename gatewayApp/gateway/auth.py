@@ -1,8 +1,8 @@
 """
 This module contains the authentication logic for the gateway service.
 """
-import hashlib
 import random
+from datetime import datetime
 from functools import wraps
 import jwt
 
@@ -73,20 +73,40 @@ def register(request_body):
 def generate_challenge(request, request_body):
     """
     Generate a challenge for a given user_id.
-    Store the challenge in the app context.
-    Respond with the challenge and user_id.
+    Fetch the user's public key and encrypt the challenge with it.
+    Store the challenge in the app context for validation.
+    Respond with the encrypted challenge and user_id.
     """
     user_id = request_body.user_id
+
     if not user_id:
         return response.json({"error": "Missing user_id."})
 
     if not user_exists(user_id):
         return response.json({"error": "User not found."})
 
-    challenge = hashlib.sha256(str(random.randint(0, 1_000_000)).encode()).digest()
-    request.app.ctx.challenges[user_id] = challenge
+    nonce = str(random.randint(0, 1_000_000))
+    timestamp = datetime.utcnow().isoformat()
+    challenge = f"LOGIN_REQUEST|{nonce}|{timestamp}"
 
-    return response.json({"user_id": user_id, "challenge": challenge.hex()})
+    request.app.ctx.challenges[user_id] = challenge.encode()
+
+    try:
+        public_key = get_public_key(user_id)
+        encrypted_challenge = public_key.encrypt(
+            challenge.encode(),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+
+        return response.json({"user_id": user_id, "challenge": encrypted_challenge.hex()})
+
+    except Exception as e:
+        return response.json({"error": f"Failed to generate challenge: {str(e)}"})
+
 
 
 def authenticate(request, body):

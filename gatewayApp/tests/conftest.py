@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..')) # to import main 
 from gateway.__main__ import create_app
 from utils.key_generator import generate_test_key_pair
 from utils.challenge_decoder import sign_challenge
+from utils.challenge_decoder import decrypt_challenge
 
 @pytest.fixture(scope='session')
 def args():
@@ -53,3 +54,8 @@ def private_key(key_pair):
 def sign_challenge_func_fixture():
     """ Return the sign_challenge function for testing."""
     return sign_challenge
+
+@pytest.fixture(scope="module")
+def decrypt_challenge_func_fixture():
+    """ Return the decrypt_challenge function for testing."""
+    return decrypt_challenge

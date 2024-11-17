@@ -36,7 +36,7 @@ def test_protected_endpoint_without_token(test_client):
     assert response.status == 401
     assert response.json["error"] == "You are unauthorized."
 
-def test_full_authentication_flow(private_key, public_key, sign_challenge_func_fixture, test_client):
+def test_full_authentication_flow(private_key, public_key, sign_challenge_func_fixture,decrypt_challenge_func_fixture , test_client):
     """
     Test the full authentication flow.
     1. Register a user.
@@ -60,7 +60,8 @@ def test_full_authentication_flow(private_key, public_key, sign_challenge_func_f
 
 
     private_key_obj = serialization.load_pem_private_key(private_key.encode(), password=None)
-    signed_challenge = sign_challenge_func_fixture(private_key_obj, challenge_bytes)
+    decrypted_challenge_bytes = decrypt_challenge_func_fixture(private_key_obj, challenge_bytes)
+    signed_challenge = sign_challenge_func_fixture(private_key_obj, decrypted_challenge_bytes)
 
     auth_payload = {
         "user_id": "auth_user",
