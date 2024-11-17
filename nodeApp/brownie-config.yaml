@@ -1,0 +1,15 @@
+dotenv: .env
+
+networks:
+  default: development
+  sepolia:
+    host: 'https://sepolia.infura.io/v3/${WEB3_INFURA_PROJECT_ID}'
+    name: 'sepolia'
+    chainid: 11155111
+    explorer: 'https://sepolia.etherscan.io'
+
+dependencies: []
+
+compiler:
+  solc:
+    remappings: []
