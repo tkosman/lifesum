@@ -6,18 +6,19 @@ contract ItemRegistry {
         uint256 itemId;
         string category;
         string itemInfo;
-        address owner;
+        string owner;
         bool exists;
     }
 
     mapping(uint256 => Item) private items;
     uint256 private itemCounter;
 
-    event ItemAdded(uint256 itemId, string category, address owner);
+    event ItemAdded(uint256 itemId, string category, string owner);
 
     function addItem(
         string memory _category,
-        string memory _itemInfo
+        string memory _itemInfo,
+        string memory _publicKey
     ) public returns (uint256) {
         itemCounter++;
         uint256 newItemId = itemCounter;
@@ -26,11 +27,11 @@ contract ItemRegistry {
             itemId: newItemId,
             category: _category,
             itemInfo: _itemInfo,
-            owner: msg.sender,
+            owner: _publicKey,
             exists: true
         });
 
-        emit ItemAdded(newItemId, _category, msg.sender);
+        emit ItemAdded(newItemId, _category, _publicKey);
 
         return newItemId;
     }
@@ -41,7 +42,7 @@ contract ItemRegistry {
         returns (
             string memory category,
             string memory itemInfo,
-            address owner
+            string memory owner
         )
     {
         require(items[_itemId].exists, "item_not_exist");
