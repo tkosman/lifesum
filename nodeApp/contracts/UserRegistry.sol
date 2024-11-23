@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract UserRegistry {
     struct User {
         string nick;
-        address public_key;
+        string public_key;
         uint256[] expertFields;
         mapping(uint256 => bool) hasExpertField; // For checking duplicates
         string additional_data;
@@ -13,29 +13,30 @@ contract UserRegistry {
     }
 
     mapping(string => User) private users;
-    mapping(address => string) private addressToNick;
+    mapping(string => string) private addressToNick;
 
-    event UserRegistered(string nick, address public_key);
+    event UserRegistered(string nick, string public_key);
     event ExpertFieldAdded(string nick, uint256 fieldId);
 
     function registerUser(
         string memory _nick,
+        string memory _publicKey,
         string memory _additionalData,
         bool _isBot
     ) public returns (string memory) {
         require(!users[_nick].exists, "nick_already_taken");
-        require(bytes(addressToNick[msg.sender]).length == 0, "address_already_registered");
+        require(bytes(addressToNick[_publicKey]).length == 0, "address_already_registered");
 
         User storage user = users[_nick];
         user.nick = _nick;
-        user.public_key = msg.sender;
+        user.public_key = _publicKey;
         user.additional_data = _additionalData;
         user.is_bot = _isBot;
         user.exists = true;
 
-        addressToNick[msg.sender] = _nick;
+        addressToNick[_publicKey] = _nick;
 
-        emit UserRegistered(_nick, msg.sender);
+        emit UserRegistered(_nick, _publicKey);
 
         return "register_success";
     }
@@ -56,7 +57,7 @@ contract UserRegistry {
         public
         view
         returns (
-            address public_key,
+            string memory public_key,
             uint256[] memory expertFields,
             string memory additional_data,
             bool is_bot
@@ -72,7 +73,7 @@ contract UserRegistry {
         );
     }
 
-    function getNickByAddress(address _address) external view returns (string memory) {
+    function getNickByAddress(string memory _address) external view returns (string memory) {
         return addressToNick[_address];
     }
 }

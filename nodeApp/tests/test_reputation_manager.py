@@ -6,7 +6,7 @@ def reputation_manager():
     return ReputationManager.deploy({'from': accounts[0]})
 
 def test_update_and_get_reputation(reputation_manager, accounts):
-    user = accounts[1]
+    user = "user_public_key_1"
     field_id = 1
     score = 1
 
@@ -15,13 +15,13 @@ def test_update_and_get_reputation(reputation_manager, accounts):
     assert tx.events['ReputationUpdated']['fieldId'] == field_id
     assert tx.events['ReputationUpdated']['score'] == score
 
-    average_score = reputation_manager.getReputation(user, field_id)
-    assert average_score == 1
+    recent_score = reputation_manager.getReputation(user, field_id)
+    assert recent_score == 1
 
     reputation_manager.updateReputation(user, field_id, 1, {'from': accounts[0]})
-    average_score = reputation_manager.getReputation(user, field_id)
-    assert average_score == 1
+    recent_score = reputation_manager.getReputation(user, field_id)
+    assert recent_score == 2
 
-    reputation_manager.updateReputation(user, field_id, 0, {'from': accounts[0]})
-    average_score = reputation_manager.getReputation(user, field_id)
-    assert average_score == (1 + 1 + 0) // 3
+    reputation_manager.updateReputation(user, field_id, -1, {'from': accounts[0]})
+    recent_score = reputation_manager.getReputation(user, field_id)
+    assert recent_score == 1

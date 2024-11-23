@@ -2,17 +2,17 @@
 pragma solidity ^0.8.0;
 
 interface IReputationManager {
-    function updateReputation(address _user, uint256 _fieldId, uint8 _score) external;
-    function getReputation(address _user, uint256 _fieldId) external view returns (uint256);
+    function updateReputation(string memory _user, uint256 _fieldId, int8 _score) external;
+    function getReputation(string memory _user, uint256 _fieldId) external view returns (uint256);
 }
 
 interface IUserRegistry {
-    function getNickByAddress(address _address) external view returns (string memory);
+    function getNickByAddress(string memory _address) external view returns (string memory);
     function getUserInfo(string memory _nick)
         external
         view
         returns (
-            address public_key,
+            string memory public_key,
             uint256[] memory expertFields,
             string memory additional_data,
             bool is_bot
@@ -27,9 +27,9 @@ contract ExpertCaseManager {
         uint256 minReputation;
         bool botAllowed;
         string ECInfo;
-        mapping(address => bool) hasVoted;
-        mapping(address => uint8) voterChoices;
-        address[] voters;
+        mapping(string => bool) hasVoted;
+        mapping(string => uint8) voterChoices;
+        string[] voters;
         mapping(uint8 => uint256) votes;
         uint8[] optionsVoted; // Added to track voted options
         bool isOpen;
@@ -42,8 +42,8 @@ contract ExpertCaseManager {
     IReputationManager private reputationManager;
     IUserRegistry private userRegistry;
 
-    event ExpertCaseOpened(uint256 ECId, uint256 itemId, address openedBy);
-    event VoteCast(uint256 ECId, address voter, uint8 option);
+    event ExpertCaseOpened(uint256 ECId, uint256 itemId, string openedBy);
+    event VoteCast(uint256 ECId, string voter, uint8 option);
     event ExpertCaseClosed(uint256 ECId, uint8 winningOption);
 
     constructor(address _reputationManagerAddress, address _userRegistryAddress) {
@@ -55,6 +55,7 @@ contract ExpertCaseManager {
         uint256 _itemId,
         uint256 _fieldId,
         uint256 _minReputation,
+        string memory _publicKey,
         bool _botAllowed,
         string memory _ECInfo
     ) public returns (uint256) {
@@ -71,14 +72,15 @@ contract ExpertCaseManager {
         ec.isOpen = true;
         ec.exists = true;
 
-        emit ExpertCaseOpened(newECId, _itemId, msg.sender);
+        emit ExpertCaseOpened(newECId, _itemId, _publicKey);
 
         return newECId;
     }
 
     function castVote(
         uint256 _ECId,
-        uint8 _option
+        uint8 _option,
+        string memory _publicKey
     ) public {
         require(expertCases[_ECId].exists, "EC_not_exist");
         require(expertCases[_ECId].isOpen, "EC_closed");
@@ -86,7 +88,7 @@ contract ExpertCaseManager {
         ExpertCase storage ec = expertCases[_ECId];
 
         // Verify voter registration
-        string memory voterNick = userRegistry.getNickByAddress(msg.sender);
+        string memory voterNick = userRegistry.getNickByAddress(_publicKey);
         require(bytes(voterNick).length > 0, "user_not_registered");
 
         // Get user info
@@ -111,24 +113,24 @@ contract ExpertCaseManager {
         require(isExpert, "not_expert_in_field");
 
         // Check user's reputation
-        uint256 userReputation = reputationManager.getReputation(msg.sender, ec.fieldId);
+        uint256 userReputation = reputationManager.getReputation(_publicKey, ec.fieldId);
         require(userReputation >= ec.minReputation, "reputation_too_low");
 
         // Check if user has already voted
-        require(!ec.hasVoted[msg.sender], "already_voted");
+        require(!ec.hasVoted[_publicKey], "already_voted");
 
         // Record the vote
-        ec.hasVoted[msg.sender] = true;
+        ec.hasVoted[_publicKey] = true;
         ec.votes[_option] += 1;
-        ec.voterChoices[msg.sender] = _option;
-        ec.voters.push(msg.sender);
+        ec.voterChoices[_publicKey] = _option;
+        ec.voters.push(_publicKey);
 
         // Add option to optionsVoted if it's the first vote for that option
         if (ec.votes[_option] == 1) {
             ec.optionsVoted.push(_option);
         }
 
-        emit VoteCast(_ECId, msg.sender, _option);
+        emit VoteCast(_ECId, _publicKey, _option);
     }
 
     function closeExpertCase(uint256 _ECId) public {
@@ -151,15 +153,28 @@ contract ExpertCaseManager {
             }
         }
 
+        uint256 winningVotersCount = 0;
+        for (uint256 i = 0; i < ec.voters.length; i++) {
+            string memory voter = ec.voters[i];
+            if (ec.voterChoices[voter] == winningOption) {
+                winningVotersCount += 1;
+            }
+        }
+
+        int256 reputationIncrementTemp = int256(ec.voters.length / winningVotersCount);
+        int8 reputationIncrement = reputationIncrementTemp > 10 ? int8(10) : int8(reputationIncrementTemp);
+
         // Update reputation for voters
         for (uint256 i = 0; i < ec.voters.length; i++) {
-            address voter = ec.voters[i];
+            string memory voter = ec.voters[i];
             uint8 voterOption = ec.voterChoices[voter];
             uint256 fieldId = ec.fieldId;
 
             if (voterOption == winningOption) {
-                // Voter chose the winning option, increment reputation
-                reputationManager.updateReputation(voter, fieldId, 1);
+                reputationManager.updateReputation(voter, fieldId, reputationIncrement);
+            }
+            else {
+                reputationManager.updateReputation(voter, fieldId, -1);
             }
         }
 

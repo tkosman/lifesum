@@ -29,26 +29,28 @@ def test_open_and_vote_expert_case(
     expert_case_manager,
     accounts
 ):
-    nick = "ExpertUser"
-    user_registry.registerUser(nick, "Expert data", False, {'from': accounts[1]})
-    user_registry.addExpertField(nick, 1, {'from': accounts[1]})
+    # Use a public key as string to identify users
+    public_key = "user_public_key_1"
+    user_registry.registerUser("ExpertUser", public_key, "Expert data", False, {'from': accounts[0]})
+    user_registry.addExpertField("ExpertUser", 1, {'from': accounts[0]})
 
-    reputation_manager.updateReputation(accounts[1], 1, 5, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key, 1, 5, {'from': accounts[0]})
 
     tx = expert_case_manager.openExpertCase(
         1,          # itemId
         1,          # fieldId
         3,          # minReputation
+        public_key, # publicKey (as string)
         False,      # botAllowed
         "EC Info",  # ECInfo
         {'from': accounts[0]}
     )
     ECId = tx.return_value
 
-    expert_case_manager.castVote(ECId, 1, {'from': accounts[1]})
+    expert_case_manager.castVote(ECId, 1, public_key, {'from': accounts[0]})
 
     with reverts("already_voted"):
-        expert_case_manager.castVote(ECId, 1, {'from': accounts[1]})
+        expert_case_manager.castVote(ECId, 1, public_key, {'from': accounts[0]})
 
 def test_vote_with_low_reputation(
     reputation_manager,
@@ -56,15 +58,17 @@ def test_vote_with_low_reputation(
     expert_case_manager,
     accounts
 ):
-    nick = "LowRepUser"
-    user_registry.registerUser(nick, "Data", False, {'from': accounts[2]})
-    user_registry.addExpertField(nick, 1, {'from': accounts[2]})
-    reputation_manager.updateReputation(accounts[2], 1, 2, {'from': accounts[0]})
+    # Use a public key as string to identify users
+    public_key = "user_public_key_2"
+    user_registry.registerUser("LowRepUser", public_key, "Data", False, {'from': accounts[0]})
+    user_registry.addExpertField("LowRepUser", 1, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key, 1, 2, {'from': accounts[0]})
 
     tx = expert_case_manager.openExpertCase(
         1,          # itemId
         1,          # fieldId
         3,          # minReputation
+        public_key, # publicKey (as string)
         False,      # botAllowed
         "EC Info",  # ECInfo
         {'from': accounts[0]}
@@ -72,7 +76,7 @@ def test_vote_with_low_reputation(
     ECId = tx.return_value
 
     with reverts("reputation_too_low"):
-        expert_case_manager.castVote(ECId, 1, {'from': accounts[2]})
+        expert_case_manager.castVote(ECId, 1, public_key, {'from': accounts[0]})
 
 def test_user_with_multiple_expert_fields(
     reputation_manager,
@@ -80,25 +84,27 @@ def test_user_with_multiple_expert_fields(
     expert_case_manager,
     accounts
 ):
-    nick = "MultiExpert"
-    user_registry.registerUser(nick, "Expert data", False, {'from': accounts[5]})
-    user_registry.addExpertField(nick, 1, {'from': accounts[5]})
-    user_registry.addExpertField(nick, 2, {'from': accounts[5]})
+    # Use a public key as string to identify users
+    public_key = "user_public_key_3"
+    user_registry.registerUser("MultiExpert", public_key, "Expert data", False, {'from': accounts[0]})
+    user_registry.addExpertField("MultiExpert", 1, {'from': accounts[0]})
+    user_registry.addExpertField("MultiExpert", 2, {'from': accounts[0]})
 
-    reputation_manager.updateReputation(accounts[5], 1, 5, {'from': accounts[0]})
-    reputation_manager.updateReputation(accounts[5], 2, 7, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key, 1, 5, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key, 2, 7, {'from': accounts[0]})
 
     tx = expert_case_manager.openExpertCase(
         1,          # itemId
         2,          # fieldId
         5,          # minReputation
+        public_key, # publicKey (as string)
         False,      # botAllowed
         "EC Info",  # ECInfo
         {'from': accounts[0]}
     )
     ECId = tx.return_value
 
-    expert_case_manager.castVote(ECId, 1, {'from': accounts[5]})
+    expert_case_manager.castVote(ECId, 1, public_key, {'from': accounts[0]})
 
 def test_close_expert_case(
     reputation_manager,
@@ -106,35 +112,35 @@ def test_close_expert_case(
     expert_case_manager,
     accounts
 ):
-    nick1 = "Expert1"
-    nick2 = "Expert2"
-    user_registry.registerUser(nick1, "Data1", False, {'from': accounts[6]})
-    user_registry.registerUser(nick2, "Data2", False, {'from': accounts[7]})
-    user_registry.addExpertField(nick1, 1, {'from': accounts[6]})
-    user_registry.addExpertField(nick2, 1, {'from': accounts[7]})
+    # Use public keys as string to identify users
+    public_key_1 = "user_public_key_4"
+    public_key_2 = "user_public_key_5"
+    user_registry.registerUser("Expert1", public_key_1, "Data1", False, {'from': accounts[0]})
+    user_registry.registerUser("Expert2", public_key_2, "Data2", False, {'from': accounts[0]})
+    user_registry.addExpertField("Expert1", 1, {'from': accounts[0]})
+    user_registry.addExpertField("Expert2", 1, {'from': accounts[0]})
 
-    reputation_manager.updateReputation(accounts[6], 1, 5, {'from': accounts[0]})
-    reputation_manager.updateReputation(accounts[7], 1, 5, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key_1, 1, 5, {'from': accounts[0]})
+    reputation_manager.updateReputation(public_key_2, 1, 5, {'from': accounts[0]})
 
     tx = expert_case_manager.openExpertCase(
         1,          # itemId
         1,          # fieldId
         3,          # minReputation
+        public_key_1, # publicKey (as string)
         False,      # botAllowed
         "EC Info",  # ECInfo
         {'from': accounts[0]}
     )
     ECId = tx.return_value
 
-    expert_case_manager.castVote(ECId, 1, {'from': accounts[6]})
-    expert_case_manager.castVote(ECId, 2, {'from': accounts[7]})
+    expert_case_manager.castVote(ECId, 1, public_key_1, {'from': accounts[0]})
+    expert_case_manager.castVote(ECId, 2, public_key_2, {'from': accounts[0]})
 
     expert_case_manager.closeExpertCase(ECId, {'from': accounts[0]})
 
-    rep1 = reputation_manager.getReputation(accounts[6], 1)
-    rep2 = reputation_manager.getReputation(accounts[7], 1)
+    rep1 = reputation_manager.getReputation(public_key_1, 1)
+    rep2 = reputation_manager.getReputation(public_key_2, 1)
 
-
-    assert rep1 == 3
-
-    assert rep2 == 5
+    assert rep1 == 7
+    assert rep2 == 4
