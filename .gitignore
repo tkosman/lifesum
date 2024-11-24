@@ -4,3 +4,9 @@
 /gatewayApp/gateway/__pycache__
 gatewayApp/utils/__pycache__
 gatewayApp/utils/key.priv
+/Message/__pycache__
+nodeApp/node/__pycache__
+app/__pycache__/
+Message/__pycache__/
+tests/__pycache__/
+
