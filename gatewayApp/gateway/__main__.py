@@ -2,12 +2,18 @@
 Sanic app.
 """
 import argparse
+import os
+from queue import Queue
+import sys
+from threading import Thread
+import time
 
 import sanic
 from sanic import response, request
 from sanic_ext import openapi
 from sanic_ext import validate
 from sanic_ext.exceptions import ValidationError
+
 from .auth import protected
 from .auth import authenticate
 from .auth import register
@@ -16,6 +22,11 @@ from .auth import generate_challenge
 from .valid_schemas import ValidUser
 from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
+
+from .node_connection_client import NodeConnectionClient
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Message')))
+from Message import Message, Type
 
 __version__ = '1.0.0'
 
@@ -58,7 +69,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidUser)
     def handle_register(request, body: ValidUser):
-        return register(body)
+        return register(app.ctx.message_queue, body)
 
     @app.route('/challenge', methods=["POST"])
     @openapi.definition(
@@ -71,7 +82,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidChallengeRequest)
     def handle_challenge(request, body: ValidChallengeRequest):
-        return generate_challenge(request, body)
+        return generate_challenge(app.ctx.message_queue, request, body)
 
     @app.route('/auth', methods=["POST"])
     @openapi.definition(
@@ -85,7 +96,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidAuthRequest)
     def handle_authentication(request, body: ValidAuthRequest):
-        return authenticate(request, body)
+        return authenticate(app.ctx.message_queue, request, body)
 
     @app.exception(ValidationError)
     def handle_invalid_request(request, exception):
@@ -108,12 +119,34 @@ def attach_endpoints(app):
     def protected_endpoint(request):
         return response.json({"message": "This is a protected endpoint."})
 
+def background_connection_worker(queue: Queue):
+    try:
+        node_connection_client = NodeConnectionClient(queue)
+    except ConnectionError as e:
+        # TODO : handle error
+        print(e)
+
 def create_app(arguments):
     "Sanic app factory."
     app = sanic.Sanic("Gateway")
     app.ctx.args = arguments
     app.ctx.challenges = {}
     app.config.SECRET = "secret" #TODO: change this to a more secure secret
+
+    app.ctx.message_queue = Queue()
+
+    @app.before_server_start()
+    async def node_connection_manager(app):
+        app.ctx.bg_thread = Thread(target=background_connection_worker, args=(app.ctx.message_queue,))
+        app.ctx.bg_thread.daemon = True
+        app.ctx.bg_thread.start()
+
+    @app.before_server_stop
+    async def stop_background_thread(app, loop):
+        print("Stopping Node connection manager thread...")
+        app.ctx.message_queue.put(Message(type=Type.EXIT))
+        app.ctx.bg_thread.join()
+        print("Node connection manager thread stopped.")
 
     attach_endpoints(app)
     return app
