@@ -2,12 +2,16 @@
 Sanic app.
 """
 import argparse
+import os
+import sys
+from threading import Thread
 
 import sanic
 from sanic import response, request
 from sanic_ext import openapi
 from sanic_ext import validate
 from sanic_ext.exceptions import ValidationError
+
 from .auth import protected
 from .auth import authenticate
 from .auth import register
@@ -18,6 +22,9 @@ from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
 
 from .daemonize import daemonize
+
+from .node_connection_client import NodeConnectionClient
+
 
 __version__ = '1.0.0'
 
@@ -60,7 +67,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidUser)
     def handle_register(request, body: ValidUser):
-        return register(body)
+        return register(app.ctx.node_connection_client, body)
 
     @app.route('/challenge', methods=["POST"])
     @openapi.definition(
@@ -73,7 +80,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidChallengeRequest)
     def handle_challenge(request, body: ValidChallengeRequest):
-        return generate_challenge(request, body)
+        return generate_challenge(app.ctx.node_connection_client, request, body)
 
     @app.route('/auth', methods=["POST"])
     @openapi.definition(
@@ -87,7 +94,7 @@ def attach_endpoints(app):
     )
     @validate(json=ValidAuthRequest)
     def handle_authentication(request, body: ValidAuthRequest):
-        return authenticate(request, body)
+        return authenticate(app.ctx.node_connection_client, request, body)
 
     @app.exception(ValidationError)
     def handle_invalid_request(request, exception):
@@ -116,6 +123,22 @@ def create_app(arguments):
     app.ctx.args = arguments
     app.ctx.challenges = {}
     app.config.SECRET = "secret" #TODO: change this to a more secure secret
+
+
+    app.ctx.node_connection_client = NodeConnectionClient()
+
+    @app.before_server_start()
+    async def node_connection_manager(app):
+        app.ctx.bg_thread = Thread(target=app.ctx.node_connection_client.connection_manager)
+        app.ctx.bg_thread.daemon = True
+        app.ctx.bg_thread.start()
+
+    @app.before_server_stop
+    async def stop_background_thread(app, loop):
+        print("Stopping Node connection manager thread...")
+        app.ctx.node_connection_client.exit()
+        app.ctx.bg_thread.join()
+        print("Node connection manager thread stopped.")
 
     attach_endpoints(app)
     return app
