@@ -2,6 +2,5 @@ __pycache__
 .env
 .history
 .hypothesis/
-build/
 reports/
 /node/__pycache__
