@@ -48,7 +48,7 @@ def protected(wrapped):
 
     return decorator(wrapped)
 
-def register(request_body):
+def register(node_connection_client, request_body):
     """
     Register a new user with user_id and his public key.
     """
@@ -58,19 +58,19 @@ def register(request_body):
     if not user_id or not public_key_pem:
         return response.json({"error": "user_id and public_key are required."}, status=400)
 
-    if user_exists(user_id):
+    if user_exists(node_connection_client, user_id):
         return response.json({"error": "User ID already exists."}, status=400)
 
     try:
         public_key = load_pem_public_key(public_key_pem.encode())
-        add_public_key(user_id, public_key)
+        add_public_key(node_connection_client, user_id, public_key)
     except (ValueError, InvalidKey):
         return response.json({"error": "Invalid public key format"}, status=400)
 
     return response.json({"message": "User registered successfully."}, status=201)
 
 
-def generate_challenge(request, request_body):
+def generate_challenge(node_connection_client, request, request_body):
     """
     Generate a challenge for a given user_id.
     Fetch the user's public key and encrypt the challenge with it.
@@ -82,7 +82,7 @@ def generate_challenge(request, request_body):
     if not user_id:
         return response.json({"error": "Missing user_id."})
 
-    if not user_exists(user_id):
+    if not user_exists(node_connection_client, user_id):
         return response.json({"error": "User not found."})
 
     nonce = str(random.randint(0, 1_000_000))
@@ -92,7 +92,7 @@ def generate_challenge(request, request_body):
     request.app.ctx.challenges[user_id] = challenge.encode()
 
     try:
-        public_key = get_public_key(user_id)
+        public_key = get_public_key(node_connection_client, user_id)
         encrypted_challenge = public_key.encrypt(
             challenge.encode(),
             padding.OAEP(
@@ -109,7 +109,7 @@ def generate_challenge(request, request_body):
 
 
 
-def authenticate(request, body):
+def authenticate(node_connection_client, request, body):
     """
     Authenticate a user by verifying the signed challenge.
     This function is called automatically by the sanic-jwt middleware on /auth endpoint.
@@ -123,7 +123,7 @@ def authenticate(request, body):
     if not challenge:
         return response.json({"eror": "Challenge not found for user."})
 
-    public_key = get_public_key(user_id)
+    public_key = get_public_key(node_connection_client, user_id)
     if not public_key:
         return response.json({"eror:": "User's public key not found."})
 

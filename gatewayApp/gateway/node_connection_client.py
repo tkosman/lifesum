@@ -7,272 +7,303 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import os
 import sys
 
-import node_connection
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Message')))
+from Message import Message, Type
 
-sys.path.insert(0, '../../Message')
-from Message import *
+class NodeConnectionClient():
+    def __init__(self):
+        # TODO replace with actual address
+        self.HOST: str = '127.0.0.1'
+        self.PORT: int = 65432
+        self.node_socket: socket = None
 
-# TODO: replace with actual address
-HOST = '127.0.0.1'
-PORT = 65432
+        self.__aes_key = None
 
-ATTEMPTS = 3
-REFRACTORY_PERIOD = 1 #[s]
+        self.ATTEMPTS: int = 3
+        self.REFRACTORY_PERIOD: int = 1 #[s]
+        self.TIMEOUT: int = 3 #[s]
 
-# Helper functions for sending/receiving data
-def send_data(socket: socket, data: bytes) -> None:
-    """Sends data to Node
 
-    Args:
-        sock (socket): Socket for communication
-        data (bytes): Data to send.
-    """
-    try:
-        # Send the length of the data (4 bytes, big-endian)
-        socket.send(len(data).to_bytes(4, 'big'))
-        # Send the actual data
-        socket.sendall(data)
-    except Exception as e:
-        print(e)
-        raise
+    def send(self, message: Message) -> None:
+        """Sends data to Node
 
-def receive_data(socket: socket) -> bytes:
-    """Retrieves message from Node.
+        Args:
+            data (bytes): Data to send.
+        """
+        try:
+            __encrypted_message: bytes = self.__encrypt(message, self.__aes_key)
+            # Send the length of the data (4 bytes, big-endian)
+            self.node_socket.send(len(__encrypted_message).to_bytes(4, 'big'))
+            # Send the actual data
+            self.node_socket.sendall(__encrypted_message)
+        except Exception as e:
+            print(e)
+            raise
 
-    Args:
-        sock (socket): Socket for communication.
+    def receive(self) -> Message:
+        """Retrieves message from Node.
 
-    Raises:
-        ConnectionError: Connection with Node broken.
+        Raises:
+            ConnectionError: Connection with Node broken.
 
-    Returns:
-        bytes: Encoded message.
-    """
-    data_length: int = int.from_bytes(socket.recv(4), 'big')
-    data: bytes = b""
-    while len(data) < data_length:
-        packet: bytes = socket.recv(data_length - len(data))
-        if not packet:
-            raise ConnectionError("Socket connection broken")
-        data += packet
-    return data
+        Returns:
+            Message: Decoded message.
+        """
+        data_length: int = int.from_bytes(self.node_socket.recv(4), 'big')
+        data: bytes = b""
+        while len(data) < data_length:
+            packet: bytes = self.node_socket.recv(data_length - len(data))
+            if not packet:
+                raise ConnectionError("Socket connection broken")
+            data += packet
 
-def decrypt(encrypted_message: bytes, aes_key: bytes) -> str:
-    """Decrypts message using AES key.
+        __decrypted_message = self.__decrypt(data, self.__aes_key)
+        return Message.from_json(__decrypted_message)
 
-    Args:
-        encrypted_message (bytes): Message to decrypt.
-        aes_key (bytes): AES key.
 
-    Returns:
-        str: Decrytped message.
-    """
-    iv = encrypted_message[:16]
-    ciphertext = encrypted_message[16:]
-    cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
-    decryptor = cipher.decryptor()
-    return decryptor.update(ciphertext) + decryptor.finalize()
+    def __send_data(self, data: bytes) -> None:
+        """Sends data to Node
 
-def encrypt(message: Message, aes_key: bytes) -> bytes:
-    """Encrypts message using AES key.
+        Args:
+            data (bytes): Data to send.
+        """
+        try:
+            # Send the length of the data (4 bytes, big-endian)
+            self.node_socket.send(len(data).to_bytes(4, 'big'))
+            # Send the actual data
+            self.node_socket.sendall(data)
+        except Exception as e:
+            print(e)
+            raise
 
-    Args:
-        message (Message): Message to encrypt.
-        aes_key (bytes): AES key.
+    def __receive_data(self) -> bytes:
+        """Retrieves data from Node.
 
-    Returns:
-        bytes: Encrypted message.
-    """
-    message_json = message.to_bytes()
+        Raises:
+            ConnectionError: Connection with Node broken.
 
-    iv = os.urandom(16)
-    cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
-    encryptor = cipher.encryptor()
-    return iv + encryptor.update(message_json) + encryptor.finalize()
+        Returns:
+            bytes: Recieved data.
+        """
+        data_length: int = int.from_bytes(self.node_socket.recv(4), 'big')
+        data: bytes = b""
+        while len(data) < data_length:
+            packet: bytes = self.node_socket.recv(data_length - len(data))
+            if not packet:
+                raise ConnectionError("Socket connection broken")
+            data += packet
+        return data
 
-# TODO: change the DH to more secure version
-def DH_exchange(socket: socket) -> bytes:
-    """Executes Diffie-Hellman key exchange and establishes connection
-    between Gateway and Node.
+    def __decrypt(self, __encrypted_message: bytes) -> str:
+        """__decrypts message using AES key.
 
-    Args:
-        socket (socket): Socket for communication.
+        Args:
+            __encrypted_message (bytes): Message to __decrypt.
+            self.__aes_key (bytes): AES key.
 
-    Returns:
-        bytes: AES key.
-    """
-    try:
-        socket.connect((HOST, PORT))
-        print("Connected to the server.")
-        print("Initiating DH exchange.")
+        Returns:
+            str: Decrytped message.
+        """
+        iv = __encrypted_message[:16]
+        ciphertext = __encrypted_message[16:]
+        cipher = Cipher(algorithms.AES(self.__aes_key), modes.CFB(iv))
+        __decryptor = cipher.__decryptor()
+        return __decryptor.update(ciphertext) + __decryptor.finalize()
 
-        # Receive the DH parameters (this is just the parameters, not a private key)
-        dh_parameters_pem: bytes = receive_data(socket)
-        print("DH parameters received")
+    def __encrypt(self, message: Message) -> bytes:
+        """__encrypts message using AES key.
 
-        # Load DH parameters
-        parameters = serialization.load_pem_parameters(dh_parameters_pem)
+        Args:
+            message (Message): Message to __encrypt.
+            self.__aes_key (bytes): AES key.
 
-        #! private key will be predetermined
-        # Generate the client's private key using the received parameters
-        client_private_key = parameters.generate_private_key()
+        Returns:
+            bytes: __encrypted message.
+        """
+        message_json = message.to_bytes()
 
-        # Generate the client's public key
-        client_public_key = client_private_key.public_key()
-        print("Key pair generated")
+        iv = os.urandom(16)
+        cipher = Cipher(algorithms.AES(self.__aes_key), modes.CFB(iv))
+        __encryptor = cipher.__encryptor()
+        return iv + __encryptor.update(message_json) + __encryptor.finalize()
 
-        # Send client's public key to the server
-        client_public_key_pem: bytes = client_public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        )
-        send_data(socket, client_public_key_pem)
-        print("Key pem send")
+    # TODO: change the DH to more secure version
+    def __DH_exchange(self) -> bytes:
+        """Executes Diffie-Hellman key exchange and establishes connection
+        between Gateway and Node.
 
-        # Receive server's public key
-        server_public_key_pem: bytes = receive_data(socket)
-        server_public_key = serialization.load_pem_public_key(server_public_key_pem)
-        print("Key pem received")
+        Returns:
+            bytes: AES key.
+        """
+        try:
+            self.node_socket.connect((self.HOST, self.PORT))
+            print("Connected to the server.")
+            print("Initiating DH exchange.")
 
-        # Perform Diffie-Hellman key exchange
-        shared_key: bytes = client_private_key.exchange(server_public_key)
+            # Receive the DH parameters (this is just the parameters, not a private key)
+            dh_parameters_pem: bytes = self.__receive_data(self.node_socket)
+            print("DH parameters received")
 
-        # Derive AES key
-        aes_key: bytes = HKDF(
-            algorithm=SHA256(),
-            length=32,
-            salt=None,
-            info=b'handshake data'
-        ).derive(shared_key)
+            # Load DH parameters
+            parameters = serialization.load_pem_parameters(dh_parameters_pem)
 
-        return aes_key
-    except Exception as e:
-        print(e)
-        return None
+            #! private key will be predetermined
+            # Generate the client's private key using the received parameters
+            client_private_key = parameters.generate_private_key()
 
-def establish_connection(node_socket: socket) -> bytes:
-    """Establishes connection with Node.
+            # Generate the client's public key
+            client_public_key = client_private_key.public_key()
+            print("Key pair generated")
 
-    Args:
-        node_socket (socket): Socket for communication.
+            # Send client's public key to the server
+            client_public_key_pem: bytes = client_public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            self.__send_data(self.node_socket, client_public_key_pem)
+            print("Key pem send")
 
-    Raises:
-        ConnectionError: Couldn't connect to Node.
+            # Receive server's public key
+            server_public_key_pem: bytes = self.__receive_data(self.node_socket)
+            server_public_key = serialization.load_pem_public_key(server_public_key_pem)
+            print("Key pem received")
 
-    Returns:
-        bytes: AES key.
-    """
-    for attempt in range(ATTEMPTS):
-            try:
-                aes_key = DH_exchange(node_socket)
-                if aes_key:
-                    print("Connection established.")
-                    return aes_key
-            except Exception as e:
-                print(f"Attempt {attempt + 1} failed: {e}")
+            # Perform Diffie-Hellman key exchange
+            shared_key: bytes = client_private_key.exchange(server_public_key)
 
-            time.sleep(REFRACTORY_PERIOD)
+            # Derive AES key
+            self.__aes_key: bytes = HKDF(
+                algorithm=SHA256(),
+                length=32,
+                salt=None,
+                info=b'handshake data'
+            ).derive(shared_key)
 
-            if attempt == ATTEMPTS - 1:
-                print("All connection attempts failed. Exiting...")
-                raise ConnectionError("Error trying to connect with Node")
+            return self.__aes_key
+        except Exception as e:
+            print(e)
+            return None
 
-def process_message(message: Message) -> None:
-    """Processes message.
+    def __establish_connection(self) -> bytes:
+        """Establishes connection with Node.
 
-    Args:
-        message (Message): Message to process.
-    """
-    print(f"Return message: {message.get_payload()}")
+        Raises:
+            ConnectionError: Couldn't connect to Node.
 
-def handle_message(message: Message, node_socket: socket , aes_key: bytes) -> None:
-    """Handles message received from Gateway
+        Returns:
+            bytes: AES key.
+        """
+        for attempt in range(self.ATTEMPTS):
+                try:
+                    self.__aes_key = self.__DH_exchange(self.node_socket)
+                    if self.__aes_key:
+                        print("Connection established.")
+                        return self.__aes_key
+                except Exception as e:
+                    print(f"Attempt {attempt + 1} failed: {e}")
 
-    Args:
-        message (Message): Message to handle.
-        node_socket (socket): Client's socket for sending response.
-        aes_key (bytes): Encryption key.
+                time.sleep(self.REFRACTORY_PERIOD)
 
-    Raises:
-        ConnectionAbortedError: Gateway broke connection.
-    """
-    match message.get_type():
-        case Type.RETURN:
-            process_message(message)
+                if attempt == self.ATTEMPTS - 1:
+                    print("All connection attempts failed. Exiting...")
+                    raise ConnectionError("Error trying to connect with Node")
 
-        case Type.ERROR:
-            if message.get_status() >= 400 and message.get_status() < 500:
-                # TODO: deal with "unrecognized message type" error
-                print(f"Erroe message: {message.to_json()}")
-            elif message.get_status() >= 500 and message.get_status() < 600:
-                # TODO: resend last message
-                print(f"Error message: {message.to_json()}")
+    def process_message(self, message: Message) -> None:
+        """Processes message.
 
-        case _:
-            #! Bad request 400
-            response = Message(type=Type.ERROR, status=400, payload=f"Unrecognized message type: {message.get_type()}")
-            encrypted_response = encrypt(response, aes_key)
+        Args:
+            message (Message): Message to process.
+        """
 
-            send_data(node_socket, encrypted_response)
+        print(f"Return message: {message.get_payload()}")
 
-def main():
-    """Manages connection between Gateway and Node.
+    #! PROBABLY DEPRECATED
+    def __handle_message(self, message: Message) -> None:
+        """Handles message received from Gateway
 
-    Raises:
-        ConnectionError: Error during Diffie-Hellman exchange.
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as node_socket:
+        Args:
+            message (Message): Message to handle.
+            node_socket (socket): Client's socket for sending response.
+            self.__aes_key (bytes): __encryption key.
 
-        # Establishing connection and common key
-        aes_key = establish_connection(node_socket)
+        Raises:
+            ConnectionAbortedError: Gateway broke connection.
+        """
+        match message.get_type():
+            case Type.RETURN:
+                self.process_message(message)
 
-        if aes_key:
-            print(f"Shared AES key established with the Node")
-        else:
-            raise ConnectionError("Error during DH exchange. Terminating connection...")
+            case Type.ERROR:
+                if message.get_status() >= 400 and message.get_status() < 500:
+                    # TODO: deal with "unrecognized message type" error
+                    print(f"Erroe message: {message.to_json()}")
+                elif message.get_status() >= 500 and message.get_status() < 600:
+                    # TODO: resend last message
+                    print(f"Error message: {message.to_json()}")
 
-        # Connection loop
-        while True:
-            input_message: str = input("Enter message payload (or type 'exit' to disconnect): ")
+            case _:
+                #! Bad request 400
+                response = Message(type=Type.ERROR, status=400, payload=f"Unrecognized message type: {message.get_type()}")
+                __encrypted_response = self.__encrypt(response, self.__aes_key)
 
-            # Prepare message
-            if input_message != "exit":
-                message: Message = Message(type=Type.REQUEST, payload=input_message)
+                self.send_data(self.node_socket, __encrypted_response)
+
+    def connection_manager(self):
+        """Manages connection between Gateway and Node.
+
+        Raises:
+            ConnectionError: Error during Diffie-Hellman exchange.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as node_socket:
+
+            self.node_socket = node_socket
+
+            # Establishing connection and common key
+            self.__aes_key = self.__establish_connection(self.node_socket)
+
+            if self.__aes_key:
+                print(f"Shared AES key established with the Node")
             else:
-                message: Message = Message(type=Type.EXIT)
+                raise ConnectionError("Error during DH exchange. Terminating connection...")
 
-            encrypted_message = encrypt(message, aes_key)
-
-            send_data(node_socket, encrypted_message)
-
-            #! Handle EXIT
-            if input_message == "exit":
-                print("Closing connection")
-                node_socket.close()
-                break
-
-            # Receive encrypted response
-            encrypted_response: bytes = receive_data(node_socket)
-            decrypted_response: Message = decrypt(encrypted_response, aes_key)
+            self.node_socket.settimeout(self.TIMEOUT)
 
             try:
-                response = Message.from_json(decrypted_response)
-            except ValueError as ex:
-                #! Checksum error 500
+                # Keep alive loop
+                while True:
+                    message: Message = Message(Type.PING)
+                    __encrypted_message: bytes = self.__encrypt(message, self.__aes_key)
+
+                    self.send_data(self.node_socket, __encrypted_message)
+
+                    try:
+                        # Receive __encrypted response
+                        response = self.receive_data(self.node_socket)
+                    except ValueError as ex:
+                        #! Checksum error 500
+                        print(ex)
+
+                        # response = Message(type=Type.ERROR, status=500, payload=str(ex))
+                        # __encrypted_response = self.__encrypt(response, self.__aes_key)
+
+                        # self.send_data(self.node_socket, __encrypted_response)
+
+                        # continue
+
+                    if response.get_type() == Type.ERROR:
+                        print("Node still connected")
+                    else:
+                        raise ValueError(f"Wrong message type {response.get_type()}")
+                    time.sleep(100) #! check
+            except socket.timeout as ex:
                 print(ex)
+            except ValueError as ex:
+                print(ex)
+            finally:
+                self.node_socket.close()
 
-                response = Message(type=Type.ERROR, status=500, payload=str(ex))
-                encrypted_response = encrypt(response, aes_key)
+    def exit(self) -> None:
+        """Sends message to the Node to gracefully close connection and closes socket."""
+        self.send(Message(Type.EXIT))
+        self.node_socket.close()
 
-                send_data(node_socket, encrypted_response)
-
-                continue
-
-            handle_message(response, node_socket, aes_key)
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print(e)
