@@ -68,7 +68,7 @@ def decrypt(encrypted_message: bytes, aes_key: bytes) -> str:
     cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
     decryptor = cipher.decryptor()
     return decryptor.update(ciphertext) + decryptor.finalize()
-    
+
 def encrypt(message: Message, aes_key: bytes) -> bytes:
     """Encrypts message using AES key.
 
@@ -85,10 +85,10 @@ def encrypt(message: Message, aes_key: bytes) -> bytes:
     cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
     encryptor = cipher.encryptor()
     return iv + encryptor.update(message_json) + encryptor.finalize()
-    
+
 # TODO: change the DH to more secure version
 def DH_exchange(socket: socket) -> bytes:
-    """Executes Diffie-Hellman key exchange and establishes connection 
+    """Executes Diffie-Hellman key exchange and establishes connection
     between Gateway and Node.
 
     Args:
@@ -137,7 +137,7 @@ def DH_exchange(socket: socket) -> bytes:
     except Exception as e:
         print(e)
         return None
-        
+
 def handle_message(message: Message, gateway_socket: socket , aes_key: bytes) -> None:
     """Handles message received from Gateway
 
@@ -160,7 +160,7 @@ def handle_message(message: Message, gateway_socket: socket , aes_key: bytes) ->
         case Type.EXIT:
             print(f"Connection ended by {threading.current_thread().name}")
             raise ConnectionAbortedError
-        
+
         case Type.ERROR:
             if message.get_status() >= 400 and message.get_status() < 500:
                 # TODO: deal with "unrecognized message type" error
@@ -175,7 +175,7 @@ def handle_message(message: Message, gateway_socket: socket , aes_key: bytes) ->
             encrypted_response = encrypt(response, aes_key)
 
             send_data(gateway_socket, encrypted_response)
-            
+
 def handle_client(gateway_socket):
     """Executed in new thread to handle comunication between Gateway nad Node.
 
@@ -192,11 +192,11 @@ def handle_client(gateway_socket):
             print(f"Shared AES key established with {threading.current_thread().name}")
         else:
             raise ConnectionError("Error during DH exchange. Terminating connection...")
-            
+
         # Communication loop for this client
         while True:
             encrypted_message = receive_data(gateway_socket)
-            
+
             decrypted_message = decrypt(encrypted_message, aes_key)
 
             # Parse and process the message
@@ -205,14 +205,14 @@ def handle_client(gateway_socket):
             except ValueError as ex:
                 #! Checksum error 500
                 print(ex)
-                
+
                 response = Message(type=Type.ERROR, status=500, payload=str(ex))
                 encrypted_response = encrypt(response, aes_key)
 
                 send_data(gateway_socket, encrypted_response)
 
                 continue
-            
+
             # Handle message
             try:
                 handle_message(message, gateway_socket, aes_key)
@@ -225,7 +225,7 @@ def handle_client(gateway_socket):
         gateway_socket.close()
 
 def main():
-    """Main thread receiving new connection requests and delegating 
+    """Main thread receiving new connection requests and delegating
     their handling to new threads.
     """
     global server_socket, client_sockets, client_threads
@@ -258,14 +258,14 @@ def main():
             except Exception as e:
                 print(f"Error closing client socket: {e}")
         client_sockets.clear()
-        
+
         for thread in client_threads:
             if thread.is_alive():
                 thread.join(timeout=1)
-                
+
         print("Server stopped.")
-        
-        
+
+
 if __name__ == "__main__":
     try:
         main()

@@ -6,10 +6,7 @@ gatewayApp/utils/__pycache__
 gatewayApp/utils/key.priv
 /Message/__pycache__
 nodeApp/node/__pycache__
-app/__pycache__/__init__.cpython-312.pyc
-app/__pycache__/__main__.cpython-312.pyc
-Message/__pycache__/Message.cpython-312.pyc
-Message/__pycache__/MessageTypes.cpython-312.pyc
-tests/__pycache__/conftest.cpython-312-pytest-8.3.3.pyc
-tests/__pycache__/test_endpoints.cpython-312-pytest-8.3.3.pyc
+app/__pycache__/
+Message/__pycache__/
+tests/__pycache__/
 

@@ -12,36 +12,36 @@ class Message():
         status (int, optional): Returning status. Defaults to None.
         payload (str, optional): Sent data. Defaults to None.
     """
-        
+
     def __init__(self, type: Type = None, status: int = None, payload: str = None) -> None:
         self.__type: Type = type
         self.__status: int = status
         self.__payload: str = payload
         self.__checksum: str = self.__generate_checksum() if payload else None
-        
-        
+
+
     def set_type(self, type: Type) -> None:
         self.__type = type
-        
+
     def get_type(sefl) -> Type:
         return sefl.__type
-        
+
     def set_status(self, status: int) -> None:
         self.__status = status
-        
+
     def get_status(sefl) -> int:
         return sefl.__status
-    
+
     def set_payload(self, payload: str) -> None:
         self.__payload = payload
-        
+
     def get_payload(sefl) -> str:
         return sefl.__payload
-    
+
     def __generate_checksum(self) -> None:
         """Generate a SHA-256 checksum for the given data."""
         return hashlib.sha256(self.__payload.encode('utf-8')).hexdigest()
-        
+
     def check_checksum(self, checksum: str) -> bool:
         """Verifies message checksum.
 
@@ -90,7 +90,7 @@ class Message():
         """
         data = json.loads(json_string)
         message = cls(type=Type(data['type']), status=data['status'], payload=data['payload'])
-        
+
         if message.check_checksum(data['checksum']):
             return message
         else:

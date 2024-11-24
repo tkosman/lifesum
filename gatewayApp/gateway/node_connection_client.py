@@ -35,7 +35,7 @@ def send_data(socket: socket, data: bytes) -> None:
     except Exception as e:
         print(e)
         raise
-    
+
 def receive_data(socket: socket) -> bytes:
     """Retrieves message from Node.
 
@@ -47,7 +47,7 @@ def receive_data(socket: socket) -> bytes:
 
     Returns:
         bytes: Encoded message.
-    """    
+    """
     data_length: int = int.from_bytes(socket.recv(4), 'big')
     data: bytes = b""
     while len(data) < data_length:
@@ -72,7 +72,7 @@ def decrypt(encrypted_message: bytes, aes_key: bytes) -> str:
     cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
     decryptor = cipher.decryptor()
     return decryptor.update(ciphertext) + decryptor.finalize()
-    
+
 def encrypt(message: Message, aes_key: bytes) -> bytes:
     """Encrypts message using AES key.
 
@@ -92,7 +92,7 @@ def encrypt(message: Message, aes_key: bytes) -> bytes:
 
 # TODO: change the DH to more secure version
 def DH_exchange(socket: socket) -> bytes:
-    """Executes Diffie-Hellman key exchange and establishes connection 
+    """Executes Diffie-Hellman key exchange and establishes connection
     between Gateway and Node.
 
     Args:
@@ -144,7 +144,7 @@ def DH_exchange(socket: socket) -> bytes:
             salt=None,
             info=b'handshake data'
         ).derive(shared_key)
-        
+
         return aes_key
     except Exception as e:
         print(e)
@@ -152,7 +152,7 @@ def DH_exchange(socket: socket) -> bytes:
 
 def establish_connection(node_socket: socket) -> bytes:
     """Establishes connection with Node.
-    
+
     Args:
         node_socket (socket): Socket for communication.
 
@@ -170,9 +170,9 @@ def establish_connection(node_socket: socket) -> bytes:
                     return aes_key
             except Exception as e:
                 print(f"Attempt {attempt + 1} failed: {e}")
-            
+
             time.sleep(REFRACTORY_PERIOD)
-            
+
             if attempt == ATTEMPTS - 1:
                 print("All connection attempts failed. Exiting...")
                 raise ConnectionError("Error trying to connect with Node")
@@ -199,7 +199,7 @@ def handle_message(message: Message, node_socket: socket , aes_key: bytes) -> No
     match message.get_type():
         case Type.RETURN:
             process_message(message)
-        
+
         case Type.ERROR:
             if message.get_status() >= 400 and message.get_status() < 500:
                 # TODO: deal with "unrecognized message type" error
@@ -207,7 +207,7 @@ def handle_message(message: Message, node_socket: socket , aes_key: bytes) -> No
             elif message.get_status() >= 500 and message.get_status() < 600:
                 # TODO: resend last message
                 print(f"Error message: {message.to_json()}")
-        
+
         case _:
             #! Bad request 400
             response = Message(type=Type.ERROR, status=400, payload=f"Unrecognized message type: {message.get_type()}")
@@ -222,7 +222,7 @@ def main():
         ConnectionError: Error during Diffie-Hellman exchange.
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as node_socket:
-        
+
         # Establishing connection and common key
         aes_key = establish_connection(node_socket)
 
@@ -235,16 +235,16 @@ def main():
         while True:
             input_message: str = input("Enter message payload (or type 'exit' to disconnect): ")
 
-            # Prepare message 
+            # Prepare message
             if input_message != "exit":
                 message: Message = Message(type=Type.REQUEST, payload=input_message)
-            else: 
+            else:
                 message: Message = Message(type=Type.EXIT)
 
             encrypted_message = encrypt(message, aes_key)
 
             send_data(node_socket, encrypted_message)
-    
+
             #! Handle EXIT
             if input_message == "exit":
                 print("Closing connection")
@@ -260,16 +260,16 @@ def main():
             except ValueError as ex:
                 #! Checksum error 500
                 print(ex)
-                
+
                 response = Message(type=Type.ERROR, status=500, payload=str(ex))
                 encrypted_response = encrypt(response, aes_key)
 
                 send_data(node_socket, encrypted_response)
 
                 continue
-            
+
             handle_message(response, node_socket, aes_key)
-            
+
 
 if __name__ == "__main__":
     try:
