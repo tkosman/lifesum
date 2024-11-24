@@ -1,0 +1,6577 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "user",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "fieldId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "int8",
+          "name": "score",
+          "type": "int8"
+        }
+      ],
+      "name": "ReputationUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_RECENT_SCORES",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_user",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_fieldId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getReputation",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "sumRecentScores",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_user",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_fieldId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "int8",
+          "name": "_score",
+          "type": "int8"
+        }
+      ],
+      "name": "updateReputation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "allSourcePaths": {
+    "2": "contracts/ReputationManager.sol"
+  },
+  "ast": {
+    "absolutePath": "contracts/ReputationManager.sol",
+    "exportedSymbols": {
+      "ReputationManager": [
+        904
+      ]
+    },
+    "id": 905,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 767,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ReputationManager",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 904,
+        "linearizedBaseContracts": [
+          904
+        ],
+        "name": "ReputationManager",
+        "nameLocation": "66:17:2",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "ReputationManager.Reputation",
+            "id": 778,
+            "members": [
+              {
+                "constant": false,
+                "id": 769,
+                "mutability": "mutable",
+                "name": "totalScore",
+                "nameLocation": "125:10:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 778,
+                "src": "118:17:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_int256",
+                  "typeString": "int256"
+                },
+                "typeName": {
+                  "id": 768,
+                  "name": "int256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "118:6:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 771,
+                "mutability": "mutable",
+                "name": "totalCases",
+                "nameLocation": "153:10:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 778,
+                "src": "145:18:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 770,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "145:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 775,
+                "mutability": "mutable",
+                "name": "recentScores",
+                "nameLocation": "198:12:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 778,
+                "src": "173:37:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_uint256_$_t_int8_$",
+                  "typeString": "mapping(uint256 => int8)"
+                },
+                "typeName": {
+                  "id": 774,
+                  "keyName": "",
+                  "keyNameLocation": "-1:-1:-1",
+                  "keyType": {
+                    "id": 772,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "181:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "Mapping",
+                  "src": "173:24:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_mapping$_t_uint256_$_t_int8_$",
+                    "typeString": "mapping(uint256 => int8)"
+                  },
+                  "valueName": "",
+                  "valueNameLocation": "-1:-1:-1",
+                  "valueType": {
+                    "id": 773,
+                    "name": "int8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "192:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int8",
+                      "typeString": "int8"
+                    }
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 777,
+                "mutability": "mutable",
+                "name": "recentIndex",
+                "nameLocation": "228:11:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 778,
+                "src": "220:19:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 776,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "220:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Reputation",
+            "nameLocation": "97:10:2",
+            "nodeType": "StructDefinition",
+            "scope": 904,
+            "src": "90:156:2",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 785,
+            "mutability": "mutable",
+            "name": "reputations",
+            "nameLocation": "411:11:2",
+            "nodeType": "VariableDeclaration",
+            "scope": 904,
+            "src": "353:69:2",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_ptr_$_t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$_$",
+              "typeString": "mapping(string => mapping(uint256 => struct ReputationManager.Reputation))"
+            },
+            "typeName": {
+              "id": 784,
+              "keyName": "",
+              "keyNameLocation": "-1:-1:-1",
+              "keyType": {
+                "id": 779,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "361:6:2",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "353:49:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_ptr_$_t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$_$",
+                "typeString": "mapping(string => mapping(uint256 => struct ReputationManager.Reputation))"
+              },
+              "valueName": "",
+              "valueNameLocation": "-1:-1:-1",
+              "valueType": {
+                "id": 783,
+                "keyName": "",
+                "keyNameLocation": "-1:-1:-1",
+                "keyType": {
+                  "id": 780,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "379:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "nodeType": "Mapping",
+                "src": "371:30:2",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$",
+                  "typeString": "mapping(uint256 => struct ReputationManager.Reputation)"
+                },
+                "valueName": "",
+                "valueNameLocation": "-1:-1:-1",
+                "valueType": {
+                  "id": 782,
+                  "nodeType": "UserDefinedTypeName",
+                  "pathNode": {
+                    "id": 781,
+                    "name": "Reputation",
+                    "nameLocations": [
+                      "390:10:2"
+                    ],
+                    "nodeType": "IdentifierPath",
+                    "referencedDeclaration": 778,
+                    "src": "390:10:2"
+                  },
+                  "referencedDeclaration": 778,
+                  "src": "390:10:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                    "typeString": "struct ReputationManager.Reputation"
+                  }
+                }
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "constant": true,
+            "functionSelector": "55aeb22f",
+            "id": 788,
+            "mutability": "constant",
+            "name": "MAX_RECENT_SCORES",
+            "nameLocation": "453:17:2",
+            "nodeType": "VariableDeclaration",
+            "scope": 904,
+            "src": "429:47:2",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 786,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "429:7:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "hexValue": "313030",
+              "id": 787,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "473:3:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_100_by_1",
+                "typeString": "int_const 100"
+              },
+              "value": "100"
+            },
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "e9c5ff185c8f467585d402c5fc07c13de428d817f49e457ffc4a3d6f704f66a2",
+            "id": 796,
+            "name": "ReputationUpdated",
+            "nameLocation": "489:17:2",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 795,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 790,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nameLocation": "514:4:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 796,
+                  "src": "507:11:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 789,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "507:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 792,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "fieldId",
+                  "nameLocation": "536:7:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 796,
+                  "src": "520:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 791,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "520:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 794,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "score",
+                  "nameLocation": "550:5:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 796,
+                  "src": "545:10:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int8",
+                    "typeString": "int8"
+                  },
+                  "typeName": {
+                    "id": 793,
+                    "name": "int8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "545:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int8",
+                      "typeString": "int8"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "506:50:2"
+            },
+            "src": "483:74:2"
+          },
+          {
+            "body": {
+              "id": 849,
+              "nodeType": "Block",
+              "src": "894:501:2",
+              "statements": [
+                {
+                  "assignments": [
+                    807
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 807,
+                      "mutability": "mutable",
+                      "name": "rep",
+                      "nameLocation": "923:3:2",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 849,
+                      "src": "904:22:2",
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                        "typeString": "struct ReputationManager.Reputation"
+                      },
+                      "typeName": {
+                        "id": 806,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 805,
+                          "name": "Reputation",
+                          "nameLocations": [
+                            "904:10:2"
+                          ],
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 778,
+                          "src": "904:10:2"
+                        },
+                        "referencedDeclaration": 778,
+                        "src": "904:10:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 813,
+                  "initialValue": {
+                    "baseExpression": {
+                      "baseExpression": {
+                        "id": 808,
+                        "name": "reputations",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 785,
+                        "src": "929:11:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_string_memory_ptr_$_t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$_$",
+                          "typeString": "mapping(string memory => mapping(uint256 => struct ReputationManager.Reputation storage ref))"
+                        }
+                      },
+                      "id": 810,
+                      "indexExpression": {
+                        "id": 809,
+                        "name": "_user",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 798,
+                        "src": "941:5:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "929:18:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$",
+                        "typeString": "mapping(uint256 => struct ReputationManager.Reputation storage ref)"
+                      }
+                    },
+                    "id": 812,
+                    "indexExpression": {
+                      "id": 811,
+                      "name": "_fieldId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 800,
+                      "src": "948:8:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "929:28:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Reputation_$778_storage",
+                      "typeString": "struct ReputationManager.Reputation storage ref"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "904:53:2"
+                },
+                {
+                  "expression": {
+                    "id": 818,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "expression": {
+                        "id": 814,
+                        "name": "rep",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 807,
+                        "src": "1026:3:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation storage pointer"
+                        }
+                      },
+                      "id": 816,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberLocation": "1030:10:2",
+                      "memberName": "totalScore",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 769,
+                      "src": "1026:14:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_int256",
+                        "typeString": "int256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "+=",
+                    "rightHandSide": {
+                      "id": 817,
+                      "name": "_score",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 802,
+                      "src": "1044:6:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_int8",
+                        "typeString": "int8"
+                      }
+                    },
+                    "src": "1026:24:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "id": 819,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1026:24:2"
+                },
+                {
+                  "expression": {
+                    "id": 824,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "expression": {
+                        "id": 820,
+                        "name": "rep",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 807,
+                        "src": "1060:3:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation storage pointer"
+                        }
+                      },
+                      "id": 822,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberLocation": "1064:10:2",
+                      "memberName": "totalCases",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 771,
+                      "src": "1060:14:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "+=",
+                    "rightHandSide": {
+                      "hexValue": "31",
+                      "id": 823,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1078:1:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "1060:19:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 825,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1060:19:2"
+                },
+                {
+                  "expression": {
+                    "id": 835,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "baseExpression": {
+                        "expression": {
+                          "id": 826,
+                          "name": "rep",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 807,
+                          "src": "1165:3:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                            "typeString": "struct ReputationManager.Reputation storage pointer"
+                          }
+                        },
+                        "id": 832,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberLocation": "1169:12:2",
+                        "memberName": "recentScores",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 775,
+                        "src": "1165:16:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_uint256_$_t_int8_$",
+                          "typeString": "mapping(uint256 => int8)"
+                        }
+                      },
+                      "id": 833,
+                      "indexExpression": {
+                        "commonType": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "id": 831,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "expression": {
+                            "id": 828,
+                            "name": "rep",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 807,
+                            "src": "1182:3:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                              "typeString": "struct ReputationManager.Reputation storage pointer"
+                            }
+                          },
+                          "id": 829,
+                          "isConstant": false,
+                          "isLValue": true,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberLocation": "1186:11:2",
+                          "memberName": "recentIndex",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 777,
+                          "src": "1182:15:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "%",
+                        "rightExpression": {
+                          "id": 830,
+                          "name": "MAX_RECENT_SCORES",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 788,
+                          "src": "1200:17:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "src": "1182:35:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "IndexAccess",
+                      "src": "1165:53:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_int8",
+                        "typeString": "int8"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 834,
+                      "name": "_score",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 802,
+                      "src": "1221:6:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_int8",
+                        "typeString": "int8"
+                      }
+                    },
+                    "src": "1165:62:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int8",
+                      "typeString": "int8"
+                    }
+                  },
+                  "id": 836,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1165:62:2"
+                },
+                {
+                  "expression": {
+                    "id": 841,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "expression": {
+                        "id": 837,
+                        "name": "rep",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 807,
+                        "src": "1237:3:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation storage pointer"
+                        }
+                      },
+                      "id": 839,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberLocation": "1241:11:2",
+                      "memberName": "recentIndex",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 777,
+                      "src": "1237:15:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "+=",
+                    "rightHandSide": {
+                      "hexValue": "31",
+                      "id": 840,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1256:1:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "1237:20:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 842,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1237:20:2"
+                },
+                {
+                  "eventCall": {
+                    "arguments": [
+                      {
+                        "id": 844,
+                        "name": "_user",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 798,
+                        "src": "1364:5:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      },
+                      {
+                        "id": 845,
+                        "name": "_fieldId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 800,
+                        "src": "1371:8:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 846,
+                        "name": "_score",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 802,
+                        "src": "1381:6:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_int8",
+                          "typeString": "int8"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_int8",
+                          "typeString": "int8"
+                        }
+                      ],
+                      "id": 843,
+                      "name": "ReputationUpdated",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 796,
+                      "src": "1346:17:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_string_memory_ptr_$_t_uint256_$_t_int8_$returns$__$",
+                        "typeString": "function (string memory,uint256,int8)"
+                      }
+                    },
+                    "id": 847,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "nameLocations": [],
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1346:42:2",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 848,
+                  "nodeType": "EmitStatement",
+                  "src": "1341:47:2"
+                }
+              ]
+            },
+            "functionSelector": "e08240f7",
+            "id": 850,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateReputation",
+            "nameLocation": "642:16:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 803,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 798,
+                  "mutability": "mutable",
+                  "name": "_user",
+                  "nameLocation": "682:5:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 850,
+                  "src": "668:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 797,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "668:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 800,
+                  "mutability": "mutable",
+                  "name": "_fieldId",
+                  "nameLocation": "730:8:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 850,
+                  "src": "722:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 799,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "722:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 802,
+                  "mutability": "mutable",
+                  "name": "_score",
+                  "nameLocation": "813:6:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 850,
+                  "src": "808:11:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int8",
+                    "typeString": "int8"
+                  },
+                  "typeName": {
+                    "id": 801,
+                    "name": "int8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "808:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int8",
+                      "typeString": "int8"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "658:226:2"
+            },
+            "returnParameters": {
+              "id": 804,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "894:0:2"
+            },
+            "scope": 904,
+            "src": "633:762:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 902,
+              "nodeType": "Block",
+              "src": "1616:463:2",
+              "statements": [
+                {
+                  "assignments": [
+                    861
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 861,
+                      "mutability": "mutable",
+                      "name": "rep",
+                      "nameLocation": "1645:3:2",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 902,
+                      "src": "1626:22:2",
+                      "stateVariable": false,
+                      "storageLocation": "storage",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                        "typeString": "struct ReputationManager.Reputation"
+                      },
+                      "typeName": {
+                        "id": 860,
+                        "nodeType": "UserDefinedTypeName",
+                        "pathNode": {
+                          "id": 859,
+                          "name": "Reputation",
+                          "nameLocations": [
+                            "1626:10:2"
+                          ],
+                          "nodeType": "IdentifierPath",
+                          "referencedDeclaration": 778,
+                          "src": "1626:10:2"
+                        },
+                        "referencedDeclaration": 778,
+                        "src": "1626:10:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 867,
+                  "initialValue": {
+                    "baseExpression": {
+                      "baseExpression": {
+                        "id": 862,
+                        "name": "reputations",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 785,
+                        "src": "1651:11:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_string_memory_ptr_$_t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$_$",
+                          "typeString": "mapping(string memory => mapping(uint256 => struct ReputationManager.Reputation storage ref))"
+                        }
+                      },
+                      "id": 864,
+                      "indexExpression": {
+                        "id": 863,
+                        "name": "_user",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 852,
+                        "src": "1663:5:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "1651:18:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Reputation_$778_storage_$",
+                        "typeString": "mapping(uint256 => struct ReputationManager.Reputation storage ref)"
+                      }
+                    },
+                    "id": 866,
+                    "indexExpression": {
+                      "id": 865,
+                      "name": "_fieldId",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 854,
+                      "src": "1670:8:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "1651:28:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Reputation_$778_storage",
+                      "typeString": "struct ReputationManager.Reputation storage ref"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1626:53:2"
+                },
+                {
+                  "assignments": [
+                    869
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 869,
+                      "mutability": "mutable",
+                      "name": "scoresCount",
+                      "nameLocation": "1806:11:2",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 902,
+                      "src": "1798:19:2",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "typeName": {
+                        "id": 868,
+                        "name": "uint256",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1798:7:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "visibility": "internal"
+                    }
+                  ],
+                  "id": 878,
+                  "initialValue": {
+                    "condition": {
+                      "commonType": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      },
+                      "id": 873,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "expression": {
+                          "id": 870,
+                          "name": "rep",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 861,
+                          "src": "1820:3:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                            "typeString": "struct ReputationManager.Reputation storage pointer"
+                          }
+                        },
+                        "id": 871,
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberLocation": "1824:10:2",
+                        "memberName": "totalCases",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 771,
+                        "src": "1820:14:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": ">",
+                      "rightExpression": {
+                        "id": 872,
+                        "name": "MAX_RECENT_SCORES",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 788,
+                        "src": "1837:17:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "src": "1820:34:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "falseExpression": {
+                      "expression": {
+                        "id": 875,
+                        "name": "rep",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 861,
+                        "src": "1877:3:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                          "typeString": "struct ReputationManager.Reputation storage pointer"
+                        }
+                      },
+                      "id": 876,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberLocation": "1881:10:2",
+                      "memberName": "totalCases",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 771,
+                      "src": "1877:14:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 877,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "Conditional",
+                    "src": "1820:71:2",
+                    "trueExpression": {
+                      "id": 874,
+                      "name": "MAX_RECENT_SCORES",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 788,
+                      "src": "1857:17:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1798:93:2"
+                },
+                {
+                  "expression": {
+                    "id": 881,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 879,
+                      "name": "sumRecentScores",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 857,
+                      "src": "1901:15:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_int256",
+                        "typeString": "int256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "hexValue": "30",
+                      "id": 880,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1919:1:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "src": "1901:19:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "id": 882,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1901:19:2"
+                },
+                {
+                  "body": {
+                    "id": 900,
+                    "nodeType": "Block",
+                    "src": "2010:63:2",
+                    "statements": [
+                      {
+                        "expression": {
+                          "id": 898,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftHandSide": {
+                            "id": 893,
+                            "name": "sumRecentScores",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 857,
+                            "src": "2024:15:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_int256",
+                              "typeString": "int256"
+                            }
+                          },
+                          "nodeType": "Assignment",
+                          "operator": "+=",
+                          "rightHandSide": {
+                            "baseExpression": {
+                              "expression": {
+                                "id": 894,
+                                "name": "rep",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 861,
+                                "src": "2043:3:2",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_struct$_Reputation_$778_storage_ptr",
+                                  "typeString": "struct ReputationManager.Reputation storage pointer"
+                                }
+                              },
+                              "id": 895,
+                              "isConstant": false,
+                              "isLValue": true,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "memberLocation": "2047:12:2",
+                              "memberName": "recentScores",
+                              "nodeType": "MemberAccess",
+                              "referencedDeclaration": 775,
+                              "src": "2043:16:2",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_mapping$_t_uint256_$_t_int8_$",
+                                "typeString": "mapping(uint256 => int8)"
+                              }
+                            },
+                            "id": 897,
+                            "indexExpression": {
+                              "id": 896,
+                              "name": "i",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 884,
+                              "src": "2060:1:2",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "nodeType": "IndexAccess",
+                            "src": "2043:19:2",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_int8",
+                              "typeString": "int8"
+                            }
+                          },
+                          "src": "2024:38:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_int256",
+                            "typeString": "int256"
+                          }
+                        },
+                        "id": 899,
+                        "nodeType": "ExpressionStatement",
+                        "src": "2024:38:2"
+                      }
+                    ]
+                  },
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 889,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "id": 887,
+                      "name": "i",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 884,
+                      "src": "1988:1:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "<",
+                    "rightExpression": {
+                      "id": 888,
+                      "name": "scoresCount",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 869,
+                      "src": "1992:11:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1988:15:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 901,
+                  "initializationExpression": {
+                    "assignments": [
+                      884
+                    ],
+                    "declarations": [
+                      {
+                        "constant": false,
+                        "id": 884,
+                        "mutability": "mutable",
+                        "name": "i",
+                        "nameLocation": "1981:1:2",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 901,
+                        "src": "1973:9:2",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 883,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1973:7:2",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "visibility": "internal"
+                      }
+                    ],
+                    "id": 886,
+                    "initialValue": {
+                      "hexValue": "30",
+                      "id": 885,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1985:1:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "nodeType": "VariableDeclarationStatement",
+                    "src": "1973:13:2"
+                  },
+                  "isSimpleCounterLoop": true,
+                  "loopExpression": {
+                    "expression": {
+                      "id": 891,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "UnaryOperation",
+                      "operator": "++",
+                      "prefix": false,
+                      "src": "2005:3:2",
+                      "subExpression": {
+                        "id": 890,
+                        "name": "i",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 884,
+                        "src": "2005:1:2",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 892,
+                    "nodeType": "ExpressionStatement",
+                    "src": "2005:3:2"
+                  },
+                  "nodeType": "ForStatement",
+                  "src": "1968:105:2"
+                }
+              ]
+            },
+            "functionSelector": "1a3d2292",
+            "id": 903,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getReputation",
+            "nameLocation": "1488:13:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 855,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 852,
+                  "mutability": "mutable",
+                  "name": "_user",
+                  "nameLocation": "1516:5:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 903,
+                  "src": "1502:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 851,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1502:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 854,
+                  "mutability": "mutable",
+                  "name": "_fieldId",
+                  "nameLocation": "1531:8:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 903,
+                  "src": "1523:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 853,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1523:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1501:39:2"
+            },
+            "returnParameters": {
+              "id": 858,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 857,
+                  "mutability": "mutable",
+                  "name": "sumRecentScores",
+                  "nameLocation": "1595:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 903,
+                  "src": "1588:22:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 856,
+                    "name": "int256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1588:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1587:24:2"
+            },
+            "scope": 904,
+            "src": "1479:600:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 905,
+        "src": "57:2024:2",
+        "usedErrors": [],
+        "usedEvents": [
+          796
+        ]
+      }
+    ],
+    "src": "32:2050:2"
+  },
+  "bytecode": "6080604052348015600f57600080fd5b506104978061001f6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80631a3d22921461004657806355aeb22f1461006b578063e08240f714610073575b600080fd5b6100596100543660046102c3565b610088565b60405190815260200160405180910390f35b610059606481565b610086610081366004610308565b610117565b005b60008060008460405161009b919061038e565b908152602001604051809103902060008481526020019081526020016000209050600060648260010154116100d45781600101546100d7565b60645b90506000925060005b8181101561010e576000818152600284016020526040812054610104910b856103c0565b93506001016100e0565b50505092915050565b60008084604051610128919061038e565b9081526020016040518091039020600084815260200190815260200160002090508160000b81600001600082825461016091906103c0565b90915550506001818101805460009061017a9084906103e8565b9250508190555081816002016000606484600301546101999190610401565b815260200190815260200160002060006101000a81548160ff021916908360000b60ff16021790555060018160030160008282546101d791906103e8565b92505081905550827fe9c5ff185c8f467585d402c5fc07c13de428d817f49e457ffc4a3d6f704f66a28584604051610210929190610423565b60405180910390a250505050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261024557600080fd5b813567ffffffffffffffff81111561025f5761025f61021e565b604051601f8201601f19908116603f0116810167ffffffffffffffff8111828210171561028e5761028e61021e565b6040528181528382016020018510156102a657600080fd5b816020850160208301376000918101602001919091529392505050565b600080604083850312156102d657600080fd5b823567ffffffffffffffff8111156102ed57600080fd5b6102f985828601610234565b95602094909401359450505050565b60008060006060848603121561031d57600080fd5b833567ffffffffffffffff81111561033457600080fd5b61034086828701610234565b935050602084013591506040840135600081900b811461035f57600080fd5b809150509250925092565b60005b8381101561038557818101518382015260200161036d565b50506000910152565b600082516103a081846020870161036a565b9190910192915050565b634e487b7160e01b600052601160045260246000fd5b80820182811260008312801582168215821617156103e0576103e06103aa565b505092915050565b808201808211156103fb576103fb6103aa565b92915050565b60008261041e57634e487b7160e01b600052601260045260246000fd5b500690565b604081526000835180604084015261044281606085016020880161036a565b60009390930b602083015250601f91909101601f19160160600191905056fea264697066735822122070f25dce6af913d8a5a3c48c925cc34ecd47a4209b9528e71d67f98f2724201464736f6c634300081c0033",
+  "bytecodeSha1": "5d6db86cc42ccfcd34bc143e329fd8a9755e212d",
+  "compiler": {
+    "evm_version": "istanbul",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "version": "0.8.28+commit.7893614a"
+  },
+  "contractName": "ReputationManager",
+  "coverageMap": {
+    "branches": {
+      "2": {
+        "ReputationManager.getReputation": {
+          "8": [
+            1820,
+            1854,
+            true
+          ]
+        }
+      }
+    },
+    "statements": {
+      "2": {
+        "ReputationManager.getReputation": {
+          "0": [
+            1901,
+            1920
+          ],
+          "1": [
+            2024,
+            2062
+          ],
+          "2": [
+            2005,
+            2008
+          ]
+        },
+        "ReputationManager.updateReputation": {
+          "3": [
+            1026,
+            1050
+          ],
+          "4": [
+            1060,
+            1079
+          ],
+          "5": [
+            1165,
+            1227
+          ],
+          "6": [
+            1237,
+            1257
+          ],
+          "7": [
+            1341,
+            1388
+          ]
+        }
+      }
+    }
+  },
+  "dependencies": [],
+  "deployedBytecode": "608060405234801561001057600080fd5b50600436106100415760003560e01c80631a3d22921461004657806355aeb22f1461006b578063e08240f714610073575b600080fd5b6100596100543660046102c3565b610088565b60405190815260200160405180910390f35b610059606481565b610086610081366004610308565b610117565b005b60008060008460405161009b919061038e565b908152602001604051809103902060008481526020019081526020016000209050600060648260010154116100d45781600101546100d7565b60645b90506000925060005b8181101561010e576000818152600284016020526040812054610104910b856103c0565b93506001016100e0565b50505092915050565b60008084604051610128919061038e565b9081526020016040518091039020600084815260200190815260200160002090508160000b81600001600082825461016091906103c0565b90915550506001818101805460009061017a9084906103e8565b9250508190555081816002016000606484600301546101999190610401565b815260200190815260200160002060006101000a81548160ff021916908360000b60ff16021790555060018160030160008282546101d791906103e8565b92505081905550827fe9c5ff185c8f467585d402c5fc07c13de428d817f49e457ffc4a3d6f704f66a28584604051610210929190610423565b60405180910390a250505050565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261024557600080fd5b813567ffffffffffffffff81111561025f5761025f61021e565b604051601f8201601f19908116603f0116810167ffffffffffffffff8111828210171561028e5761028e61021e565b6040528181528382016020018510156102a657600080fd5b816020850160208301376000918101602001919091529392505050565b600080604083850312156102d657600080fd5b823567ffffffffffffffff8111156102ed57600080fd5b6102f985828601610234565b95602094909401359450505050565b60008060006060848603121561031d57600080fd5b833567ffffffffffffffff81111561033457600080fd5b61034086828701610234565b935050602084013591506040840135600081900b811461035f57600080fd5b809150509250925092565b60005b8381101561038557818101518382015260200161036d565b50506000910152565b600082516103a081846020870161036a565b9190910192915050565b634e487b7160e01b600052601160045260246000fd5b80820182811260008312801582168215821617156103e0576103e06103aa565b505092915050565b808201808211156103fb576103fb6103aa565b92915050565b60008261041e57634e487b7160e01b600052601260045260246000fd5b500690565b604081526000835180604084015261044281606085016020880161036a565b60009390930b602083015250601f91909101601f19160160600191905056fea264697066735822122070f25dce6af913d8a5a3c48c925cc34ecd47a4209b9528e71d67f98f2724201464736f6c634300081c0033",
+  "deployedSourceMap": "57:2024:2:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1479:600;;;;;;:::i;:::-;;:::i;:::-;;;1462:25:4;;;1450:2;1435:18;1479:600:2;;;;;;;429:47;;473:3;429:47;;633:762;;;;;;:::i;:::-;;:::i;:::-;;1479:600;1588:22;1626;1651:11;1663:5;1651:18;;;;;;:::i;:::-;;;;;;;;;;;;;:28;1670:8;1651:28;;;;;;;;;;;1626:53;;1798:19;473:3;1820;:14;;;:34;:71;;1877:3;:14;;;1820:71;;;473:3;1820:71;1798:93;;1919:1;1901:19;;1973:9;1968:105;1992:11;1988:1;:15;1968:105;;;2043:19;;;;:16;;;:19;;;;;;2024:38;;2043:19;2024:38;;:::i;:::-;;-1:-1:-1;2005:3:2;;1968:105;;;;1616:463;;1479:600;;;;:::o;633:762::-;904:22;929:11;941:5;929:18;;;;;;:::i;:::-;;;;;;;;;;;;;:28;948:8;929:28;;;;;;;;;;;904:53;;1044:6;1026:24;;:3;:14;;;:24;;;;;;;:::i;:::-;;;;-1:-1:-1;;1078:1:2;1060:14;;;:19;;:14;;:19;;1078:1;;1060:19;:::i;:::-;;;;;;;;1221:6;1165:3;:16;;:53;473:3;1182;:15;;;:35;;;;:::i;:::-;1165:53;;;;;;;;;;;;:62;;;;;;;;;;;;;;;;;;;;1256:1;1237:3;:15;;;:20;;;;;;;:::i;:::-;;;;;;;;1371:8;1346:42;1364:5;1381:6;1346:42;;;;;;;:::i;:::-;;;;;;;;894:501;633:762;;;:::o;14:127:4:-;75:10;70:3;66:20;63:1;56:31;106:4;103:1;96:15;130:4;127:1;120:15;146:726;189:5;242:3;235:4;227:6;223:17;219:27;209:55;;260:1;257;250:12;209:55;300:6;287:20;330:18;322:6;319:30;316:56;;;352:18;;:::i;:::-;401:2;395:9;493:2;455:17;;-1:-1:-1;;451:31:4;;;484:2;447:40;443:54;431:67;;528:18;513:34;;549:22;;;510:62;507:88;;;575:18;;:::i;:::-;611:2;604:22;635;;;676:19;;;697:4;672:30;669:39;-1:-1:-1;666:59:4;;;721:1;718;711:12;666:59;785:6;778:4;770:6;766:17;759:4;751:6;747:17;734:58;840:1;812:19;;;833:4;808:30;801:41;;;;816:6;146:726;-1:-1:-1;;;146:726:4:o;877:436::-;955:6;963;1016:2;1004:9;995:7;991:23;987:32;984:52;;;1032:1;1029;1022:12;984:52;1072:9;1059:23;1105:18;1097:6;1094:30;1091:50;;;1137:1;1134;1127:12;1091:50;1160;1202:7;1193:6;1182:9;1178:22;1160:50;:::i;:::-;1150:60;1279:2;1264:18;;;;1251:32;;-1:-1:-1;;;;877:436:4:o;1680:604::-;1764:6;1772;1780;1833:2;1821:9;1812:7;1808:23;1804:32;1801:52;;;1849:1;1846;1839:12;1801:52;1889:9;1876:23;1922:18;1914:6;1911:30;1908:50;;;1954:1;1951;1944:12;1908:50;1977;2019:7;2010:6;1999:9;1995:22;1977:50;:::i;:::-;1967:60;-1:-1:-1;;2096:2:4;2081:18;;2068:32;;-1:-1:-1;2176:2:4;2161:18;;2148:32;2049:1;2211:22;;;2199:35;;2189:63;;2248:1;2245;2238:12;2189:63;2271:7;2261:17;;;1680:604;;;;;:::o;2289:250::-;2374:1;2384:113;2398:6;2395:1;2392:13;2384:113;;;2474:11;;;2468:18;2455:11;;;2448:39;2420:2;2413:10;2384:113;;;-1:-1:-1;;2531:1:4;2513:16;;2506:27;2289:250::o;2544:289::-;2675:3;2713:6;2707:13;2729:66;2788:6;2783:3;2776:4;2768:6;2764:17;2729:66;:::i;:::-;2811:16;;;;;2544:289;-1:-1:-1;;2544:289:4:o;2838:127::-;2899:10;2894:3;2890:20;2887:1;2880:31;2930:4;2927:1;2920:15;2954:4;2951:1;2944:15;2970:216;3034:9;;;3062:11;;;3009:3;3092:9;;3120:10;;3116:19;;3145:10;;3137:19;;3113:44;3110:70;;;3160:18;;:::i;:::-;3110:70;;2970:216;;;;:::o;3191:125::-;3256:9;;;3277:10;;;3274:36;;;3290:18;;:::i;:::-;3191:125;;;;:::o;3321:209::-;3353:1;3379;3369:132;;3423:10;3418:3;3414:20;3411:1;3404:31;3458:4;3455:1;3448:15;3486:4;3483:1;3476:15;3369:132;-1:-1:-1;3515:9:4;;3321:209::o;3535:480::-;3706:2;3695:9;3688:21;3669:4;3738:6;3732:13;3781:6;3776:2;3765:9;3761:18;3754:34;3797:81;3871:6;3866:2;3855:9;3851:18;3844:4;3836:6;3832:17;3797:81;:::i;:::-;3998:1;3987:21;;;;3980:4;3965:20;;3958:51;-1:-1:-1;3939:2:4;3918:15;;;;-1:-1:-1;;3914:29:4;3899:45;3946:2;3895:54;;3535:480;-1:-1:-1;3535:480:4:o",
+  "language": "Solidity",
+  "natspec": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "offset": [
+    57,
+    2081
+  ],
+  "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x41 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x1A3D2292 EQ PUSH2 0x46 JUMPI DUP1 PUSH4 0x55AEB22F EQ PUSH2 0x6B JUMPI DUP1 PUSH4 0xE08240F7 EQ PUSH2 0x73 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x59 PUSH2 0x54 CALLDATASIZE PUSH1 0x4 PUSH2 0x2C3 JUMP JUMPDEST PUSH2 0x88 JUMP JUMPDEST PUSH1 0x40 MLOAD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x59 PUSH1 0x64 DUP2 JUMP JUMPDEST PUSH2 0x86 PUSH2 0x81 CALLDATASIZE PUSH1 0x4 PUSH2 0x308 JUMP JUMPDEST PUSH2 0x117 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 DUP5 PUSH1 0x40 MLOAD PUSH2 0x9B SWAP2 SWAP1 PUSH2 0x38E JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 KECCAK256 PUSH1 0x0 DUP5 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 SWAP1 POP PUSH1 0x0 PUSH1 0x64 DUP3 PUSH1 0x1 ADD SLOAD GT PUSH2 0xD4 JUMPI DUP2 PUSH1 0x1 ADD SLOAD PUSH2 0xD7 JUMP JUMPDEST PUSH1 0x64 JUMPDEST SWAP1 POP PUSH1 0x0 SWAP3 POP PUSH1 0x0 JUMPDEST DUP2 DUP2 LT ISZERO PUSH2 0x10E JUMPI PUSH1 0x0 DUP2 DUP2 MSTORE PUSH1 0x2 DUP5 ADD PUSH1 0x20 MSTORE PUSH1 0x40 DUP2 KECCAK256 SLOAD PUSH2 0x104 SWAP2 SIGNEXTEND DUP6 PUSH2 0x3C0 JUMP JUMPDEST SWAP4 POP PUSH1 0x1 ADD PUSH2 0xE0 JUMP JUMPDEST POP POP POP SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 DUP5 PUSH1 0x40 MLOAD PUSH2 0x128 SWAP2 SWAP1 PUSH2 0x38E JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 KECCAK256 PUSH1 0x0 DUP5 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 SWAP1 POP DUP2 PUSH1 0x0 SIGNEXTEND DUP2 PUSH1 0x0 ADD PUSH1 0x0 DUP3 DUP3 SLOAD PUSH2 0x160 SWAP2 SWAP1 PUSH2 0x3C0 JUMP JUMPDEST SWAP1 SWAP2 SSTORE POP POP PUSH1 0x1 DUP2 DUP2 ADD DUP1 SLOAD PUSH1 0x0 SWAP1 PUSH2 0x17A SWAP1 DUP5 SWAP1 PUSH2 0x3E8 JUMP JUMPDEST SWAP3 POP POP DUP2 SWAP1 SSTORE POP DUP2 DUP2 PUSH1 0x2 ADD PUSH1 0x0 PUSH1 0x64 DUP5 PUSH1 0x3 ADD SLOAD PUSH2 0x199 SWAP2 SWAP1 PUSH2 0x401 JUMP JUMPDEST DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 PUSH1 0x0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH1 0xFF MUL NOT AND SWAP1 DUP4 PUSH1 0x0 SIGNEXTEND PUSH1 0xFF AND MUL OR SWAP1 SSTORE POP PUSH1 0x1 DUP2 PUSH1 0x3 ADD PUSH1 0x0 DUP3 DUP3 SLOAD PUSH2 0x1D7 SWAP2 SWAP1 PUSH2 0x3E8 JUMP JUMPDEST SWAP3 POP POP DUP2 SWAP1 SSTORE POP DUP3 PUSH32 0xE9C5FF185C8F467585D402C5FC07C13DE428D817F49E457FFC4A3D6F704F66A2 DUP6 DUP5 PUSH1 0x40 MLOAD PUSH2 0x210 SWAP3 SWAP2 SWAP1 PUSH2 0x423 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG2 POP POP POP POP JUMP JUMPDEST PUSH4 0x4E487B71 PUSH1 0xE0 SHL PUSH1 0x0 MSTORE PUSH1 0x41 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH1 0x0 REVERT JUMPDEST PUSH1 0x0 DUP3 PUSH1 0x1F DUP4 ADD SLT PUSH2 0x245 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 CALLDATALOAD PUSH8 0xFFFFFFFFFFFFFFFF DUP2 GT ISZERO PUSH2 0x25F JUMPI PUSH2 0x25F PUSH2 0x21E JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH1 0x1F DUP3 ADD PUSH1 0x1F NOT SWAP1 DUP2 AND PUSH1 0x3F ADD AND DUP2 ADD PUSH8 0xFFFFFFFFFFFFFFFF DUP2 GT DUP3 DUP3 LT OR ISZERO PUSH2 0x28E JUMPI PUSH2 0x28E PUSH2 0x21E JUMP JUMPDEST PUSH1 0x40 MSTORE DUP2 DUP2 MSTORE DUP4 DUP3 ADD PUSH1 0x20 ADD DUP6 LT ISZERO PUSH2 0x2A6 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 PUSH1 0x20 DUP6 ADD PUSH1 0x20 DUP4 ADD CALLDATACOPY PUSH1 0x0 SWAP2 DUP2 ADD PUSH1 0x20 ADD SWAP2 SWAP1 SWAP2 MSTORE SWAP4 SWAP3 POP POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x40 DUP4 DUP6 SUB SLT ISZERO PUSH2 0x2D6 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP3 CALLDATALOAD PUSH8 0xFFFFFFFFFFFFFFFF DUP2 GT ISZERO PUSH2 0x2ED JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x2F9 DUP6 DUP3 DUP7 ADD PUSH2 0x234 JUMP JUMPDEST SWAP6 PUSH1 0x20 SWAP5 SWAP1 SWAP5 ADD CALLDATALOAD SWAP5 POP POP POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 PUSH1 0x60 DUP5 DUP7 SUB SLT ISZERO PUSH2 0x31D JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP4 CALLDATALOAD PUSH8 0xFFFFFFFFFFFFFFFF DUP2 GT ISZERO PUSH2 0x334 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x340 DUP7 DUP3 DUP8 ADD PUSH2 0x234 JUMP JUMPDEST SWAP4 POP POP PUSH1 0x20 DUP5 ADD CALLDATALOAD SWAP2 POP PUSH1 0x40 DUP5 ADD CALLDATALOAD PUSH1 0x0 DUP2 SWAP1 SIGNEXTEND DUP2 EQ PUSH2 0x35F JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP1 SWAP2 POP POP SWAP3 POP SWAP3 POP SWAP3 JUMP JUMPDEST PUSH1 0x0 JUMPDEST DUP4 DUP2 LT ISZERO PUSH2 0x385 JUMPI DUP2 DUP2 ADD MLOAD DUP4 DUP3 ADD MSTORE PUSH1 0x20 ADD PUSH2 0x36D JUMP JUMPDEST POP POP PUSH1 0x0 SWAP2 ADD MSTORE JUMP JUMPDEST PUSH1 0x0 DUP3 MLOAD PUSH2 0x3A0 DUP2 DUP5 PUSH1 0x20 DUP8 ADD PUSH2 0x36A JUMP JUMPDEST SWAP2 SWAP1 SWAP2 ADD SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH4 0x4E487B71 PUSH1 0xE0 SHL PUSH1 0x0 MSTORE PUSH1 0x11 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH1 0x0 REVERT JUMPDEST DUP1 DUP3 ADD DUP3 DUP2 SLT PUSH1 0x0 DUP4 SLT DUP1 ISZERO DUP3 AND DUP3 ISZERO DUP3 AND OR ISZERO PUSH2 0x3E0 JUMPI PUSH2 0x3E0 PUSH2 0x3AA JUMP JUMPDEST POP POP SWAP3 SWAP2 POP POP JUMP JUMPDEST DUP1 DUP3 ADD DUP1 DUP3 GT ISZERO PUSH2 0x3FB JUMPI PUSH2 0x3FB PUSH2 0x3AA JUMP JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP3 PUSH2 0x41E JUMPI PUSH4 0x4E487B71 PUSH1 0xE0 SHL PUSH1 0x0 MSTORE PUSH1 0x12 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH1 0x0 REVERT JUMPDEST POP MOD SWAP1 JUMP JUMPDEST PUSH1 0x40 DUP2 MSTORE PUSH1 0x0 DUP4 MLOAD DUP1 PUSH1 0x40 DUP5 ADD MSTORE PUSH2 0x442 DUP2 PUSH1 0x60 DUP6 ADD PUSH1 0x20 DUP9 ADD PUSH2 0x36A JUMP JUMPDEST PUSH1 0x0 SWAP4 SWAP1 SWAP4 SIGNEXTEND PUSH1 0x20 DUP4 ADD MSTORE POP PUSH1 0x1F SWAP2 SWAP1 SWAP2 ADD PUSH1 0x1F NOT AND ADD PUSH1 0x60 ADD SWAP2 SWAP1 POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 PUSH17 0xF25DCE6AF913D8A5A3C48C925CC34ECD47 LOG4 KECCAK256 SWAP12 SWAP6 0x28 0xE7 SAR PUSH8 0xF98F272420146473 PUSH16 0x6C634300081C00330000000000000000 ",
+  "pcMap": {
+    "0": {
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x80"
+    },
+    "2": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "4": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "5": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "CALLVALUE",
+      "path": "2"
+    },
+    "6": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "7": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "ISZERO",
+      "path": "2"
+    },
+    "8": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x10"
+    },
+    "11": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "12": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "14": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "15": {
+      "dev": "Cannot send ether to nonpayable function",
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "REVERT",
+      "path": "2"
+    },
+    "16": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "17": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "18": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x4"
+    },
+    "20": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "CALLDATASIZE",
+      "path": "2"
+    },
+    "21": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "LT",
+      "path": "2"
+    },
+    "22": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x41"
+    },
+    "25": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "26": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "28": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "CALLDATALOAD",
+      "path": "2"
+    },
+    "29": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0xE0"
+    },
+    "31": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "SHR",
+      "path": "2"
+    },
+    "32": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "33": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH4",
+      "path": "2",
+      "value": "0x1A3D2292"
+    },
+    "38": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "EQ",
+      "path": "2"
+    },
+    "39": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x46"
+    },
+    "42": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "43": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "44": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH4",
+      "path": "2",
+      "value": "0x55AEB22F"
+    },
+    "49": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "EQ",
+      "path": "2"
+    },
+    "50": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x6B"
+    },
+    "53": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "54": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "55": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH4",
+      "path": "2",
+      "value": "0xE08240F7"
+    },
+    "60": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "EQ",
+      "path": "2"
+    },
+    "61": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x73"
+    },
+    "64": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "65": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "66": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "68": {
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "69": {
+      "first_revert": true,
+      "fn": null,
+      "offset": [
+        57,
+        2081
+      ],
+      "op": "REVERT",
+      "path": "2"
+    },
+    "70": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "71": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x59"
+    },
+    "74": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x54"
+    },
+    "77": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "CALLDATASIZE",
+      "path": "2"
+    },
+    "78": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x4"
+    },
+    "80": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x2C3"
+    },
+    "83": {
+      "fn": "ReputationManager.getReputation",
+      "jump": "i",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "84": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "85": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x88"
+    },
+    "88": {
+      "fn": "ReputationManager.getReputation",
+      "jump": "i",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "89": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "90": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "92": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "93": {
+      "op": "SWAP1"
+    },
+    "94": {
+      "op": "DUP2"
+    },
+    "95": {
+      "op": "MSTORE"
+    },
+    "96": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "98": {
+      "op": "ADD"
+    },
+    "99": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "101": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "102": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "103": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "104": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "SUB",
+      "path": "2"
+    },
+    "105": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "106": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "RETURN",
+      "path": "2"
+    },
+    "107": {
+      "offset": [
+        429,
+        476
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "108": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        429,
+        476
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x59"
+    },
+    "111": {
+      "offset": [
+        473,
+        476
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x64"
+    },
+    "113": {
+      "offset": [
+        429,
+        476
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "114": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        429,
+        476
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "115": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "116": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x86"
+    },
+    "119": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x81"
+    },
+    "122": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "CALLDATASIZE",
+      "path": "2"
+    },
+    "123": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x4"
+    },
+    "125": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x308"
+    },
+    "128": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "129": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "130": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x117"
+    },
+    "133": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "134": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "135": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "STOP",
+      "path": "2"
+    },
+    "136": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "137": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1588,
+        1610
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "139": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1626,
+        1648
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "140": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1662
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "142": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1663,
+        1668
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "143": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "145": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "146": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x9B"
+    },
+    "149": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "150": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "151": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x38E"
+    },
+    "154": {
+      "fn": "ReputationManager.getReputation",
+      "jump": "i",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "155": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "156": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "157": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "158": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "159": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "161": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "162": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "164": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "165": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "166": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "167": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SUB",
+      "path": "2"
+    },
+    "168": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "169": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1669
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "170": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "172": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1670,
+        1678
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "173": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "174": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "175": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "177": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "178": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "179": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "180": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "181": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "183": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "184": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "186": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1651,
+        1679
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "187": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1626,
+        1679
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "188": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1626,
+        1679
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "189": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1798,
+        1817
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "191": {
+      "offset": [
+        473,
+        476
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x64"
+    },
+    "193": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1823
+      ],
+      "op": "DUP3",
+      "path": "2"
+    },
+    "194": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1834
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x1"
+    },
+    "196": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1834
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "197": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1834
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "198": {
+      "branch": 8,
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1854
+      ],
+      "op": "GT",
+      "path": "2"
+    },
+    "199": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0xD4"
+    },
+    "202": {
+      "branch": 8,
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "203": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1877,
+        1880
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "204": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1877,
+        1891
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x1"
+    },
+    "206": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1877,
+        1891
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "207": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1877,
+        1891
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "208": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0xD7"
+    },
+    "211": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "212": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "213": {
+      "offset": [
+        473,
+        476
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x64"
+    },
+    "215": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1820,
+        1891
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "216": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1798,
+        1891
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "217": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1798,
+        1891
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "218": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1919,
+        1920
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "statement": 0,
+      "value": "0x0"
+    },
+    "220": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1901,
+        1920
+      ],
+      "op": "SWAP3",
+      "path": "2"
+    },
+    "221": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1901,
+        1920
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "222": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1973,
+        1982
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "224": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "225": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1992,
+        2003
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "226": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1988,
+        1989
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "227": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1988,
+        2003
+      ],
+      "op": "LT",
+      "path": "2"
+    },
+    "228": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "ISZERO",
+      "path": "2"
+    },
+    "229": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x10E"
+    },
+    "232": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "JUMPI",
+      "path": "2"
+    },
+    "233": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "statement": 1,
+      "value": "0x0"
+    },
+    "235": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "236": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "237": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "238": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2059
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x2"
+    },
+    "240": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2059
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "241": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2059
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "242": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "244": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "245": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "247": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "248": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "249": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "250": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x104"
+    },
+    "253": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "254": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2043,
+        2062
+      ],
+      "op": "SIGNEXTEND",
+      "path": "2"
+    },
+    "255": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "DUP6",
+      "path": "2"
+    },
+    "256": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x3C0"
+    },
+    "259": {
+      "fn": "ReputationManager.getReputation",
+      "jump": "i",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "260": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "261": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2024,
+        2062
+      ],
+      "op": "SWAP4",
+      "path": "2"
+    },
+    "262": {
+      "op": "POP"
+    },
+    "263": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2005,
+        2008
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "statement": 2,
+      "value": "0x1"
+    },
+    "265": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        2005,
+        2008
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "266": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0xE0"
+    },
+    "269": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "270": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "271": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1968,
+        2073
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "272": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1616,
+        2079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "273": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1616,
+        2079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "274": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "SWAP3",
+      "path": "2"
+    },
+    "275": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "276": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "277": {
+      "fn": "ReputationManager.getReputation",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "278": {
+      "fn": "ReputationManager.getReputation",
+      "jump": "o",
+      "offset": [
+        1479,
+        2079
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "279": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "280": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        904,
+        926
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "282": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        940
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "283": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        941,
+        946
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "284": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "286": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "287": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x128"
+    },
+    "290": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "291": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "292": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x38E"
+    },
+    "295": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "296": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "297": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "298": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "299": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "300": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "302": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "303": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "305": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "306": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "307": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "308": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SUB",
+      "path": "2"
+    },
+    "309": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "310": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        947
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "311": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "313": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        948,
+        956
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "314": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "315": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "316": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "318": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "319": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "320": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "321": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "322": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "324": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "325": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "327": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        929,
+        957
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "328": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        904,
+        957
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "329": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        904,
+        957
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "330": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1044,
+        1050
+      ],
+      "op": "DUP2",
+      "path": "2",
+      "statement": 3
+    },
+    "331": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "333": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SIGNEXTEND",
+      "path": "2"
+    },
+    "334": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1029
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "335": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1040
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "337": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1040
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "338": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1040
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "340": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "DUP3",
+      "path": "2"
+    },
+    "341": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "DUP3",
+      "path": "2"
+    },
+    "342": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "343": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x160"
+    },
+    "346": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "347": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "348": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x3C0"
+    },
+    "351": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "352": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "353": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "354": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "355": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1026,
+        1050
+      ],
+      "op": "SSTORE",
+      "path": "2"
+    },
+    "356": {
+      "op": "POP"
+    },
+    "357": {
+      "op": "POP"
+    },
+    "358": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1078,
+        1079
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "statement": 4,
+      "value": "0x1"
+    },
+    "360": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1074
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "361": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1074
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "362": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1074
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "363": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "364": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "365": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1074
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "367": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1074
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "368": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x17A"
+    },
+    "371": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "372": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1078,
+        1079
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "373": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1078,
+        1079
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "374": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x3E8"
+    },
+    "377": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "378": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "379": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "SWAP3",
+      "path": "2"
+    },
+    "380": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "381": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "382": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "383": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "384": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "SSTORE",
+      "path": "2"
+    },
+    "385": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1060,
+        1079
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "386": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1221,
+        1227
+      ],
+      "op": "DUP2",
+      "path": "2",
+      "statement": 5
+    },
+    "387": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1168
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "388": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1181
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x2"
+    },
+    "390": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1181
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "391": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "393": {
+      "offset": [
+        473,
+        476
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x64"
+    },
+    "395": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1185
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "396": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1197
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x3"
+    },
+    "398": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1197
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "399": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1197
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "400": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x199"
+    },
+    "403": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "404": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "405": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x401"
+    },
+    "408": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "409": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1182,
+        1217
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "410": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "411": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "412": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "414": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "415": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "416": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "417": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "MSTORE",
+      "path": "2"
+    },
+    "418": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x20"
+    },
+    "420": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "421": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "423": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "KECCAK256",
+      "path": "2"
+    },
+    "424": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1218
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "426": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x100"
+    },
+    "429": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "EXP",
+      "path": "2"
+    },
+    "430": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "431": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "432": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "433": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0xFF"
+    },
+    "435": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "MUL",
+      "path": "2"
+    },
+    "436": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "NOT",
+      "path": "2"
+    },
+    "437": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "AND",
+      "path": "2"
+    },
+    "438": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "439": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "DUP4",
+      "path": "2"
+    },
+    "440": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "442": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "SIGNEXTEND",
+      "path": "2"
+    },
+    "443": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0xFF"
+    },
+    "445": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "AND",
+      "path": "2"
+    },
+    "446": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "MUL",
+      "path": "2"
+    },
+    "447": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "OR",
+      "path": "2"
+    },
+    "448": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "449": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "SSTORE",
+      "path": "2"
+    },
+    "450": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1165,
+        1227
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "451": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1256,
+        1257
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "statement": 6,
+      "value": "0x1"
+    },
+    "453": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1240
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "454": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1252
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x3"
+    },
+    "456": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1252
+      ],
+      "op": "ADD",
+      "path": "2"
+    },
+    "457": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1252
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x0"
+    },
+    "459": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "DUP3",
+      "path": "2"
+    },
+    "460": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "DUP3",
+      "path": "2"
+    },
+    "461": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SLOAD",
+      "path": "2"
+    },
+    "462": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x1D7"
+    },
+    "465": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "466": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "467": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x3E8"
+    },
+    "470": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "471": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "472": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SWAP3",
+      "path": "2"
+    },
+    "473": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "474": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "475": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "DUP2",
+      "path": "2"
+    },
+    "476": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "477": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "SSTORE",
+      "path": "2"
+    },
+    "478": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1237,
+        1257
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "479": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1371,
+        1379
+      ],
+      "op": "DUP3",
+      "path": "2",
+      "statement": 7
+    },
+    "480": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "PUSH32",
+      "path": "2",
+      "value": "0xE9C5FF185C8F467585D402C5FC07C13DE428D817F49E457FFC4A3D6F704F66A2"
+    },
+    "513": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1364,
+        1369
+      ],
+      "op": "DUP6",
+      "path": "2"
+    },
+    "514": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1381,
+        1387
+      ],
+      "op": "DUP5",
+      "path": "2"
+    },
+    "515": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "517": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "518": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x210"
+    },
+    "521": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SWAP3",
+      "path": "2"
+    },
+    "522": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "523": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "524": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "PUSH2",
+      "path": "2",
+      "value": "0x423"
+    },
+    "527": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "i",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "528": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "JUMPDEST",
+      "path": "2"
+    },
+    "529": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "PUSH1",
+      "path": "2",
+      "value": "0x40"
+    },
+    "531": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "MLOAD",
+      "path": "2"
+    },
+    "532": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "DUP1",
+      "path": "2"
+    },
+    "533": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SWAP2",
+      "path": "2"
+    },
+    "534": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SUB",
+      "path": "2"
+    },
+    "535": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "SWAP1",
+      "path": "2"
+    },
+    "536": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        1346,
+        1388
+      ],
+      "op": "LOG2",
+      "path": "2"
+    },
+    "537": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        894,
+        1395
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "538": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "539": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "540": {
+      "fn": "ReputationManager.updateReputation",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "POP",
+      "path": "2"
+    },
+    "541": {
+      "fn": "ReputationManager.updateReputation",
+      "jump": "o",
+      "offset": [
+        633,
+        1395
+      ],
+      "op": "JUMP",
+      "path": "2"
+    },
+    "542": {
+      "op": "JUMPDEST"
+    },
+    "543": {
+      "op": "PUSH4",
+      "value": "0x4E487B71"
+    },
+    "548": {
+      "op": "PUSH1",
+      "value": "0xE0"
+    },
+    "550": {
+      "op": "SHL"
+    },
+    "551": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "553": {
+      "op": "MSTORE"
+    },
+    "554": {
+      "op": "PUSH1",
+      "value": "0x41"
+    },
+    "556": {
+      "op": "PUSH1",
+      "value": "0x4"
+    },
+    "558": {
+      "op": "MSTORE"
+    },
+    "559": {
+      "op": "PUSH1",
+      "value": "0x24"
+    },
+    "561": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "563": {
+      "op": "REVERT"
+    },
+    "564": {
+      "op": "JUMPDEST"
+    },
+    "565": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "567": {
+      "op": "DUP3"
+    },
+    "568": {
+      "op": "PUSH1",
+      "value": "0x1F"
+    },
+    "570": {
+      "op": "DUP4"
+    },
+    "571": {
+      "op": "ADD"
+    },
+    "572": {
+      "op": "SLT"
+    },
+    "573": {
+      "op": "PUSH2",
+      "value": "0x245"
+    },
+    "576": {
+      "op": "JUMPI"
+    },
+    "577": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "579": {
+      "op": "DUP1"
+    },
+    "580": {
+      "op": "REVERT"
+    },
+    "581": {
+      "op": "JUMPDEST"
+    },
+    "582": {
+      "op": "DUP2"
+    },
+    "583": {
+      "op": "CALLDATALOAD"
+    },
+    "584": {
+      "op": "PUSH8",
+      "value": "0xFFFFFFFFFFFFFFFF"
+    },
+    "593": {
+      "op": "DUP2"
+    },
+    "594": {
+      "op": "GT"
+    },
+    "595": {
+      "op": "ISZERO"
+    },
+    "596": {
+      "op": "PUSH2",
+      "value": "0x25F"
+    },
+    "599": {
+      "op": "JUMPI"
+    },
+    "600": {
+      "op": "PUSH2",
+      "value": "0x25F"
+    },
+    "603": {
+      "op": "PUSH2",
+      "value": "0x21E"
+    },
+    "606": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "607": {
+      "op": "JUMPDEST"
+    },
+    "608": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "610": {
+      "op": "MLOAD"
+    },
+    "611": {
+      "op": "PUSH1",
+      "value": "0x1F"
+    },
+    "613": {
+      "op": "DUP3"
+    },
+    "614": {
+      "op": "ADD"
+    },
+    "615": {
+      "op": "PUSH1",
+      "value": "0x1F"
+    },
+    "617": {
+      "op": "NOT"
+    },
+    "618": {
+      "op": "SWAP1"
+    },
+    "619": {
+      "op": "DUP2"
+    },
+    "620": {
+      "op": "AND"
+    },
+    "621": {
+      "op": "PUSH1",
+      "value": "0x3F"
+    },
+    "623": {
+      "op": "ADD"
+    },
+    "624": {
+      "op": "AND"
+    },
+    "625": {
+      "op": "DUP2"
+    },
+    "626": {
+      "op": "ADD"
+    },
+    "627": {
+      "op": "PUSH8",
+      "value": "0xFFFFFFFFFFFFFFFF"
+    },
+    "636": {
+      "op": "DUP2"
+    },
+    "637": {
+      "op": "GT"
+    },
+    "638": {
+      "op": "DUP3"
+    },
+    "639": {
+      "op": "DUP3"
+    },
+    "640": {
+      "op": "LT"
+    },
+    "641": {
+      "op": "OR"
+    },
+    "642": {
+      "op": "ISZERO"
+    },
+    "643": {
+      "op": "PUSH2",
+      "value": "0x28E"
+    },
+    "646": {
+      "op": "JUMPI"
+    },
+    "647": {
+      "op": "PUSH2",
+      "value": "0x28E"
+    },
+    "650": {
+      "op": "PUSH2",
+      "value": "0x21E"
+    },
+    "653": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "654": {
+      "op": "JUMPDEST"
+    },
+    "655": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "657": {
+      "op": "MSTORE"
+    },
+    "658": {
+      "op": "DUP2"
+    },
+    "659": {
+      "op": "DUP2"
+    },
+    "660": {
+      "op": "MSTORE"
+    },
+    "661": {
+      "op": "DUP4"
+    },
+    "662": {
+      "op": "DUP3"
+    },
+    "663": {
+      "op": "ADD"
+    },
+    "664": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "666": {
+      "op": "ADD"
+    },
+    "667": {
+      "op": "DUP6"
+    },
+    "668": {
+      "op": "LT"
+    },
+    "669": {
+      "op": "ISZERO"
+    },
+    "670": {
+      "op": "PUSH2",
+      "value": "0x2A6"
+    },
+    "673": {
+      "op": "JUMPI"
+    },
+    "674": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "676": {
+      "op": "DUP1"
+    },
+    "677": {
+      "op": "REVERT"
+    },
+    "678": {
+      "op": "JUMPDEST"
+    },
+    "679": {
+      "op": "DUP2"
+    },
+    "680": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "682": {
+      "op": "DUP6"
+    },
+    "683": {
+      "op": "ADD"
+    },
+    "684": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "686": {
+      "op": "DUP4"
+    },
+    "687": {
+      "op": "ADD"
+    },
+    "688": {
+      "op": "CALLDATACOPY"
+    },
+    "689": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "691": {
+      "op": "SWAP2"
+    },
+    "692": {
+      "op": "DUP2"
+    },
+    "693": {
+      "op": "ADD"
+    },
+    "694": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "696": {
+      "op": "ADD"
+    },
+    "697": {
+      "op": "SWAP2"
+    },
+    "698": {
+      "op": "SWAP1"
+    },
+    "699": {
+      "op": "SWAP2"
+    },
+    "700": {
+      "op": "MSTORE"
+    },
+    "701": {
+      "op": "SWAP4"
+    },
+    "702": {
+      "op": "SWAP3"
+    },
+    "703": {
+      "op": "POP"
+    },
+    "704": {
+      "op": "POP"
+    },
+    "705": {
+      "op": "POP"
+    },
+    "706": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "707": {
+      "op": "JUMPDEST"
+    },
+    "708": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "710": {
+      "op": "DUP1"
+    },
+    "711": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "713": {
+      "op": "DUP4"
+    },
+    "714": {
+      "op": "DUP6"
+    },
+    "715": {
+      "op": "SUB"
+    },
+    "716": {
+      "op": "SLT"
+    },
+    "717": {
+      "op": "ISZERO"
+    },
+    "718": {
+      "op": "PUSH2",
+      "value": "0x2D6"
+    },
+    "721": {
+      "op": "JUMPI"
+    },
+    "722": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "724": {
+      "op": "DUP1"
+    },
+    "725": {
+      "op": "REVERT"
+    },
+    "726": {
+      "op": "JUMPDEST"
+    },
+    "727": {
+      "op": "DUP3"
+    },
+    "728": {
+      "op": "CALLDATALOAD"
+    },
+    "729": {
+      "op": "PUSH8",
+      "value": "0xFFFFFFFFFFFFFFFF"
+    },
+    "738": {
+      "op": "DUP2"
+    },
+    "739": {
+      "op": "GT"
+    },
+    "740": {
+      "op": "ISZERO"
+    },
+    "741": {
+      "op": "PUSH2",
+      "value": "0x2ED"
+    },
+    "744": {
+      "op": "JUMPI"
+    },
+    "745": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "747": {
+      "op": "DUP1"
+    },
+    "748": {
+      "op": "REVERT"
+    },
+    "749": {
+      "op": "JUMPDEST"
+    },
+    "750": {
+      "op": "PUSH2",
+      "value": "0x2F9"
+    },
+    "753": {
+      "op": "DUP6"
+    },
+    "754": {
+      "op": "DUP3"
+    },
+    "755": {
+      "op": "DUP7"
+    },
+    "756": {
+      "op": "ADD"
+    },
+    "757": {
+      "op": "PUSH2",
+      "value": "0x234"
+    },
+    "760": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "761": {
+      "op": "JUMPDEST"
+    },
+    "762": {
+      "op": "SWAP6"
+    },
+    "763": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "765": {
+      "op": "SWAP5"
+    },
+    "766": {
+      "op": "SWAP1"
+    },
+    "767": {
+      "op": "SWAP5"
+    },
+    "768": {
+      "op": "ADD"
+    },
+    "769": {
+      "op": "CALLDATALOAD"
+    },
+    "770": {
+      "op": "SWAP5"
+    },
+    "771": {
+      "op": "POP"
+    },
+    "772": {
+      "op": "POP"
+    },
+    "773": {
+      "op": "POP"
+    },
+    "774": {
+      "op": "POP"
+    },
+    "775": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "776": {
+      "op": "JUMPDEST"
+    },
+    "777": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "779": {
+      "op": "DUP1"
+    },
+    "780": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "782": {
+      "op": "PUSH1",
+      "value": "0x60"
+    },
+    "784": {
+      "op": "DUP5"
+    },
+    "785": {
+      "op": "DUP7"
+    },
+    "786": {
+      "op": "SUB"
+    },
+    "787": {
+      "op": "SLT"
+    },
+    "788": {
+      "op": "ISZERO"
+    },
+    "789": {
+      "op": "PUSH2",
+      "value": "0x31D"
+    },
+    "792": {
+      "op": "JUMPI"
+    },
+    "793": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "795": {
+      "op": "DUP1"
+    },
+    "796": {
+      "op": "REVERT"
+    },
+    "797": {
+      "op": "JUMPDEST"
+    },
+    "798": {
+      "op": "DUP4"
+    },
+    "799": {
+      "op": "CALLDATALOAD"
+    },
+    "800": {
+      "op": "PUSH8",
+      "value": "0xFFFFFFFFFFFFFFFF"
+    },
+    "809": {
+      "op": "DUP2"
+    },
+    "810": {
+      "op": "GT"
+    },
+    "811": {
+      "op": "ISZERO"
+    },
+    "812": {
+      "op": "PUSH2",
+      "value": "0x334"
+    },
+    "815": {
+      "op": "JUMPI"
+    },
+    "816": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "818": {
+      "op": "DUP1"
+    },
+    "819": {
+      "op": "REVERT"
+    },
+    "820": {
+      "op": "JUMPDEST"
+    },
+    "821": {
+      "op": "PUSH2",
+      "value": "0x340"
+    },
+    "824": {
+      "op": "DUP7"
+    },
+    "825": {
+      "op": "DUP3"
+    },
+    "826": {
+      "op": "DUP8"
+    },
+    "827": {
+      "op": "ADD"
+    },
+    "828": {
+      "op": "PUSH2",
+      "value": "0x234"
+    },
+    "831": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "832": {
+      "op": "JUMPDEST"
+    },
+    "833": {
+      "op": "SWAP4"
+    },
+    "834": {
+      "op": "POP"
+    },
+    "835": {
+      "op": "POP"
+    },
+    "836": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "838": {
+      "op": "DUP5"
+    },
+    "839": {
+      "op": "ADD"
+    },
+    "840": {
+      "op": "CALLDATALOAD"
+    },
+    "841": {
+      "op": "SWAP2"
+    },
+    "842": {
+      "op": "POP"
+    },
+    "843": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "845": {
+      "op": "DUP5"
+    },
+    "846": {
+      "op": "ADD"
+    },
+    "847": {
+      "op": "CALLDATALOAD"
+    },
+    "848": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "850": {
+      "op": "DUP2"
+    },
+    "851": {
+      "op": "SWAP1"
+    },
+    "852": {
+      "op": "SIGNEXTEND"
+    },
+    "853": {
+      "op": "DUP2"
+    },
+    "854": {
+      "op": "EQ"
+    },
+    "855": {
+      "op": "PUSH2",
+      "value": "0x35F"
+    },
+    "858": {
+      "op": "JUMPI"
+    },
+    "859": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "861": {
+      "op": "DUP1"
+    },
+    "862": {
+      "op": "REVERT"
+    },
+    "863": {
+      "op": "JUMPDEST"
+    },
+    "864": {
+      "op": "DUP1"
+    },
+    "865": {
+      "op": "SWAP2"
+    },
+    "866": {
+      "op": "POP"
+    },
+    "867": {
+      "op": "POP"
+    },
+    "868": {
+      "op": "SWAP3"
+    },
+    "869": {
+      "op": "POP"
+    },
+    "870": {
+      "op": "SWAP3"
+    },
+    "871": {
+      "op": "POP"
+    },
+    "872": {
+      "op": "SWAP3"
+    },
+    "873": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "874": {
+      "op": "JUMPDEST"
+    },
+    "875": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "877": {
+      "op": "JUMPDEST"
+    },
+    "878": {
+      "op": "DUP4"
+    },
+    "879": {
+      "op": "DUP2"
+    },
+    "880": {
+      "op": "LT"
+    },
+    "881": {
+      "op": "ISZERO"
+    },
+    "882": {
+      "op": "PUSH2",
+      "value": "0x385"
+    },
+    "885": {
+      "op": "JUMPI"
+    },
+    "886": {
+      "op": "DUP2"
+    },
+    "887": {
+      "op": "DUP2"
+    },
+    "888": {
+      "op": "ADD"
+    },
+    "889": {
+      "op": "MLOAD"
+    },
+    "890": {
+      "op": "DUP4"
+    },
+    "891": {
+      "op": "DUP3"
+    },
+    "892": {
+      "op": "ADD"
+    },
+    "893": {
+      "op": "MSTORE"
+    },
+    "894": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "896": {
+      "op": "ADD"
+    },
+    "897": {
+      "op": "PUSH2",
+      "value": "0x36D"
+    },
+    "900": {
+      "op": "JUMP"
+    },
+    "901": {
+      "op": "JUMPDEST"
+    },
+    "902": {
+      "op": "POP"
+    },
+    "903": {
+      "op": "POP"
+    },
+    "904": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "906": {
+      "op": "SWAP2"
+    },
+    "907": {
+      "op": "ADD"
+    },
+    "908": {
+      "op": "MSTORE"
+    },
+    "909": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "910": {
+      "op": "JUMPDEST"
+    },
+    "911": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "913": {
+      "op": "DUP3"
+    },
+    "914": {
+      "op": "MLOAD"
+    },
+    "915": {
+      "op": "PUSH2",
+      "value": "0x3A0"
+    },
+    "918": {
+      "op": "DUP2"
+    },
+    "919": {
+      "op": "DUP5"
+    },
+    "920": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "922": {
+      "op": "DUP8"
+    },
+    "923": {
+      "op": "ADD"
+    },
+    "924": {
+      "op": "PUSH2",
+      "value": "0x36A"
+    },
+    "927": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "928": {
+      "op": "JUMPDEST"
+    },
+    "929": {
+      "op": "SWAP2"
+    },
+    "930": {
+      "op": "SWAP1"
+    },
+    "931": {
+      "op": "SWAP2"
+    },
+    "932": {
+      "op": "ADD"
+    },
+    "933": {
+      "op": "SWAP3"
+    },
+    "934": {
+      "op": "SWAP2"
+    },
+    "935": {
+      "op": "POP"
+    },
+    "936": {
+      "op": "POP"
+    },
+    "937": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "938": {
+      "op": "JUMPDEST"
+    },
+    "939": {
+      "op": "PUSH4",
+      "value": "0x4E487B71"
+    },
+    "944": {
+      "op": "PUSH1",
+      "value": "0xE0"
+    },
+    "946": {
+      "op": "SHL"
+    },
+    "947": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "949": {
+      "op": "MSTORE"
+    },
+    "950": {
+      "op": "PUSH1",
+      "value": "0x11"
+    },
+    "952": {
+      "op": "PUSH1",
+      "value": "0x4"
+    },
+    "954": {
+      "op": "MSTORE"
+    },
+    "955": {
+      "op": "PUSH1",
+      "value": "0x24"
+    },
+    "957": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "959": {
+      "op": "REVERT"
+    },
+    "960": {
+      "op": "JUMPDEST"
+    },
+    "961": {
+      "op": "DUP1"
+    },
+    "962": {
+      "op": "DUP3"
+    },
+    "963": {
+      "op": "ADD"
+    },
+    "964": {
+      "op": "DUP3"
+    },
+    "965": {
+      "op": "DUP2"
+    },
+    "966": {
+      "op": "SLT"
+    },
+    "967": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "969": {
+      "op": "DUP4"
+    },
+    "970": {
+      "op": "SLT"
+    },
+    "971": {
+      "op": "DUP1"
+    },
+    "972": {
+      "op": "ISZERO"
+    },
+    "973": {
+      "op": "DUP3"
+    },
+    "974": {
+      "op": "AND"
+    },
+    "975": {
+      "op": "DUP3"
+    },
+    "976": {
+      "op": "ISZERO"
+    },
+    "977": {
+      "op": "DUP3"
+    },
+    "978": {
+      "op": "AND"
+    },
+    "979": {
+      "op": "OR"
+    },
+    "980": {
+      "op": "ISZERO"
+    },
+    "981": {
+      "op": "PUSH2",
+      "value": "0x3E0"
+    },
+    "984": {
+      "op": "JUMPI"
+    },
+    "985": {
+      "op": "PUSH2",
+      "value": "0x3E0"
+    },
+    "988": {
+      "op": "PUSH2",
+      "value": "0x3AA"
+    },
+    "991": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "992": {
+      "op": "JUMPDEST"
+    },
+    "993": {
+      "op": "POP"
+    },
+    "994": {
+      "op": "POP"
+    },
+    "995": {
+      "op": "SWAP3"
+    },
+    "996": {
+      "op": "SWAP2"
+    },
+    "997": {
+      "op": "POP"
+    },
+    "998": {
+      "op": "POP"
+    },
+    "999": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "1000": {
+      "op": "JUMPDEST"
+    },
+    "1001": {
+      "op": "DUP1"
+    },
+    "1002": {
+      "op": "DUP3"
+    },
+    "1003": {
+      "op": "ADD"
+    },
+    "1004": {
+      "op": "DUP1"
+    },
+    "1005": {
+      "op": "DUP3"
+    },
+    "1006": {
+      "op": "GT"
+    },
+    "1007": {
+      "op": "ISZERO"
+    },
+    "1008": {
+      "op": "PUSH2",
+      "value": "0x3FB"
+    },
+    "1011": {
+      "op": "JUMPI"
+    },
+    "1012": {
+      "op": "PUSH2",
+      "value": "0x3FB"
+    },
+    "1015": {
+      "op": "PUSH2",
+      "value": "0x3AA"
+    },
+    "1018": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "1019": {
+      "op": "JUMPDEST"
+    },
+    "1020": {
+      "op": "SWAP3"
+    },
+    "1021": {
+      "op": "SWAP2"
+    },
+    "1022": {
+      "op": "POP"
+    },
+    "1023": {
+      "op": "POP"
+    },
+    "1024": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "1025": {
+      "op": "JUMPDEST"
+    },
+    "1026": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "1028": {
+      "op": "DUP3"
+    },
+    "1029": {
+      "op": "PUSH2",
+      "value": "0x41E"
+    },
+    "1032": {
+      "op": "JUMPI"
+    },
+    "1033": {
+      "op": "PUSH4",
+      "value": "0x4E487B71"
+    },
+    "1038": {
+      "op": "PUSH1",
+      "value": "0xE0"
+    },
+    "1040": {
+      "op": "SHL"
+    },
+    "1041": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "1043": {
+      "op": "MSTORE"
+    },
+    "1044": {
+      "op": "PUSH1",
+      "value": "0x12"
+    },
+    "1046": {
+      "op": "PUSH1",
+      "value": "0x4"
+    },
+    "1048": {
+      "op": "MSTORE"
+    },
+    "1049": {
+      "op": "PUSH1",
+      "value": "0x24"
+    },
+    "1051": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "1053": {
+      "op": "REVERT"
+    },
+    "1054": {
+      "op": "JUMPDEST"
+    },
+    "1055": {
+      "op": "POP"
+    },
+    "1056": {
+      "op": "MOD"
+    },
+    "1057": {
+      "op": "SWAP1"
+    },
+    "1058": {
+      "jump": "o",
+      "op": "JUMP"
+    },
+    "1059": {
+      "op": "JUMPDEST"
+    },
+    "1060": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "1062": {
+      "op": "DUP2"
+    },
+    "1063": {
+      "op": "MSTORE"
+    },
+    "1064": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "1066": {
+      "op": "DUP4"
+    },
+    "1067": {
+      "op": "MLOAD"
+    },
+    "1068": {
+      "op": "DUP1"
+    },
+    "1069": {
+      "op": "PUSH1",
+      "value": "0x40"
+    },
+    "1071": {
+      "op": "DUP5"
+    },
+    "1072": {
+      "op": "ADD"
+    },
+    "1073": {
+      "op": "MSTORE"
+    },
+    "1074": {
+      "op": "PUSH2",
+      "value": "0x442"
+    },
+    "1077": {
+      "op": "DUP2"
+    },
+    "1078": {
+      "op": "PUSH1",
+      "value": "0x60"
+    },
+    "1080": {
+      "op": "DUP6"
+    },
+    "1081": {
+      "op": "ADD"
+    },
+    "1082": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "1084": {
+      "op": "DUP9"
+    },
+    "1085": {
+      "op": "ADD"
+    },
+    "1086": {
+      "op": "PUSH2",
+      "value": "0x36A"
+    },
+    "1089": {
+      "jump": "i",
+      "op": "JUMP"
+    },
+    "1090": {
+      "op": "JUMPDEST"
+    },
+    "1091": {
+      "op": "PUSH1",
+      "value": "0x0"
+    },
+    "1093": {
+      "op": "SWAP4"
+    },
+    "1094": {
+      "op": "SWAP1"
+    },
+    "1095": {
+      "op": "SWAP4"
+    },
+    "1096": {
+      "op": "SIGNEXTEND"
+    },
+    "1097": {
+      "op": "PUSH1",
+      "value": "0x20"
+    },
+    "1099": {
+      "op": "DUP4"
+    },
+    "1100": {
+      "op": "ADD"
+    },
+    "1101": {
+      "op": "MSTORE"
+    },
+    "1102": {
+      "op": "POP"
+    },
+    "1103": {
+      "op": "PUSH1",
+      "value": "0x1F"
+    },
+    "1105": {
+      "op": "SWAP2"
+    },
+    "1106": {
+      "op": "SWAP1"
+    },
+    "1107": {
+      "op": "SWAP2"
+    },
+    "1108": {
+      "op": "ADD"
+    },
+    "1109": {
+      "op": "PUSH1",
+      "value": "0x1F"
+    },
+    "1111": {
+      "op": "NOT"
+    },
+    "1112": {
+      "op": "AND"
+    },
+    "1113": {
+      "op": "ADD"
+    },
+    "1114": {
+      "op": "PUSH1",
+      "value": "0x60"
+    },
+    "1116": {
+      "op": "ADD"
+    },
+    "1117": {
+      "op": "SWAP2"
+    },
+    "1118": {
+      "op": "SWAP1"
+    },
+    "1119": {
+      "op": "POP"
+    },
+    "1120": {
+      "jump": "o",
+      "op": "JUMP"
+    }
+  },
+  "sha1": "d8277a5395f9ae3b4acfe62c0178fcf4640cee2c",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract ReputationManager {\n    struct Reputation {\n        int256 totalScore;\n        uint256 totalCases;\n        mapping(uint256 => int8) recentScores;\n        uint256 recentIndex;\n    }\n\n    // Use public key (string) to identify users, and fieldId (uint256) for reputation within fields\n    mapping(string => mapping(uint256 => Reputation)) private reputations;\n\n    uint256 public constant MAX_RECENT_SCORES = 100;\n\n    event ReputationUpdated(string user, uint256 indexed fieldId, int8 score);\n\n    // Update the reputation of a user identified by their public key\n    function updateReputation(\n        string memory _user,  // Public key as string\n        uint256 _fieldId,          // Field ID to track reputation in a specific area\n        int8 _score                // Score to be added (positive or negative)\n    ) external {\n        Reputation storage rep = reputations[_user][_fieldId];\n        \n        // Update the total score and total cases\n        rep.totalScore += _score;\n        rep.totalCases += 1;\n\n        // Add the score to the recent scores array with circular indexing\n        rep.recentScores[rep.recentIndex % MAX_RECENT_SCORES] = _score;\n        rep.recentIndex += 1;\n\n        // Emit the ReputationUpdated event with public key and field ID\n        emit ReputationUpdated(_user, _fieldId, _score);\n    }\n\n    // Get the sum of recent reputation scores for a user in a specific field\n    function getReputation(string memory _user, uint256 _fieldId)\n        external\n        view\n        returns (int256 sumRecentScores)\n    {\n        Reputation storage rep = reputations[_user][_fieldId];\n        \n        // Determine the number of recent scores to sum (based on totalCases vs. MAX_RECENT_SCORES)\n        uint256 scoresCount = rep.totalCases > MAX_RECENT_SCORES ? MAX_RECENT_SCORES : rep.totalCases;\n        sumRecentScores = 0; \n\n        // Sum up the recent scores\n        for (uint256 i = 0; i < scoresCount; i++) {\n            sumRecentScores += rep.recentScores[i];\n        }\n    }\n}\n",
+  "sourceMap": "57:2024:2:-:0;;;;;;;;;;;;;;;;;;;",
+  "sourcePath": "contracts/ReputationManager.sol",
+  "type": "contract"
+}
