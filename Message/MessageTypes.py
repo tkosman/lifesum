@@ -8,4 +8,5 @@ class Type(Enum):
     EXIT = 'exit'
     RETURN = 'return'
     REQUEST = 'request'
+    PING = 'ping'
 
