@@ -122,20 +122,21 @@ def create_app(arguments):
     app.ctx.challenges = {}
     app.config.SECRET = "secret" #TODO: change this to a more secure secret
 
-
     app.ctx.node_connection_client = NodeConnectionClient()
 
     @app.before_server_start()
     async def node_connection_manager(app):
-        app.ctx.bg_thread = Thread(target=app.ctx.node_connection_client.connection_manager)
-        app.ctx.bg_thread.daemon = True
-        app.ctx.bg_thread.start()
+        # Thread for creating and maintaining connection with Node
+        app.ctx.bg_connection_thread = Thread(target=app.ctx.node_connection_client.connection_manager, args=())
+        app.ctx.bg_connection_thread.daemon = True
+        app.ctx.bg_connection_thread.start()
 
     @app.before_server_stop
     async def stop_background_thread(app, loop):
+        # Garefully close connection with Node
         print("Stopping Node connection manager thread...")
         app.ctx.node_connection_client.exit()
-        app.ctx.bg_thread.join()
+        app.ctx.bg_connection_thread.join()
         print("Node connection manager thread stopped.")
 
     attach_endpoints(app)

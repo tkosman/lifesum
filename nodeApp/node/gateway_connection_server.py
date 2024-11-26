@@ -169,6 +169,13 @@ def handle_message(message: Message, gateway_socket: socket , aes_key: bytes) ->
                 # TODO: resend last message
                 print(f"Error message: {message.to_json()}")
 
+        case Type.PING:
+            print("PING")
+            response = Message(type=Type.PING)
+            encrypted_response = encrypt(response, aes_key)
+
+            send_data(gateway_socket, encrypted_response)
+
         case _:
             #! Bad request 400
             response = Message(type=Type.ERROR, status=400, payload=f"Unrecognized message type: {message.get_type()}")
