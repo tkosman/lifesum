@@ -10,7 +10,7 @@ class Message():
     Args:
         type (Type, optional): Type of the message. Defaults to None.
         status (int, optional): Returning status. Defaults to None.
-        payload (str, optional): Sent data. Defaults to None.
+        payload (str, optional): Data to send. Defaults to None.
     """
 
     def __init__(self, type: Type = None, status: int = None, payload: str = None) -> None:
@@ -94,4 +94,4 @@ class Message():
         if message.check_checksum(data['checksum']):
             return message
         else:
-            raise ValueError("Checksum not matchin, message corrupted")
+            raise ValueError("Checksum not matching, message corrupted")
