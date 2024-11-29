@@ -23,5 +23,4 @@ jobs:
       run: |
         cd gatewayApp
         docker build -t docker-gateway .
-        docker run docker-gateway
-      timeout-minutes: 0.5
+        docker run -d --rm docker-gateway
