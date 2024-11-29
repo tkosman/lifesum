@@ -22,4 +22,4 @@ jobs:
     - name: Run pytest
       run: |
         cd gatewayApp
-        ./run_pytest.sh
+        ./run-pytest.sh
