@@ -17,6 +17,8 @@ from .valid_schemas import ValidUser
 from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
 
+from .daemonize import daemonize
+
 __version__ = '1.0.0'
 
 def get_args():
@@ -25,7 +27,7 @@ def get_args():
     argument_parser.add_argument('-i', '--ip', type=str, default='127.0.0.1',
                                  help='ip address to bind to')
     argument_parser.add_argument('-p', '--port', type=int, default=1234, help='port number')
-    argument_parser.add_argument('-d', '--daemonize', action='store_true', help='run as daemon')
+    argument_parser.add_argument('-bg', '--background', action='store_true', help='run as deamon')
     argument_parser.add_argument('--version', action='version', version=f'app {__version__}')
 
     return argument_parser.parse_args()
@@ -125,5 +127,6 @@ def main(arguments):
 
 if __name__ == '__main__':
     args = get_args()
-    #TODO add deamonize support
+    if args.background:
+        daemonize()
     main(args)
