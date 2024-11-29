@@ -24,4 +24,5 @@ jobs:
         cd gatewayApp
         docker build -t docker-gateway .
         docker run -d -p 1234:1234 docker-gateway
+        sleep 5
         curl http://localhost:1234/
