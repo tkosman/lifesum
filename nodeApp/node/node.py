@@ -11,7 +11,9 @@ __version__ = "1.0.0"
 # TODO: replace with actual address
 HOST: str = '127.0.0.1'
 PORT: int = 65432
+
 BACKLOG: int = 5
+RUNNING: bool = False
 
 client_handlers: list[GatewayConnectionServer] = []
 client_threads: list[threading.Thread] = []
@@ -37,22 +39,32 @@ def node() -> None:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((HOST, PORT))
         server_socket.listen(BACKLOG)
+        RUNNING = True
         logger.info("Server listening...")
 
-        while server_socket.fileno() != -1:
-            gateway_socket, client_address = server_socket.accept()
-            logger.access(f"Connection from {client_address}.")
+        while RUNNING:
+            try:
+                gateway_socket, client_address = server_socket.accept()
+                logger.connection(f"Connection from {client_address}.")
 
-            gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket, blockchain_interface)
-            client_handlers.append(gateway_handler)
+                gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket)
+                # gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket, blockchain_interface)
+                client_handlers.append(gateway_handler)
 
-            # Create a new thread to handle the client
-            client_thread = threading.Thread(target=gateway_handler.handle_client, name=str(client_address), args=())
-            client_threads.append(client_thread)
-            client_thread.start()
-    except Exception as e:
-        logger.error(f"Error in main server loop: {e}.")
+                # Create a new thread to handle the client
+                client_thread = threading.Thread(target=gateway_handler.handle_client, name=str(client_address), args=())
+                client_thread.daemon = True
+                client_threads.append(client_thread)
+                client_thread.start()
+
+            except KeyboardInterrupt:
+                logger.info("No longer accepting connections.")
+                RUNNING = False
+            except Exception as e:
+                logger.error(f"Error in main server loop: {e}.")
+                RUNNING = False
     finally:
+        RUNNING = False
         server_socket.close()
 
         for handler in client_handlers:
@@ -67,6 +79,7 @@ def node() -> None:
                 thread.join(timeout=1)
 
         logger.info("Server stopped.")
+
 
 if __name__ == "__main__":
     node()
