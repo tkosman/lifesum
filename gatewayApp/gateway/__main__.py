@@ -2,8 +2,6 @@
 Sanic app.
 """
 import argparse
-import os
-import sys
 from threading import Thread
 
 import sanic
@@ -11,6 +9,7 @@ from sanic import response, request
 from sanic_ext import openapi
 from sanic_ext import validate
 from sanic_ext.exceptions import ValidationError
+from sanic.log import logger
 
 from .auth import protected
 from .auth import authenticate
@@ -136,10 +135,10 @@ def create_app(arguments):
     @app.before_server_stop
     async def stop_background_thread(app, loop):
         # Garefully close connection with Node
-        print("Stopping Node connection manager thread...")
+        logger.info("Stopping Node connection manager thread...")
         app.ctx.node_connection_client.exit()
         app.ctx.bg_connection_thread.join()
-        print("Node connection manager thread stopped.")
+        logger.info("Node connection manager thread stopped.")
 
     attach_endpoints(app)
     return app
