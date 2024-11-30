@@ -1,0 +1,45 @@
+name: Ci pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/trusted.gpg.d/docker.asc
+        echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    - name: Run pytest
+      run: |
+        cd gatewayApp
+        ./run-pytest.sh
+
+  run-gateway:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/trusted.gpg.d/docker.asc
+        echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    - name: Run gateway in docker and try to curl it
+      run: |
+        cd gatewayApp
+        docker build -t docker-gateway .
+        docker run -d -p 1234:1234 docker-gateway
+        sleep 5
+        curl http://localhost:1234/
