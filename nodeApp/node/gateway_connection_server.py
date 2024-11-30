@@ -8,273 +8,213 @@ import os
 import threading
 import sys
 
+from user_regitry_interface import UserRegistryInterface
+from message_handlers import *
+from logger import logger
+
 sys.path.insert(0, '../../Message')
-from Message import *
+from Message import Message, Type
+
+class GatewayConnectionServer():
+    """A class for handling connection between the Node and a Gateway"""
+    def __init__(self, gateway_socket: socket.socket, blockchain: UserRegistryInterface) -> None:
+        self._gateway_socket: socket.socket = gateway_socket
+        self._blockchain: UserRegistryInterface = blockchain
+        self._aes_key: bytes = None
+        self._running: bool = True
 
 
-# TODO: replace with actual address
-HOST = '127.0.0.1'
-PORT = 65432
-BACKLOG = 5
+    def _send(self, message: Message) -> None:
+        """Sends data to Gateway.
 
-client_sockets = []
-client_threads = []
-server_socket = None
+        Args:
+            data (bytes): Data to send.
+        """
+        try:
+            encrypted_message: bytes = self._encrypt(message)
+            # Send the length of the data (4 bytes, big-endian)
+            self._gateway_socket.send(len(encrypted_message).to_bytes(4, 'big'))
+            # Send the actual data
+            self._gateway_socket.sendall(encrypted_message)
+        except Exception as e:
+            logger.error(e)
+            raise
 
-# Helper functions for sending/receiving data
-def send_data(sock:  socket, data: bytes) -> None:
-    """Sends data to Gateway
+    def _receive(self) -> Message:
+        """Retrieves message from Gateway.
 
-    Args:
-        sock (socket): Socket for communication
-        data (bytes): Data to send.
-    """
-    sock.send(len(data).to_bytes(4, 'big'))
-    sock.sendall(data)
+        Raises:
+            ConnectionError: Connection with Gateway broken.
 
-def receive_data(sock: socket) -> bytes:
-    """Retrieves message from Gateway.
+        Returns:
+            Message: Decoded message.
+        """
+        data_length: int = int.from_bytes(self._gateway_socket.recv(4), 'big')
+        data: bytes = b""
+        while len(data) < data_length:
+            packet: bytes = self._gateway_socket.recv(data_length - len(data))
+            if not packet:
+                raise ConnectionError("Socket connection broken.")
+            data += packet
 
-    Args:
-        sock (socket): Socket for communication.
+        decrypted_message = self._decrypt(data)
+        return Message.from_json(decrypted_message)
 
-    Raises:
-        ConnectionError: Connection with Gateway broken.
+    def _send_data(self, data: bytes) -> None:
+        """Sends data to Gateway.
 
-    Returns:
-        bytes: Encoded message.
-    """
-    data_length = int.from_bytes(sock.recv(4), 'big')
-    data = b""
-    while len(data) < data_length:
-        packet = sock.recv(data_length - len(data))
-        if not packet:
-            raise ConnectionError(f"Socket connection with {threading.current_thread().name} broken")
-        data += packet
-    return data
+        Args:
+            data (bytes): Data to send.
+        """
+        try:
+            # Send the length of the data (4 bytes, big-endian)
+            self._gateway_socket.send(len(data).to_bytes(4, 'big'))
+            # Send the actual data
+            self._gateway_socket.sendall(data)
+        except Exception as e:
+            logger.error(e)
+            raise
 
-def decrypt(encrypted_message: bytes, aes_key: bytes) -> str:
-    """Decrypts message using AES key.
+    def _receive_data(self) -> bytes:
+        """Retrieves data from Gateway.
 
-    Args:
-        encrypted_message (bytes): Message to decrypt.
-        aes_key (bytes): AES key.
+        Raises:
+            ConnectionError: Connection with Wateway broken.
 
-    Returns:
-        str: Decrytped message.
-    """
-    iv = encrypted_message[:16]
-    ciphertext = encrypted_message[16:]
-    cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
-    decryptor = cipher.decryptor()
-    return decryptor.update(ciphertext) + decryptor.finalize()
+        Returns:
+            bytes: Recieved data.
+        """
+        data_length: int = int.from_bytes(self._gateway_socket.recv(4), 'big')
+        data: bytes = b""
+        while len(data) < data_length:
+            packet: bytes = self._gateway_socket.recv(data_length - len(data))
+            if not packet:
+                raise ConnectionError("Socket connection broken.")
+            data += packet
+        return data
 
-def encrypt(message: Message, aes_key: bytes) -> bytes:
-    """Encrypts message using AES key.
+    def _decrypt(self, encrypted_message: bytes) -> str:
+        """Decrypts message using AES key.
 
-    Args:
-        message (Message): Message to encrypt.
-        aes_key (bytes): AES key.
+        Args:
+            encrypted_message (bytes): Message to decrypt.
 
-    Returns:
-        bytes: Encrypted message.
-    """
-    message_json = message.to_bytes()
+        Returns:
+            str: Decrytped message.
+        """
+        iv = encrypted_message[:16]
+        ciphertext = encrypted_message[16:]
+        cipher = Cipher(algorithms.AES(self._aes_key), modes.CFB(iv))
+        decryptor = cipher.decryptor()
+        return decryptor.update(ciphertext) + decryptor.finalize()
 
-    iv = os.urandom(16)
-    cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv))
-    encryptor = cipher.encryptor()
-    return iv + encryptor.update(message_json) + encryptor.finalize()
+    def _encrypt(self, message: Message) -> bytes:
+        """Encrypts message using AES key.
 
-# TODO: change the DH to more secure version
-def DH_exchange(socket: socket) -> bytes:
-    """Executes Diffie-Hellman key exchange and establishes connection
-    between Gateway and Node.
+        Args:
+            message (Message): Message to encrypt.
 
-    Args:
-        socket (socket): Socket for communication.
+        Returns:
+            bytes: Encrypted message.
+        """
+        message_json = message.to_bytes()
 
-    Returns:
-        bytes: AES key.
-    """
-    try:
-        # Generate new DH parameters for this connection
-        parameters = dh.generate_parameters(generator=2, key_size=2048)
-        dh_parameters_pem = parameters.parameter_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.ParameterFormat.PKCS3
-        )
+        iv = os.urandom(16)
+        cipher = Cipher(algorithms.AES(self._aes_key), modes.CFB(iv))
+        encryptor = cipher.encryptor()
+        return iv + encryptor.update(message_json) + encryptor.finalize()
 
-        # Send the DH parameters to the client
-        send_data(socket, dh_parameters_pem)
-        print(f"Sent new DH parameters to {threading.current_thread().name}")
+    # TODO: change the DH to more secure version
+    def _DH_exchange(self) -> bytes:
+        """Executes Diffie-Hellman key exchange and establishes connection
+        between Gateway and Node.
 
-        # Generate server's private and public keys
-        server_private_key = parameters.generate_private_key()
-        server_public_key = server_private_key.public_key()
+        Args:
+            socket (socket): Socket for communication.
 
-        # Send server's public key to the client
-        server_public_key_pem = server_public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        )
-        send_data(socket, server_public_key_pem)
+        Returns:
+            bytes: AES key.
+        """
+        try:
+            # Generate new DH parameters for this connection
+            parameters = dh.generate_parameters(generator=2, key_size=2048)
+            dh_parameters_pem = parameters.parameter_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.ParameterFormat.PKCS3
+            )
 
-        # Receive client's public key
-        client_public_key_pem = receive_data(socket)
-        client_public_key = serialization.load_pem_public_key(client_public_key_pem)
+            # Send the DH parameters to the client
+            self._send_data(dh_parameters_pem)
+            logger.info(f"Sent new DH parameters to {threading.current_thread().name}.")
 
-        # Generate shared secret
-        shared_key = server_private_key.exchange(client_public_key)
+            # Generate server's private and public keys
+            server_private_key = parameters.generate_private_key()
+            server_public_key = server_private_key.public_key()
 
-        # Derive AES key
-        return HKDF(
-            algorithm=SHA256(),
-            length=32,
-            salt=None,
-            info=b'handshake data'
-        ).derive(shared_key)
-    except Exception as e:
-        print(e)
-        return None
+            # Send server's public key to the client
+            server_public_key_pem = server_public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+            self._send_data(server_public_key_pem)
 
-def handle_message(message: Message, gateway_socket: socket , aes_key: bytes) -> None:
-    """Handles message received from Gateway
+            # _receive client's public key
+            client_public_key_pem = self._receive_data()
+            client_public_key = serialization.load_pem_public_key(client_public_key_pem)
 
-    Args:
-        message (Message): Message to handle.
-        gateway_socket (socket): Client's socket for sending response.
-        aes_key (bytes): Encryption key.
+            # Generate shared secret
+            shared_key = server_private_key.exchange(client_public_key)
 
-    Raises:
-        ConnectionAbortedError: Gateway broke connection.
-    """
-    match message.get_type():
-        case Type.REQUEST:
-            print(f"Received message from {threading.current_thread().name}: {message.get_payload()}")
-            response = Message(type=Type.RETURN, status=200, payload=message.get_payload())
-            encrypted_response = encrypt(response, aes_key)
+            # Derive AES key
+            return HKDF(
+                algorithm=SHA256(),
+                length=32,
+                salt=None,
+                info=b'handshake data'
+            ).derive(shared_key)
+        except Exception as e:
+            logger.error(e)
+            return None
 
-            send_data(gateway_socket, encrypted_response)
+    def _handle_message(self, message: Message) -> None:
+        """Handles message received from Gateway
 
-        case Type.EXIT:
-            print(f"Connection ended by {threading.current_thread().name}")
-            raise ConnectionAbortedError
+        Args:
+            message (Message): Message to handle.
+        """
+        self._send(message)
 
-        case Type.ERROR:
-            if message.get_status() >= 400 and message.get_status() < 500:
-                # TODO: deal with "unrecognized message type" error
-                print(f"Error message: {message.to_json()}")
-            elif message.get_status() >= 500 and message.get_status() < 600:
-                # TODO: resend last message
-                print(f"Error message: {message.to_json()}")
+    def handle_client(self) -> None:
+        """Executed in new thread to handle comunication between Gateway nad Node.
 
-        case Type.PING:
-            print("PING")
-            response = Message(type=Type.PING)
-            encrypted_response = encrypt(response, aes_key)
+        Raises:
+            ConnectionError: Error during Diffie-Hellman exchange.
+        """
+        try:
+            self._aes_key = self._DH_exchange()
 
-            send_data(gateway_socket, encrypted_response)
+            if self._aes_key:
+                logger.info(f"Shared AES key established with {threading.current_thread().name}.")
+            else:
+                raise ConnectionError("Error during DH exchange. Terminating connection...")
 
-        case _:
-            #! Bad request 400
-            response = Message(type=Type.ERROR, status=400, payload=f"Unrecognized message type: {message.get_type()}")
-            encrypted_response = encrypt(response, aes_key)
+            # Communication loop for this client
+            while self._running:
+                message: Message = self._receive()
 
-            send_data(gateway_socket, encrypted_response)
+                # Handle message
+                try:
+                    # ! update message handling
+                    self._handle_message(message)
+                except ConnectionAbortedError:
+                    break
+        except Exception as e:
+            logger.error(f"Error handling {threading.current_thread().name}: {e}.")
+        finally:
+            logger.info(f"Closing socket for connection with {threading.current_thread().name}.")
+            self._gateway_socket.close()
 
-def handle_client(gateway_socket):
-    """Executed in new thread to handle comunication between Gateway nad Node.
-
-    Args:
-        gateway_socket (_type_): Socket for communication.
-
-    Raises:
-        ConnectionError: Error during Diffie-Hellman exchange.
-    """
-    try:
-        aes_key = DH_exchange(gateway_socket)
-
-        if aes_key:
-            print(f"Shared AES key established with {threading.current_thread().name}")
-        else:
-            raise ConnectionError("Error during DH exchange. Terminating connection...")
-
-        # Communication loop for this client
-        while True:
-            encrypted_message = receive_data(gateway_socket)
-
-            decrypted_message = decrypt(encrypted_message, aes_key)
-
-            # Parse and process the message
-            try:
-                message = Message.from_json(decrypted_message)
-            except ValueError as ex:
-                #! Checksum error 500
-                print(ex)
-
-                response = Message(type=Type.ERROR, status=500, payload=str(ex))
-                encrypted_response = encrypt(response, aes_key)
-
-                send_data(gateway_socket, encrypted_response)
-
-                continue
-
-            # Handle message
-            try:
-                handle_message(message, gateway_socket, aes_key)
-            except ConnectionAbortedError as ex:
-                break
-    except Exception as e:
-        print(f"Error handling {threading.current_thread().name}: {e}")
-    finally:
-        print(f"Closing socket for connection with {threading.current_thread().name}")
-        gateway_socket.close()
-
-def main():
-    """Main thread receiving new connection requests and delegating
-    their handling to new threads.
-    """
-    global server_socket, client_sockets, client_threads
-
-    try:
-        # Start listening for connections
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((HOST, PORT))
-        server_socket.listen(BACKLOG)
-        print("Server listening...")
-
-        while server_socket.fileno() != -1:
-            gateway_socket, client_address = server_socket.accept()
-            print(f"Connection from {client_address}")
-
-            client_sockets.append(gateway_socket)
-
-            # Create a new thread to handle the client
-            client_thread = threading.Thread(target=handle_client, name=str(client_address), args=(gateway_socket,))
-            client_threads.append(client_thread)
-            client_thread.start()
-    except Exception as e:
-        print(f"Error in main server loop: {e}")
-    finally:
-        server_socket.close()
-
-        for sock in client_sockets:
-            try:
-                sock.close()
-            except Exception as e:
-                print(f"Error closing client socket: {e}")
-        client_sockets.clear()
-
-        for thread in client_threads:
-            if thread.is_alive():
-                thread.join(timeout=1)
-
-        print("Server stopped.")
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print(e)
+    def exit(self) -> None:
+        """Gracefully close connection with Gateway."""
+        self._running = False
+        self._gateway_socket.close()
