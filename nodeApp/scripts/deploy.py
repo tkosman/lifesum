@@ -1,4 +1,3 @@
-# deploy.py
 
 from brownie import UserRegistry, accounts, network, config
 

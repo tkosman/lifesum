@@ -1,4 +1,3 @@
-# user_registry_interface.py
 
 import os
 from dotenv import load_dotenv
