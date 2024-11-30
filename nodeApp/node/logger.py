@@ -2,10 +2,13 @@
 import logging
 from logging.config import dictConfig
 
+connection_LEVEL = 25
+logging.addLevelName(connection_LEVEL, "CONNECTION")
+
 LOG_LEVEL_COLORS = {
     "INFO": "\033[34m",     # Blue for INFO
     "ERROR": "\033[31m",    # Red for ERROR
-    "ACCESS": "\033[32m",   # Green for ACCESS
+    "CONNECTION": "\033[32m",   # Green for CONNECTION
 }
 
 GRAY = "\033[37m"  # Gray for date and time
@@ -20,11 +23,11 @@ class ColorFormatter(logging.Formatter):
 
         levelname = record.levelname
         if levelname == "INFO":
-            record.levelname = LOG_LEVEL_COLORS["INFO"] + "[INFO]" + RESET
+            record.levelname = LOG_LEVEL_COLORS["INFO"] + "[INFO]  " + RESET
         elif levelname == "ERROR":
-            record.levelname = LOG_LEVEL_COLORS["ERROR"] + "[ERROR]" + RESET
-        elif levelname == "ACCESS":
-            record.levelname = LOG_LEVEL_COLORS["ACCESS"] + "[ACCESS]" + RESET
+            record.levelname = LOG_LEVEL_COLORS["ERROR"] + "[ERROR] " + RESET
+        elif levelname == "CONNECTION":
+            record.levelname = LOG_LEVEL_COLORS["CONNECTION"] + "[CONN]  " + RESET
 
         return super().format(record)
 
@@ -45,18 +48,18 @@ LOGGING_CONFIG = {
         },
     },
     "loggers": {
-        "sanic.root": {
+        "root": {
             "level": "INFO",
             "handlers": ["console"],
             "propagate": False,
         },
-        "sanic.error": {
+        "error": {
             "level": "ERROR",
             "handlers": ["console"],
             "propagate": False,
         },
-        "sanic.access": {
-            "level": "INFO",
+        "connection": {
+            "level": "CONNECTION",
             "handlers": ["console"],
             "propagate": False,
         },
@@ -68,9 +71,9 @@ dictConfig(LOGGING_CONFIG)
 class NodeLogger:
     def __init__(self):
         """Node logger."""
-        self.root_logger = logging.getLogger("sanic.root")
-        self.error_logger = logging.getLogger("sanic.error")
-        self.access_logger = logging.getLogger("sanic.access")
+        self.root_logger = logging.getLogger("root")
+        self.error_logger = logging.getLogger("error")
+        self.connection_logger = logging.getLogger("connection")
 
     def info(self, message, **kwargs):
         self.root_logger.info(message, **kwargs)
@@ -78,9 +81,8 @@ class NodeLogger:
     def error(self, message, **kwargs):
         self.error_logger.error(message, **kwargs)
 
-    def access(self, message, **kwargs):
-        self.access_logger.info(message, **kwargs)
-
+    def connection(self, message, **kwargs):
+        self.connection_logger.log(connection_LEVEL, message, **kwargs)
 
 logger = NodeLogger()
 """Node logger."""

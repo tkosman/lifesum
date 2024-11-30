@@ -17,12 +17,16 @@ from Message import Message, Type
 
 class GatewayConnectionServer():
     """A class for handling connection between the Node and a Gateway"""
-    def __init__(self, gateway_socket: socket.socket, blockchain: UserRegistryInterface) -> None:
+    # def __init__(self, gateway_socket: socket.socket, blockchain: UserRegistryInterface) -> None:
+    #     self._gateway_socket: socket.socket = gateway_socket
+    #     self._blockchain: UserRegistryInterface = blockchain
+    #     self._aes_key: bytes = None
+    #     self._running: bool = True
+
+    def __init__(self, gateway_socket: socket.socket) -> None:
         self._gateway_socket: socket.socket = gateway_socket
-        self._blockchain: UserRegistryInterface = blockchain
         self._aes_key: bytes = None
         self._running: bool = True
-
 
     def _send(self, message: Message) -> None:
         """Sends data to Gateway.

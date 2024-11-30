@@ -1,4 +1,5 @@
 import socket
+import threading
 import time
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.hashes import SHA256
@@ -25,7 +26,7 @@ class NodeConnectionClient():
     def __init__(self) -> None:
         self.node_socket: socket.socket = None
         self._aes_key: bytes = None
-        self._running: bool = True
+        self._running: bool = False
 
 
     def send(self, message: Message) -> None:
@@ -41,7 +42,7 @@ class NodeConnectionClient():
             # Send the actual data
             self.node_socket.sendall(encrypted_message)
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             raise
 
     def receive(self) -> Message:
@@ -77,7 +78,7 @@ class NodeConnectionClient():
             # Send the actual data
             self.node_socket.sendall(data)
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             raise
 
     def _receive_data(self) -> bytes:
@@ -183,7 +184,7 @@ class NodeConnectionClient():
 
             return self._aes_key
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             return None
 
     def _establish_connection(self) -> bytes:
@@ -196,19 +197,19 @@ class NodeConnectionClient():
             bytes: AES key.
         """
         for attempt in range(NodeConnectionClient.ATTEMPTS):
-                try:
-                    self._aes_key = self._DH_exchange()
-                    if self._aes_key:
-                        logger.info("Connection established.")
-                        return self._aes_key
-                except Exception as e:
-                    logger.info(f"Attempt {attempt + 1} failed: {e}")
+            try:
+                self._aes_key = self._DH_exchange()
+                if self._aes_key:
+                    logger.info("Connection established.")
+                    return self._aes_key
+            except Exception as e:
+                logger.error(f"Attempt {attempt + 1} failed: {e}")
 
-                time.sleep(NodeConnectionClient.REFRACTORY_PERIOD)
+            time.sleep(NodeConnectionClient.REFRACTORY_PERIOD)
 
-                if attempt == NodeConnectionClient.ATTEMPTS - 1:
-                    logger.info("All connection attempts failed. Exiting...")
-                    raise ConnectionError("Error trying to connect with Node")
+            if attempt == NodeConnectionClient.ATTEMPTS - 1:
+                logger.fatal("All connection attempts failed.")
+                return None
 
     def connection_manager(self) -> None:
         """Manages connection between Gateway and Node.
@@ -225,8 +226,11 @@ class NodeConnectionClient():
 
             if self._aes_key:
                 logger.info(f"Shared AES key established with the Node")
+                self._running = True
             else:
-                raise ConnectionError("Error during DH exchange. Terminating connection...")
+                logger.fatal("No aes key. Exiting...")
+                self.exit()
+                return
 
             self.node_socket.settimeout(NodeConnectionClient.TIMEOUT)
 
@@ -247,21 +251,21 @@ class NodeConnectionClient():
                             if response.get_type() == Type.PING:
                                 logger.info(f"Ping {(time.time_ns() - t) * 10e-6}ms")
                             else:
-                                logger.info(f"Wrong response type {response.get_type()}")
+                                logger.error(f"Wrong response type {response.get_type()}")
                                 break
                         except ValueError as ex:
-                            logger.info(f"Checksum error: {ex}")
+                            logger.error(f"Checksum error: {ex}")
                         except socket.timeout:
-                            logger.info("Socket timeout.")
+                            logger.error("Socket timeout.")
                             break
             except Exception as ex:
-                logger.info(f"Unexpected error: {ex}")
+                logger.error(f"Unexpected error: {ex}")
             finally:
-                self.node_socket.close()
+                self.exit()
 
     def exit(self) -> None:
         """Sends message to the Node to gracefully close connection and closes socket."""
-        self.send(Message(Type.EXIT))
-        self._running = False
+        if self._running:
+            self.send(Message(Type.EXIT))
+            self._running = False
         self.node_socket.close()
-
