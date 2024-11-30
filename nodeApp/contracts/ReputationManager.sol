@@ -23,7 +23,7 @@ contract ReputationManager {
         int8 _score                // Score to be added (positive or negative)
     ) external {
         Reputation storage rep = reputations[_user][_fieldId];
-        
+
         // Update the total score and total cases
         rep.totalScore += _score;
         rep.totalCases += 1;
@@ -43,10 +43,10 @@ contract ReputationManager {
         returns (int256 sumRecentScores)
     {
         Reputation storage rep = reputations[_user][_fieldId];
-        
+
         // Determine the number of recent scores to sum (based on totalCases vs. MAX_RECENT_SCORES)
         uint256 scoresCount = rep.totalCases > MAX_RECENT_SCORES ? MAX_RECENT_SCORES : rep.totalCases;
-        sumRecentScores = 0; 
+        sumRecentScores = 0;
 
         // Sum up the recent scores
         for (uint256 i = 0; i < scoresCount; i++) {
