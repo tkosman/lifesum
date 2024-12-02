@@ -1,11 +1,17 @@
-from ape import accounts, project, networks
+from brownie import UserRegistry, accounts
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from the .env file
 
 def main():
-    # load_dotenv()
-    # Load the securely stored account
-    account = accounts.load("myaccount")
+    # Load the deployer account using the private key
+    private_key = os.getenv("PRIVATE_KEY")
+    deployer = accounts.add(private_key)
+    print(deployer)
 
-    # Use the Sepolia network with Infura
-    with networks.ethereum.sepolia.use_provider("infura"):
-        contract = account.deploy(project.UserRegistry)
-        print(f"Contract deployed at: {contract.address}")
+    # Deploy the contract
+    user_registry = UserRegistry.deploy({"from": deployer})
+
+    # Print the contract address
+    print(f"Contract deployed at: {user_registry.address}")
