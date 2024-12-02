@@ -9,7 +9,6 @@ import threading
 import sys
 
 from user_regitry_interface import UserRegistryInterface
-from message_handlers import *
 from logger import logger
 
 sys.path.insert(0, '../../Message')
