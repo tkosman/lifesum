@@ -1,0 +1,7 @@
+plugins: []
+
+providers:
+  ethereum:
+    sepolia:
+      infura:
+        api_key: ${WEB3_INFURA_API_KEY}
