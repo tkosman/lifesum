@@ -12,7 +12,7 @@ from message_handler.MessageHandler import MessageHandler
 from user_regitry_interface import UserRegistryInterface
 from logger import logger
 
-sys.path.insert(0, '../../Message')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Message')))
 from Message import Message
 
 class GatewayConnectionServer():

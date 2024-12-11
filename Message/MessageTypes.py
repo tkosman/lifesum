@@ -9,4 +9,5 @@ class Type(Enum):
     RETURN = 'return'
     REQUEST = 'request'
     PING = 'ping'
+    REGISTER = 'register'
 

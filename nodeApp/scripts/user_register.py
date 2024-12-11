@@ -1,6 +1,6 @@
 from ape import project, accounts, networks
 
-def main():
+def register_user():
     with networks.ethereum.sepolia.use_provider("infura"):
         deployer = accounts[0]
         user_registry = project.UserRegistry.at("c406212e17e862c285386406c1307d34cd26d50D")
@@ -13,5 +13,3 @@ def main():
 
         nick = user_registry.getNickByAddress("2345g2524523f6j58k38q673456")
         print("Nick from address:", nick)
-
-main()
