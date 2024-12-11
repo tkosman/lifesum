@@ -1,32 +1,29 @@
 
 import sys
 from .ExitHandler import ExitHandler
+from .PingHandler import PingHandler
+from .ErrorHandler import ErrorHandler
 from .AbstractHandler import AbstractHandler
 
 sys.path.insert(0, '../../../Message')
 from Message import Message, Type
 
 
-class MessageHandler(AbstractHandler):
+class MessageHandler:
 
     handlers: dict[Type, AbstractHandler] = {
+        Type.PING: PingHandler,
         Type.EXIT: ExitHandler,
     }
 
     @classmethod
-    def handle(self, message: Message) -> Message | None:
+    def handle(self, message: Message) -> Message:
         """Handles a message.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            Message|None: Return message; *None* if a *KeyError* occurs.
+            Message: Return message.
         """
-        try:
-            return_message: Message = self.handlers.get(Message.get_type()).handle(message)
-        except KeyError as ex:
-            print(ex)
-            return None
-
-        return return_message
+        return self.handlers.get(message.get_type(), ErrorHandler).handle(message)

@@ -8,11 +8,12 @@ import os
 import threading
 import sys
 
+from message_handler.MessageHandler import MessageHandler
 from user_regitry_interface import UserRegistryInterface
 from logger import logger
 
 sys.path.insert(0, '../../Message')
-from Message import Message, Type
+from Message import Message
 
 class GatewayConnectionServer():
     """A class for handling connection between the Node and a Gateway"""
@@ -179,14 +180,6 @@ class GatewayConnectionServer():
             logger.error(e)
             return None
 
-    def _handle_message(self, message: Message) -> None:
-        """Handles message received from Gateway
-
-        Args:
-            message (Message): Message to handle.
-        """
-        self._send(message)
-
     def handle_client(self) -> None:
         """Executed in new thread to handle comunication between Gateway nad Node.
 
@@ -199,7 +192,7 @@ class GatewayConnectionServer():
             if self._aes_key:
                 logger.info(f"Shared AES key established with {threading.current_thread().name}.")
             else:
-                raise ConnectionError("Error during DH exchange. Terminating connection...")
+                raise ConnectionError("Error during DH exchange. Terminating connection.")
 
             # Communication loop for this client
             while self._running:
@@ -207,9 +200,14 @@ class GatewayConnectionServer():
 
                 # Handle message
                 try:
-                    # ! update message handling
-                    self._handle_message(message)
-                except ConnectionAbortedError:
+                    return_message = MessageHandler.handle(message)
+                    if return_message:
+                        self._send(return_message)
+                    else:
+                        # Exit message, termiante connection
+                        break
+                except ConnectionAbortedError as ex:
+                    logger.error(ex)
                     break
         except Exception as e:
             logger.error(f"Error handling {threading.current_thread().name}: {e}.")

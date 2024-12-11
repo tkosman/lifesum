@@ -3,7 +3,7 @@ from brownie import *
 p = project.load('../../nodeApp', name="NodeappProject")
 p.load_config()
 
-from brownie.project.NodeappProject import *
+from brownie.project.NodeappProject import * # type: ignore
 network.connect('sepolia')
 
 import os
@@ -20,7 +20,7 @@ deployer = accounts.add(private_key)
 #network.connect('sepolia')
 
 # Get contract ABI from build artifacts
-user_registry = UserRegistry[-1]
+user_registry = UserRegistry[-1] # type: ignore
 
 # 1. Register a new user
 def register_user(nick, public_key, additional_data, is_bot):

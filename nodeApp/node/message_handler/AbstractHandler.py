@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import sys
 
-sys.path.insert(0, '../../../Message')
+sys.path.insert(0, '../../Message')
 from Message import Message
 
 class AbstractHandler(ABC):
@@ -16,6 +16,6 @@ class AbstractHandler(ABC):
             message (Message): The message to handle.
 
         Returns:
-            Message|None: Return message; *None* if a *KeyError* occurs.
+            Message|None: Return message; *None* if EXIT message.
         """
         raise NotImplementedError("Method not implemented: handle.")

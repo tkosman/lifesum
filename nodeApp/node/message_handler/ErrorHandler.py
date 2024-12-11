@@ -6,16 +6,16 @@ sys.path.insert(0, '../../../Message')
 from Message import Message, Type
 
 
-class ExitHandler(AbstractHandler):
+class ErrorHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message) -> Message | None:
-        """Handles messages of type EXIT.
+        """Handles messages of type ERROR.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            None: Shutting down, no message to send.
+            Message: Error with status 500 for unknown message type.
         """
-        return None
+        return Message(type=Type.ERROR, status=500, payload=f"Unknown message type: {message.get_type()}")
