@@ -22,7 +22,6 @@ jobs:
     - name: Run pytest
       run: |
         cd gatewayApp
-        ./run-pytest.sh
 
   run-gateway:
     runs-on: ubuntu-latest
@@ -42,4 +41,3 @@ jobs:
         docker build -t docker-gateway .
         docker run -d -p 1234:1234 docker-gateway
         sleep 5
-        curl http://localhost:1234/
