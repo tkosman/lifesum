@@ -6,16 +6,16 @@ sys.path.insert(0, '../../../Message')
 from Message import Message, Type
 
 
-class ExitHandler(AbstractHandler):
+class PingHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message) -> Message | None:
-        """Handles messages of type EXIT.
+        """Handles messages of type PING.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            None: Shutting down, no message to send.
+            Message: Ping message.
         """
-        return None
+        return Message(type=Type.PING)
