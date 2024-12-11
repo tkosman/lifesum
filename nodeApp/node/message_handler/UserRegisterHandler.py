@@ -6,8 +6,11 @@ from .AbstractHandler import AbstractHandler
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Message')))
 from Message import Message, Type
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
 
-class PingHandler(AbstractHandler):
+from user_register import register_user # type: ignore
+
+class UserRegisterHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message) -> Message | None:
@@ -19,4 +22,6 @@ class PingHandler(AbstractHandler):
         Returns:
             Message: Ping message.
         """
-        return Message(type=Type.PING)
+        register_user()
+
+        return Message(type=Type.RETURN, status=200, payload="User registered succesfully.")

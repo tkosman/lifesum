@@ -33,7 +33,7 @@ def get_public_key(node_connection_client: NodeConnectionClient, user_id):
 
 def user_exists(node_connection_client: NodeConnectionClient, user_id):
     """Check if a user_id exists in NODE."""
-    node_connection_client.send(Message(type=Type.REQUEST, payload=str(user_id)))
+    node_connection_client.send(Message(type=Type.REGISTER, payload=str(user_id)))
     response = node_connection_client.receive().to_json()
     print(response)
 
