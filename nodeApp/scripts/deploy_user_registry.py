@@ -1,7 +1,7 @@
 from ape import accounts, project, networks
 
 def main():
-    load_dotenv()
+    # load_dotenv()
     # Load the securely stored account
     account = accounts.load("myaccount")
 
