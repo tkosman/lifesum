@@ -23,7 +23,7 @@ jobs:
       run: |
         cd gatewayApp
 
-  run-gateway:
+  run-all-in-docker:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -37,8 +37,8 @@ jobs:
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
     - name: Run gateway in docker and try to curl it
       run: |
-        docker build -t docker-node ./docker/Dockerfile.node
-        docker build -t docker-gateway ./docker/Dockerfile.gateway
+        docker build -t docker-node -f docker/Dockerfile.node .
+        docker build -t docker-gateway -f docker/Dockerfile.gateway .
         docker run -d --network host docker-node
         docker run -d --network host docker-gateway
         sleep 10
