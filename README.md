@@ -1,34 +1,30 @@
-## To run and test Gateway using docker (being fancy)
-### Run application
+## How to run our environment using docker? (be fancy)
+
+### Run Node service
 ```bash
-docker build -t docker-gateway .
-docker run -p 1234:1234 docker-gateway
+docker build -t docker-gateway -f docker/Dockerfile.gateway .
+docker run --network host docker-gateway
+```
+
+### Run Gateway service
+```bash
+docker build -t docker-node -f docker/Dockerfile.node .
+docker run --network host docker-node
 ```
 > NOTE: Do not use `-bg` option in docker as it will orphan our container :/
 
-### Run pytest:
-```bash
-./run-pytest.sh
-```
-
-## To run Gateway the usual way
-### Create python venv using python 3.12 and activate it
+## To run Gateway the normal way
+#### Create python venv using python 3.12 and activate it
 ```bash
 python3.12 -m venv myenv
 source ./myenv/bin/activate
 ```
-### Install all required packages:
+#### Install all required packages:
 ```bash
 pip install -r "requirements.txt"
 ```
 
-### Run the Gateway
+#### Run the Gateway
 ```
 python -m gateway
-```
-
-## To test
-```bash
-pip install -r "requirements-test.txt"
-pytest
 ```
