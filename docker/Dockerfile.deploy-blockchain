@@ -22,4 +22,4 @@ RUN pip install --upgrade pip \
 
 WORKDIR /app/nodeApp
 
-ENTRYPOINT ["python", "-m", "node"]
+ENTRYPOINT ["./ape-deploy.sh"]
