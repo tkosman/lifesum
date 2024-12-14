@@ -1,1 +1,2 @@
-eth-ape[]=0.8.22
+cryptography==44.0.0
+eth-ape==0.8.22
