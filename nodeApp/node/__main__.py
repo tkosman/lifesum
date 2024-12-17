@@ -1,10 +1,9 @@
-
 import socket
 import threading
-from gateway_connection_server import GatewayConnectionServer
-from user_regitry_interface import *
 
-from logger import logger
+from .gateway_connection_server import GatewayConnectionServer
+from .logger import logger
+from .user_regitry_interface import *
 
 __version__ = "1.0.0"
 

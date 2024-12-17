@@ -13,7 +13,7 @@ class UserRegistryInterface:
         infura_url = f'https://mainnet.infura.io/v3/{infura_project_id}'
         self.web3 = Web3(Web3.HTTPProvider(infura_url))
 
-        if not self.web3.isConnected():
+        if not self.web3.is_connected():
             raise ConnectionError("Failed to connect to Ethereum network")
 
         private_key = os.getenv('PRIVATE_KEY')
