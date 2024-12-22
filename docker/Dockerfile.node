@@ -18,7 +18,8 @@ COPY --from=temp-stage /temp/nodeApp /app/nodeApp
 COPY --from=temp-stage /temp/Message /app/Message
 
 RUN pip install --upgrade pip \
-    && pip install -r /app/nodeApp/requirements.txt
+    && pip install -r /app/nodeApp/requirements.txt \
+    && ape plugins install infura
 
 WORKDIR /app/nodeApp
 

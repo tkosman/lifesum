@@ -6,11 +6,14 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Message')))
 from Message import Message
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
+from blockchain_manager import BlockchainManager
+
 class AbstractHandler(ABC):
     """Abstract message handler."""
     @classmethod
     @abstractmethod
-    def handle(self, message: Message) -> Message | None:
+    def handle(self, message: Message, blockchain_manager: BlockchainManager) -> Message | None:
         """Handles a message.
 
         Args:

@@ -1,9 +1,14 @@
 import socket
+import sys
 import threading
 
 from .gateway_connection_server import GatewayConnectionServer
 from .logger import logger
 from .user_regitry_interface import *
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../scripts')))
+from blockchain_manager import BlockchainManager
+from get_blockchain_manager import get_blockchain_manager
 
 __version__ = "1.0.0"
 
@@ -27,8 +32,10 @@ def node() -> None:
         {'\033[32m'}Welcome to the Node. {'\033[93m'}{__version__}{'\033[0m'}
     """)
 
+    # Initiate one blockchain manager for all the connections
     try:
-        blockchain_interface = UserRegistryInterface()
+        blockchain_manager = get_blockchain_manager()
+        logger.info("Blockchani connected.")
     except Exception as ex:
         # TODO : handle exceptions
         logger.error(ex)
@@ -46,8 +53,8 @@ def node() -> None:
                 gateway_socket, client_address = server_socket.accept()
                 logger.connection(f"Connection from {client_address}.")
 
-                gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket)
-                # gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket, blockchain_interface)
+                # gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket, None)
+                gateway_handler: GatewayConnectionServer = GatewayConnectionServer(gateway_socket, blockchain_manager)
                 client_handlers.append(gateway_handler)
 
                 # Create a new thread to handle the client

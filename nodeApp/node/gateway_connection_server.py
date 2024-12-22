@@ -9,22 +9,19 @@ import threading
 import sys
 
 from .message_handler.MessageHandler import MessageHandler
-from .user_regitry_interface import UserRegistryInterface
 from .logger import logger
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Message')))
 from Message import Message
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../scripts')))
+from blockchain_manager import BlockchainManager
+
 class GatewayConnectionServer():
     """A class for handling connection between the Node and a Gateway"""
-    # def __init__(self, gateway_socket: socket.socket, blockchain: UserRegistryInterface) -> None:
-    #     self._gateway_socket: socket.socket = gateway_socket
-    #     self._blockchain: UserRegistryInterface = blockchain
-    #     self._aes_key: bytes = None
-    #     self._running: bool = True
-
-    def __init__(self, gateway_socket: socket.socket) -> None:
+    def __init__(self, gateway_socket: socket.socket, blockchain: BlockchainManager) -> None:
         self._gateway_socket: socket.socket = gateway_socket
+        self._blockchain: BlockchainManager = blockchain
         self._aes_key: bytes = None
         self._running: bool = True
 
@@ -200,7 +197,7 @@ class GatewayConnectionServer():
 
                 # Handle message
                 try:
-                    return_message = MessageHandler.handle(message)
+                    return_message = MessageHandler.handle(message, self._blockchain)
                     if return_message:
                         self._send(return_message)
                     else:

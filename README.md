@@ -2,14 +2,14 @@
 
 ### Run Node service
 ```bash
-docker build -t docker-gateway -f docker/Dockerfile.gateway .
-docker run --network host docker-gateway
+docker build -t docker-node -f docker/Dockerfile.node .
+sudo docker run --network host --env-file ./nodeApp/.env docker-node
 ```
 
 ### Run Gateway service
 ```bash
-docker build -t docker-node -f docker/Dockerfile.node .
-docker run --network host docker-node
+docker build -t docker-gateway -f docker/Dockerfile.gateway .
+docker run --network host docker-gateway
 ```
 > NOTE: Do not use `-bg` option in docker as it will orphan our container :/
 

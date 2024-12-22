@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 from .node_connection_client import NodeConnectionClient
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Message')))
@@ -13,7 +14,7 @@ public_keys = {}
 
 def add_public_key(node_connection_client: NodeConnectionClient, user_id, public_key):
     """Adds a user's public key to the NODE service if it doesn't already exist."""
-    node_connection_client.send(Message(type=Type.REQUEST, payload=str(user_id)))
+    node_connection_client.send(Message(type=Type.ADDPUBKEY, payload=str(user_id)))
 
     response = node_connection_client.receive().to_json()
     print(response)
@@ -22,18 +23,46 @@ def add_public_key(node_connection_client: NodeConnectionClient, user_id, public
         raise ValueError("User ID already exists.")
     public_keys[user_id] = public_key
 
-def get_public_key(node_connection_client: NodeConnectionClient, user_id):
+def get_public_key(node_connection_client: NodeConnectionClient, user_id) -> str | None:
     """Retrieve the public key of a given user_id."""
-    node_connection_client.send(Message(type=Type.REQUEST, payload=str(user_id)))
-    response = node_connection_client.receive().to_json()
-    print(response)
+    node_connection_client.send(Message(type=Type.GETPUBKEY, payload=str('{ "address": "' + user_id+ '"}')))
+    response: Message = node_connection_client.receive()
 
-    return response
-    # return public_keys.get(user_id, None)
+    if response.get_status() != 200:
+        return None
 
-def user_exists(node_connection_client: NodeConnectionClient, user_id):
+    try:
+        return json.loads(response.get_payload()).get("pub_key")
+    except json.JSONDecodeError:
+        return None
+
+# def user_exists(node_connection_client: NodeConnectionClient, user_id) -> str | None:
+#     """Retrieve the public key of a given user_id."""
+#     node_connection_client.send(Message(type=Type.GETPUBKEY, payload=str('{ "address": "' + user_id+ '"}')))
+#     response: Message = node_connection_client.receive()
+
+#     if response.get_status() != 200:
+#         return None
+
+#     print(response.to_json())
+
+#     try:
+#         return json.loads(response.get_payload()).get("pub_key")
+#     except json.JSONDecodeError:
+#         return None
+
+def user_exists(node_connection_client: NodeConnectionClient, user_id) -> bool | None:
     """Check if a user_id exists in NODE."""
-    return user_id in public_keys
+    node_connection_client.send(Message(type=Type.USREXISTS, payload=str('{ "address": "' + user_id+ '"}')))
+    response: Message = node_connection_client.receive()
+
+    if response.get_status() != 200:
+        return None
+
+    try:
+        return _check_key_value(response, "user_exists", True)
+    except json.JSONDecodeError:
+        return None
 
 def want_to_become_expert_in_field(user_id, field):
     """Send request to become expert in a given field."""
@@ -72,3 +101,19 @@ def add_item(category, itemInfo, owner_public_key):
 def get_items():
     """Get all items from the NODE service."""
     return ["item1", "item2", "item3"] #TODO Dobrek - implement this
+
+def _check_key_value(response: Message, key: str, expected_value) -> bool:
+    """
+    Checks if a specific key in the JSON payload has the expected value.
+
+    Parameters:
+        response (Message): Object with a method `get_payload()` that returns a string.
+        key (str): The key to check in the JSON payload.
+        expected_value (any): The value to check against.
+
+    Returns:
+        bool: True if the key exists and its value matches `expected_value`, False otherwise.
+    """
+    payload = response.get_payload()
+    data = json.loads(payload)
+    return data.get(key) == expected_value
