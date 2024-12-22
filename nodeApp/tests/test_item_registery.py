@@ -1,46 +1,41 @@
 import pytest
-from brownie import ItemRegistry, accounts, reverts
+from ape import project, accounts
+from ape.exceptions import ContractLogicError
 
 @pytest.fixture
 def item_registry():
-    return ItemRegistry.deploy({'from': accounts[0]})
+    return project.ItemRegistry.deploy(sender=accounts[2])
 
-def test_add_item(item_registry, accounts):
-    # Use a public key (could be a string like an address, etc.)
+def test_add_item(item_registry):
     public_key = "user_public_key_1"  # Use Ethereum address as public key
 
-    tx = item_registry.addItem("Electronics", "Smartphone", public_key, {'from': accounts[0]})
-    itemId = tx.return_value
+    receipt = item_registry.addItem("Electronics", "Smartphone", public_key, sender=accounts[2])
+    event = receipt.events["ItemAdded"][0]
+    itemId = event["itemId"]
 
-    assert 'ItemAdded' in tx.events
-    assert tx.events['ItemAdded']['itemId'] == itemId
-    assert tx.events['ItemAdded']['category'] == "Electronics"
-    assert tx.events['ItemAdded']['owner'] == public_key  # Check public key in event
+    assert event["category"] == "Electronics"
+    assert event["owner"] == public_key
 
-    # Retrieve the item and verify its data
     category, itemInfo, owner = item_registry.getItem(itemId)
 
     assert category == "Electronics"
     assert itemInfo == "Smartphone"
-    assert owner == public_key  # Verify that the public key was stored correctly
+    assert owner == public_key
 
 def test_get_nonexistent_item(item_registry):
-    with reverts("item_not_exist"):
+    with pytest.raises(ContractLogicError, match="item_not_exist"):
         item_registry.getItem(999)
 
-def test_add_multiple_items(item_registry, accounts):
+def test_add_multiple_items(item_registry):
     public_key1 = "user_public_key_2"
     public_key2 = "user_public_key_3"
 
-    # Add first item
-    tx1 = item_registry.addItem("Books", "Blockchain Basics", public_key1, {'from': accounts[0]})
-    itemId1 = tx1.return_value
+    receipt1 = item_registry.addItem("Books", "Blockchain Basics", public_key1, sender=accounts[2])
+    itemId1 = receipt1.events["ItemAdded"][0]["itemId"]
 
-    # Add second item
-    tx2 = item_registry.addItem("Movies", "Inception", public_key2, {'from': accounts[0]})
-    itemId2 = tx2.return_value
+    receipt2 = item_registry.addItem("Movies", "Inception", public_key2, sender=accounts[2])
+    itemId2 = receipt2.events["ItemAdded"][0]["itemId"]
 
-    # Retrieve and check both items
     category1, itemInfo1, owner1 = item_registry.getItem(itemId1)
     category2, itemInfo2, owner2 = item_registry.getItem(itemId2)
 
@@ -52,16 +47,14 @@ def test_add_multiple_items(item_registry, accounts):
     assert itemInfo2 == "Inception"
     assert owner2 == public_key2
 
-def test_item_counter_increments_correctly(item_registry, accounts):
+def test_item_counter_increments_correctly(item_registry):
     public_key1 = "user_public_key_4"
     public_key2 = "user_public_key_5"
 
-    # Add first item
-    tx1 = item_registry.addItem("Category1", "Item A", public_key1, {'from': accounts[0]})
-    itemId1 = tx1.return_value
+    receipt1 = item_registry.addItem("Category1", "Item A", public_key1, sender=accounts[2])
+    itemId1 = receipt1.events["ItemAdded"][0]["itemId"]
 
-    # Add second item
-    tx2 = item_registry.addItem("Category2", "Item B", public_key2, {'from': accounts[0]})
-    itemId2 = tx2.return_value
+    receipt2 = item_registry.addItem("Category2", "Item B", public_key2, sender=accounts[2])
+    itemId2 = receipt2.events["ItemAdded"][0]["itemId"]
 
-    assert itemId2 == itemId1 + 1  # Check that item counter is incremented correctly
+    assert itemId2 == itemId1 + 1
