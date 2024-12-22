@@ -23,7 +23,7 @@ client_handlers: list[GatewayConnectionServer] = []
 client_threads: list[threading.Thread] = []
 
 def node() -> None:
-    print(rf"""{'\033[95m'}
+    logger.info(rf"""{'\033[95m'}
            __ _  __
           / /(_)/ _| ___  ___ _   _ _ __ ___
          / / | | |_ / _ \/ __| | | | '_ ` _ \
