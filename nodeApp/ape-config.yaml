@@ -5,3 +5,7 @@ providers:
     sepolia:
       infura:
         api_key: ${WEB3_INFURA_API_KEY}
+    local:
+      node:
+        host: http://127.0.0.1
+        port: 8545
