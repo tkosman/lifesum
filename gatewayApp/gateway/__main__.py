@@ -6,6 +6,8 @@ from threading import Thread
 
 import sanic
 from sanic import response, request
+from sanic.exceptions import ServerError
+
 from sanic_ext import openapi
 from sanic_ext import validate
 from sanic_ext.exceptions import ValidationError
@@ -21,6 +23,12 @@ from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
 
 from .daemonize import daemonize
+
+from .node_connection import want_to_become_expert_in_field
+from .node_connection import check_expert_in_field
+from .node_connection import get_open_expert_cases
+from .node_connection import add_item
+from .node_connection import get_items
 
 from .node_connection_client import NodeConnectionClient
 
@@ -55,6 +63,7 @@ def attach_endpoints(app):
         )
 
 
+    # Authentication and registration
     @app.route('/register', methods=["POST"])
     @openapi.definition(
         body=ValidUser,
@@ -95,6 +104,64 @@ def attach_endpoints(app):
     def handle_authentication(request, body: ValidAuthRequest):
         return authenticate(app.ctx.node_connection_client, request, body)
 
+    # Becoming expert
+    @app.post('/expert/become')
+    @protected
+    def handle_become_expert(request):
+        user_id = request.json.get("user_id", None)
+        field = request.json.get("field", None)
+        if not user_id or not field:
+            raise ServerError("Missing user_id or field.")
+        return response.json({"success": want_to_become_expert_in_field(user_id, field)})
+
+    @app.post('/expert/check')
+    @protected
+    def handle_check_expert(request):
+        user_id = request.json.get("user_id", None)
+        field = request.json.get("field", None)
+        if not user_id or not field:
+            raise ServerError("Missing user_id or field.")
+        return response.json({"is_expert": check_expert_in_field(user_id, field)})
+
+    # Expert cases
+    @app.post('/expert/case/open')
+    @protected
+    def handle_open_expert_case(request):
+        user_id = request.json.get("user_id", None)
+        case_name = request.json.get("case_name", None)
+        if not user_id or not case_name:
+            raise ServerError("Missing user_id or field.")
+        return response.json({"success": open_expert_case(user_id, case_name)})
+
+    @app.get('/expert/case/all')
+    @protected
+    def handle_get_expert_cases(request):
+        user_id = request.json.get("user_id", None)
+        if not user_id:
+            raise ServerError("Missing user_id.")
+        open_cases = get_open_expert_cases(user_id)
+        return response.json({"open_cases": open_cases})
+
+
+    # Item registry
+    @app.post('/items/add')
+    @protected
+    def handle_add_item(request):
+        category = request.json.get("category", None)
+        item_info = request.json.get("item_info", None)
+        owner_public_key = request.json.get("owner_public_key", None)
+        if not category or not item_info or not owner_public_key:
+            raise ServerError("Missing category, item_info or owner_public_key.")
+        return response.json({"success": add_item(category, item_info, owner_public_key)})
+
+    @app.get('/items/all')
+    @protected
+    def handle_get_items(request):
+        items = get_items()
+        return response.json({"items": items})
+
+
+    # Exception handling
     @app.exception(ValidationError)
     def handle_invalid_request(request, exception):
         return response.json(
@@ -105,16 +172,17 @@ def attach_endpoints(app):
             status=exception.status_code
         )
 
-    @app.route('/protected')
-    @openapi.definition(
-        summary="Protected test endpoint.",
-        response={
-            200: {"description": "This is a protected endpoint."}
-        }
-    )
-    @protected
-    def protected_endpoint(request):
-        return response.json({"message": "This is a protected endpoint."})
+    @app.exception(ServerError)
+    def handle_server_error(request, exception):
+        return response.json(
+            {
+                "error": "ServerError",
+                "message": exception.args[0] if exception.args
+                    else "An internal server error occurred."
+            },
+            status=500
+        )
+
 
 def create_app(arguments):
     "Sanic app factory."
