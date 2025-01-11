@@ -19,12 +19,13 @@ from .auth import register
 from .auth import generate_challenge
 
 from .valid_schemas import ValidUser
+from .valid_schemas import GetUserInfo
 from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
 
 from .daemonize import daemonize
 
-from .node_connection import want_to_become_expert_in_field
+from .node_connection import open_expert_case, want_to_become_expert_in_field
 from .node_connection import check_expert_in_field
 from .node_connection import get_open_expert_cases
 from .node_connection import add_item
@@ -76,6 +77,20 @@ def attach_endpoints(app):
     @validate(json=ValidUser)
     def handle_register(request, body: ValidUser):
         return register(app.ctx.node_connection_client, body)
+
+
+    @app.route('/get-user-info', methods=["POST"])
+    @openapi.definition(
+        body=GetUserInfo,
+        summary="Get user info by user_id.",
+        response={
+            200: {"description": "User info retrieved successfully."},
+            400: {"description": "Error due to missing user_id."}
+        }
+    )
+    @validate(json=GetUserInfo)
+    def handle_get_user_info(req, body: GetUserInfo):
+        return response.json({"user_info": app.ctx.node_connection_client.get_user_info(body.user_id)})
 
     @app.route('/challenge', methods=["POST"])
     @openapi.definition(

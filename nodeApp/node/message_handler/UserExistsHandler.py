@@ -25,7 +25,8 @@ class UserExistsHandler(AbstractHandler):
             Message: Bool value whether user exists.
         """
 
-        if blockchain_manager.get_nick_by_address(**json.loads(message.get_payload())) != "":
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": True" }')
-        else:
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": False" }')
+        try:
+            blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
+            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": true }')
+        except Exception as ex:
+            return Message(type=Type.RETURN, status=500, payload='{ "user_exists": false }')

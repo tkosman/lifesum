@@ -66,6 +66,8 @@ def register(node_connection_client, request_body):
         add_public_key(node_connection_client, user_id, public_key)
     except (ValueError, InvalidKey):
         return response.json({"error": "Invalid public key format"}, status=400)
+    except NameError as ex:
+        return response.json({"error": "" + str(ex) +""}, status=400)
 
     return response.json({"message": "User registered successfully."}, status=201)
 

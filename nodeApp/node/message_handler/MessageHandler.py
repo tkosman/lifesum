@@ -4,7 +4,7 @@ import sys
 from .ExitHandler import ExitHandler
 from .PingHandler import PingHandler
 from .ErrorHandler import ErrorHandler
-from .UserRegisterHandler import UserRegisterHandler
+from .AddPublicKeyHandler import AddPublicKeyHandler
 from .AbstractHandler import AbstractHandler
 from .UserExistsHandler import UserExistsHandler
 from .GetPubKeyHandler import GetPubKeyHandler
@@ -20,7 +20,7 @@ class MessageHandler:
     handlers: dict[Type, AbstractHandler] = {
         Type.PING: PingHandler,
         Type.EXIT: ExitHandler,
-        Type.REGISTER: UserRegisterHandler,
+        Type.ADDPUBKEY: AddPublicKeyHandler,
         Type.USREXISTS: UserExistsHandler,
         Type.GETPUBKEY: GetPubKeyHandler,
     }

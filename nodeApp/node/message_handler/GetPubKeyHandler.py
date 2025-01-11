@@ -24,10 +24,10 @@ class GetPubKeyHandler(AbstractHandler):
         Returns:
             Message: Public key for user.
         """
-        # pub_key = json.loads(blockchain_manager.get_nick_by_address(**json.loads(message.get_payload()))).get("pub_key")
-        pub_key = json.loads(blockchain_manager.get_user_info("Alice")).get("pub_key")
-        # ! check how it looks
-        if  pub_key != "":
+
+        try:
+            pub_key = blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
             return Message(type=Type.RETURN, status=200, payload='{ "pub_key": ' + pub_key + '" }')
-        else:
-            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": null" }')
+        except Exception as ex:
+            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": null }')
+
