@@ -34,6 +34,8 @@ class BlockchainManager:
         """
         try:
             self.account = accounts.load("my_account")
+            self.account.unlock()
+            self.account.set_autosign(True)
         except Exception as e:
             raise Exception(f"Failed to load account: {e}")
 
