@@ -31,10 +31,16 @@ python -m gateway
 
 #### To use dev dockerfiles:
 ```
-docker build -t docker-dev-node -f Dockerfile.dev.node . (run inside docker dir)
-docker run -it -v ./nodeApp:/nodeApp -v ./Message:/Message --env-file ./nodeApp/.env docker-dev-node (run outside docker dir)
+docker build -t docker-dev-node -f Dockerfile.dev.node .  ##run inside docker dir
+docker run -it -v ./nodeApp:/nodeApp -v ./Message:/Message --env-file ./nodeApp/.env --network host docker-dev-node  ##run outside docker dir
+#inside container
+cd nodeApp
+python -m node
 ```
 ```
-docker build -t docker-dev-gateway -f Dockerfile.dev.gateway . (inside docker dir)
-docker run -it -v ./gatewayApp:/gatewayApp -v ./Message:/Message --network host docker-dev-gateway (run outside docker dir)
+docker build -t docker-dev-gateway -f Dockerfile.dev.gateway . ##inside docker dir
+docker run -it -v ./gatewayApp:/gatewayApp -v ./Message:/Message --network host docker-dev-gateway ##run outside docker dir
+#inside container
+cd gatewayApp
+python -m gateway
 ```
