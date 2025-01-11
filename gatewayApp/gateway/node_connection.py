@@ -22,9 +22,21 @@ def add_public_key(node_connection_client: NodeConnectionClient, user_id, public
     )
 
     # Convert bytes to string
-    public_key_str = public_key_pem.decode('utf-8').strip("\n").strip("\r")
+    public_key_str = public_key_pem.decode('utf-8')
 
-    payload = str('{ "nick": "' + user_id + '", "public_key" : "' + public_key_str + '", "additional_data" : "a", "is_bot" : false}')
+    # Usuwamy końcowe znaki nowej linii, ale zachowujemy strukturę klucza
+    public_key_str = public_key_str
+
+    # Dane do JSON-a
+    data = {
+        "nick": user_id,
+        "public_key": public_key_str,
+        "additional_data": "a",
+        "is_bot": False
+    }
+
+    # Generowanie poprawnego JSON-a
+    payload = json.dumps(data)
 
     node_connection_client.send(Message(type=Type.ADDPUBKEY, payload=payload))
 
