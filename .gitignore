@@ -11,3 +11,4 @@ Message/__pycache__/
 tests/__pycache__/
 
 nodeApp/myenv/
+.DS_Store

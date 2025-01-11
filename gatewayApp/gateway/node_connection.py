@@ -51,6 +51,9 @@ def get_public_key(node_connection_client: NodeConnectionClient, user_id) -> str
 #     except json.JSONDecodeError:
 #         return None
 
+def get_user_info(node_connection_client: NodeConnectionClient, user_id) -> dict | None:
+   pass
+
 def user_exists(node_connection_client: NodeConnectionClient, user_id) -> bool | None:
     """Check if a user_id exists in NODE."""
     node_connection_client.send(Message(type=Type.USREXISTS, payload=str('{ "address": "' + user_id+ '"}')))

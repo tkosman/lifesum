@@ -11,6 +11,11 @@ class ValidUser:
     public_key: str
 
 @dataclass
+class GetUserInfo:
+    """ Schema for the user info request."""
+    user_id: str
+
+@dataclass
 class ValidChallengeRequest:
     """ Schema for the challenge generation request."""
     user_id: str
