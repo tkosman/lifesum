@@ -2,6 +2,8 @@ import os
 import sys
 import json
 
+from cryptography.hazmat.primitives import serialization
+
 from .node_connection_client import NodeConnectionClient
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Message')))
 from Message import Message, Type
@@ -10,22 +12,33 @@ from Message import Message, Type
 This module is a mock of the NODE service. It stores public keys of users.
 """
 
-public_keys = {}
-
 def add_public_key(node_connection_client: NodeConnectionClient, user_id, public_key):
     """Adds a user's public key to the NODE service if it doesn't already exist."""
-    node_connection_client.send(Message(type=Type.ADDPUBKEY, payload=str(user_id)))
 
-    response = node_connection_client.receive().to_json()
-    print(response)
+    # Assuming public_key is an RSAPublicKey object
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
 
-    if user_id in public_keys:
-        raise ValueError("User ID already exists.")
-    public_keys[user_id] = public_key
+    # Convert bytes to string
+    public_key_str = public_key_pem.decode('utf-8').strip("\n").strip("\r")
+
+    payload = str('{ "nick": "' + user_id + '", "public_key" : "' + public_key_str + '", "additional_data" : "a", "is_bot" : false}')
+
+    node_connection_client.send(Message(type=Type.ADDPUBKEY, payload=payload))
+
+    response = node_connection_client.receive()
+
+    if not _check_key_value(response, "result", "register_success"):
+        raise NameError("User ID already exists.")
 
 def get_public_key(node_connection_client: NodeConnectionClient, user_id) -> str | None:
     """Retrieve the public key of a given user_id."""
-    node_connection_client.send(Message(type=Type.GETPUBKEY, payload=str('{ "address": "' + user_id+ '"}')))
+
+    payload = str('{ "nick": "' + user_id + '"}')
+
+    node_connection_client.send(Message(type=Type.GETPUBKEY, payload=payload))
     response: Message = node_connection_client.receive()
 
     if response.get_status() != 200:
@@ -36,36 +49,15 @@ def get_public_key(node_connection_client: NodeConnectionClient, user_id) -> str
     except json.JSONDecodeError:
         return None
 
-# def user_exists(node_connection_client: NodeConnectionClient, user_id) -> str | None:
-#     """Retrieve the public key of a given user_id."""
-#     node_connection_client.send(Message(type=Type.GETPUBKEY, payload=str('{ "address": "' + user_id+ '"}')))
-#     response: Message = node_connection_client.receive()
-
-#     if response.get_status() != 200:
-#         return None
-
-#     print(response.to_json())
-
-#     try:
-#         return json.loads(response.get_payload()).get("pub_key")
-#     except json.JSONDecodeError:
-#         return None
-
-def get_user_info(node_connection_client: NodeConnectionClient, user_id) -> dict | None:
-   pass
-
 def user_exists(node_connection_client: NodeConnectionClient, user_id) -> bool | None:
     """Check if a user_id exists in NODE."""
-    node_connection_client.send(Message(type=Type.USREXISTS, payload=str('{ "address": "' + user_id+ '"}')))
+
+    payload = str('{ "nick": "' + user_id + '"}')
+
+    node_connection_client.send(Message(type=Type.USREXISTS, payload=payload))
     response: Message = node_connection_client.receive()
 
-    if response.get_status() != 200:
-        return None
-
-    try:
-        return _check_key_value(response, "user_exists", True)
-    except json.JSONDecodeError:
-        return None
+    return _check_key_value(response, "user_exists", "True")
 
 def want_to_become_expert_in_field(user_id, field):
     """Send request to become expert in a given field."""
@@ -103,9 +95,10 @@ def add_item(category, itemInfo, owner_public_key):
 
 def get_items():
     """Get all items from the NODE service."""
+    #TODO Add limit on the number of items
     return ["item1", "item2", "item3"] #TODO Dobrek - implement this
 
-def _check_key_value(response: Message, key: str, expected_value) -> bool:
+def _check_key_value(response: Message, key: str, expected_value: str) -> bool:
     """
     Checks if a specific key in the JSON payload has the expected value.
 
@@ -119,4 +112,8 @@ def _check_key_value(response: Message, key: str, expected_value) -> bool:
     """
     payload = response.get_payload()
     data = json.loads(payload)
-    return data.get(key) == expected_value
+
+    print("left: ", str(data.get(key)))
+    print("right: ", expected_value)
+
+    return str(data.get(key)) == expected_value

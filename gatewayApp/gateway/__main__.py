@@ -25,7 +25,7 @@ from .valid_schemas import ValidAuthRequest
 
 from .daemonize import daemonize
 
-from .node_connection import want_to_become_expert_in_field
+from .node_connection import open_expert_case, want_to_become_expert_in_field
 from .node_connection import check_expert_in_field
 from .node_connection import get_open_expert_cases
 from .node_connection import add_item
