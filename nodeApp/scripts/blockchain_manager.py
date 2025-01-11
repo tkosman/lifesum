@@ -75,7 +75,7 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.user_registry.registerUser(nick, public_key, additional_data, is_bot, sender=sender)
-                tx.wait_for_confirmation()
+                tx.wait()
                 return tx.return_value
         except Exception as e:
             error_message = str(e)
