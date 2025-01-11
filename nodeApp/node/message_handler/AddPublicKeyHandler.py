@@ -25,15 +25,13 @@ class AddPublicKeyHandler(AbstractHandler):
             Message: Registry status.
         """
 
-        print(message.get_payload())
-
         try:
-            registry_status: str = blockchain_manager.register_user(**json.loads(message.get_payload()))
+            registry_status = str(blockchain_manager.register_user(**json.loads(message.get_payload())))
 
-            if registry_status == "register_success":
-                return Message(type=Type.RETURN, status=200, payload='{ "result": "' + registry_status + '" }')
+            if registry_status == "0":
+                return Message(type=Type.RETURN, status=200, payload='{ "result": "register_success" }')
             else:
-                return Message(type=Type.RETURN, status=500, payload='{ "result": "' + registry_status + '" }')
+                return Message(type=Type.RETURN, status=500, payload='{ "result": "error during register" }')
         except Exception as ex:
             logger.error(ex)
             return Message(type=Type.RETURN, status=500, payload='{ "result": "error during register" }')

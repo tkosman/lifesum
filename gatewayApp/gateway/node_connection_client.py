@@ -49,22 +49,39 @@ class NodeConnectionClient():
         """Retrieves message from Node.
 
         Raises:
-            ConnectionError: Connection with Node broken.
+            ConnectionError: Connection with Node broken or timeout occurred.
+            TimeoutError: If receiving the message length exceeds the timeout.
 
         Returns:
             Message: Decoded message.
         """
-        data_length: int = int.from_bytes(self.node_socket.recv(4), 'big')
-        data: bytes = b""
-        while len(data) < data_length:
-            packet: bytes = self.node_socket.recv(data_length - len(data))
-            if not packet:
-                raise ConnectionError("Socket connection broken")
-            data += packet
+        try:
+            # Set a timeout for the socket
+            self.node_socket.settimeout(600.0)
 
-        decrypted_message = self._decrypt(data)
-        return Message.from_json(decrypted_message)
+            # Receive the first 4 bytes (message length)
+            data_length: int = int.from_bytes(self.node_socket.recv(4), 'big')
 
+            # Reset timeout for the remainder of the data (optional)
+            self.node_socket.settimeout(None)
+
+            # Receive the actual data
+            data: bytes = b""
+            while len(data) < data_length:
+                packet: bytes = self.node_socket.recv(data_length - len(data))
+                if not packet:
+                    raise ConnectionError("Socket connection broken")
+                data += packet
+
+            # Decrypt and return the message
+            decrypted_message = self._decrypt(data)
+            return Message.from_json(decrypted_message)
+
+        except socket.timeout:
+            raise TimeoutError("Receiving message length exceeded the timeout")
+        finally:
+            # Reset socket timeout to default (optional, depends on your application)
+            self.node_socket.settimeout(None)
 
     def _send_data(self, data: bytes) -> None:
         """Sends data to Node.

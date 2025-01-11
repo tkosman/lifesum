@@ -125,7 +125,4 @@ def _check_key_value(response: Message, key: str, expected_value: str) -> bool:
     payload = response.get_payload()
     data = json.loads(payload)
 
-    print("left: ", str(data.get(key)))
-    print("right: ", expected_value)
-
     return str(data.get(key)) == expected_value
