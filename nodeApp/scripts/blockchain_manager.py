@@ -32,6 +32,11 @@ class BlockchainManager:
                 "0xReputationManagerAddress"
             )
         """
+        try:
+            self.account = accounts.load("my_account")
+        except Exception as e:
+            raise Exception(f"Failed to load account: {e}")
+
         with networks.ethereum.sepolia.use_provider("infura"):
             self.user_registry = project.UserRegistry.at(user_registry_address)
             self.expert_case_manager = project.ExpertCaseManager.at(expert_case_manager_address)
@@ -66,7 +71,7 @@ class BlockchainManager:
         """
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
-                sender = accounts.load("my_account")
+                # sender = accounts.load("my_account")
                 tx = self.user_registry.registerUser(nick, public_key, additional_data, is_bot, sender=sender)
                 tx.wait_for_confirmation()
                 return tx.return_value
