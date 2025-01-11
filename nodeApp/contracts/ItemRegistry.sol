@@ -49,4 +49,52 @@ contract ItemRegistry {
         Item storage item = items[_itemId];
         return (item.category, item.itemInfo, item.owner);
     }
+
+    function updateItemOwner(uint256 _itemId, string memory _newOwner) public {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        item.owner = _newOwner;
+    }
+
+    function updateItemInfo(uint256 _itemId, string memory _newInfo) public {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        item.itemInfo = _newInfo;
+    }
+
+    function getItemCategory(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory category
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.category);
+    }
+
+    function getItemOwner(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory owner
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.owner);
+    }
+
+    function getItemInfo(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory itemInfo
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.itemInfo);
+    }
 }

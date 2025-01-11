@@ -17,6 +17,13 @@ interface IUserRegistry {
             string memory additional_data,
             bool is_bot
         );
+    function modifyUserAdditionalData(string memory _nick, string memory _newData) external;
+    function addExpertField(string memory _nick, uint256 _fieldId) external;
+}
+
+interface IItemRegistry {
+    function updateItemOwner(uint256 _itemId, string memory _newOwner) external;
+    function updateItemInfo(uint256 _itemId, string memory _newInfo) external;
 }
 
 contract ExpertCaseManager {
@@ -34,6 +41,10 @@ contract ExpertCaseManager {
         uint8[] optionsVoted; // Added to track voted options
         bool isOpen;
         bool exists;
+        string nick_to_change;
+        string uniStringToModify;
+        uint256 fieldId_to_add;
+        uint256 flag;
     }
 
     mapping(uint256 => ExpertCase) private expertCases;
@@ -41,14 +52,16 @@ contract ExpertCaseManager {
 
     IReputationManager private reputationManager;
     IUserRegistry private userRegistry;
+    IItemRegistry private itemRegistry;
 
     event ExpertCaseOpened(uint256 ECId, uint256 itemId, string openedBy);
     event VoteCast(uint256 ECId, string voter, uint8 option);
     event ExpertCaseClosed(uint256 ECId, uint8 winningOption);
 
-    constructor(address _reputationManagerAddress, address _userRegistryAddress) {
+    constructor(address _reputationManagerAddress, address _userRegistryAddress, address _itemRegistryAddress) {
         reputationManager = IReputationManager(_reputationManagerAddress);
         userRegistry = IUserRegistry(_userRegistryAddress);
+        itemRegistry = IItemRegistry(_itemRegistryAddress);
     }
 
     function openExpertCase(
@@ -57,7 +70,11 @@ contract ExpertCaseManager {
         uint256 _minReputation,
         string memory _publicKey,
         bool _botAllowed,
-        string memory _ECInfo
+        string memory _ECInfo,
+        string memory _nick_to_change,
+        string memory _uniStringToModify,
+        uint256 _fieldId_to_add,
+        uint256 _flag 
     ) public returns (uint256) {
         ECIdCounter++;
         uint256 newECId = ECIdCounter;
@@ -71,6 +88,10 @@ contract ExpertCaseManager {
         ec.ECInfo = _ECInfo;
         ec.isOpen = true;
         ec.exists = true;
+        ec.nick_to_change = _nick_to_change;
+        ec.uniStringToModify = _uniStringToModify;
+        ec.fieldId_to_add = _fieldId_to_add;
+        ec.flag = _flag;
 
         emit ExpertCaseOpened(newECId, _itemId, _publicKey);
 
@@ -178,6 +199,20 @@ contract ExpertCaseManager {
             }
         }
 
+        if (winningOption == 0) {
+            if (ec.flag == 0) {
+                itemRegistry.updateItemOwner(ec.itemId, ec.uniStringToModify);
+            }
+            else if (ec.flag == 1) {
+                itemRegistry.updateItemInfo(ec.itemId, ec.uniStringToModify);
+            }
+            else if (ec.flag == 2) {
+                userRegistry.modifyUserAdditionalData(ec.nick_to_change, ec.uniStringToModify);
+            }
+            else if (ec.flag == 3) {
+                userRegistry.addExpertField(ec.nick_to_change, ec.fieldId_to_add);
+            }                                                           
+        }           
         emit ExpertCaseClosed(_ECId, winningOption);
     }
 

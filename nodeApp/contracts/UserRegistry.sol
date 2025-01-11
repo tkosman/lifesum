@@ -6,7 +6,7 @@ contract UserRegistry {
         string nick;
         string public_key;
         uint256[] expertFields;
-        mapping(uint256 => bool) hasExpertField; // For checking duplicates
+        mapping(uint256 => bool) hasExpertField;
         string additional_data;
         bool is_bot;
         bool exists;
@@ -75,5 +75,25 @@ contract UserRegistry {
 
     function getNickByAddress(string memory _address) external view returns (string memory) {
         return addressToNick[_address];
+    }
+
+    function modifyUserAdditionalData(string memory _nick, string memory _newData) public {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+        user.additional_data = _newData;
+    }
+
+    function getUserPublicKey(string memory _nick)
+        public
+        view
+        returns (
+            string memory public_key
+        )
+    {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+        return (
+            user.public_key
+        );
     }
 }
