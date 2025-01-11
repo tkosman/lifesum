@@ -113,7 +113,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.user_registry.addExpertField(nick, field_id, sender=sender)
-                tx.wait_for_confirmation()
                 return "field_added_successfully"
         except Exception as e:
             error_message = str(e)
@@ -151,7 +150,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.user_registry.modifyUserAdditionalData(nick, new_data, sender=sender)
-                tx.wait_for_confirmation()
                 return "modify_success"
         except Exception as e:
             error_message = str(e)
@@ -289,7 +287,6 @@ class BlockchainManager:
                     flag,
                     sender=sender
                 )
-                tx.wait_for_confirmation()
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
@@ -328,7 +325,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.expert_case_manager.castVote(ec_id, option, public_key, sender=sender)
-                tx.wait_for_confirmation()
                 return "vote_cast_successfully"
         except Exception as e:
             error_message = str(e)
@@ -376,7 +372,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.expert_case_manager.closeExpertCase(ec_id, sender=sender)
-                tx.wait_for_confirmation()
                 return "expert_case_closed_successfully"
         except Exception as e:
             error_message = str(e)
@@ -441,7 +436,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.item_registry.addItem(category, item_info, public_key, sender=sender)
-                tx.wait_for_confirmation()
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Add Item failed: {e}")
@@ -498,7 +492,6 @@ class BlockchainManager:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.reputation_manager.updateReputation(user, field_id, score, sender=sender)
-                tx.wait_for_confirmation()
                 return "reputation_updated_successfully"
         except Exception as e:
             raise Exception(f"Update Reputation failed: {e}")
@@ -528,3 +521,4 @@ class BlockchainManager:
                 return self.reputation_manager.getReputation(user, field_id)
         except Exception as e:
             raise Exception(f"Get Reputation failed: {e}")
+        
