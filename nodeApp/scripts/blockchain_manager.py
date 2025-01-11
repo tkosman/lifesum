@@ -2,10 +2,11 @@ from ape import accounts, project, networks
 
 class BlockchainManager:
     def __init__(self, user_registry_address, expert_case_manager_address, item_registry_address, reputation_manager_address):
-        self.user_registry = project.UserRegistry.at(user_registry_address)
-        self.expert_case_manager = project.ExpertCaseManager.at(expert_case_manager_address)
-        self.item_registry = project.ItemRegistry.at(item_registry_address)
-        self.reputation_manager = project.ReputationManager.at(reputation_manager_address)
+        with networks.ethereum.sepolia.use_provider("infura"):
+            self.user_registry = project.UserRegistry.at(user_registry_address)
+            self.expert_case_manager = project.ExpertCaseManager.at(expert_case_manager_address)
+            self.item_registry = project.ItemRegistry.at(item_registry_address)
+            self.reputation_manager = project.ReputationManager.at(reputation_manager_address)
 
     def register_user(self, nick, public_key, additional_data, is_bot):
         with networks.ethereum.sepolia.use_provider("infura"):

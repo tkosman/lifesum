@@ -7,7 +7,9 @@ class Type(Enum):
     ERROR = 'error'
     EXIT = 'exit'
     RETURN = 'return'
-    REQUEST = 'request'
     PING = 'ping'
-    REGISTER = 'register'
 
+    USREXISTS = 'user_exists'
+    REGISTER = 'register'
+    GETPUBKEY = 'get_public_key'
+    ADDPUBKEY = 'add_public_key'

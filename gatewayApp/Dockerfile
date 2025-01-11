@@ -1,8 +1,3 @@
-FROM python:3.12-slim AS temp-stage
-
-COPY gatewayApp /temp/gatewayApp
-COPY Message /temp/Message
-
 FROM python:3.12-slim AS base
 
 WORKDIR /app
@@ -14,12 +9,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=temp-stage /temp/gatewayApp /app/gatewayApp
-COPY --from=temp-stage /temp/Message /app/Message
+COPY . /app
 
 RUN pip install --upgrade pip \
-    && pip install -r /app/gatewayApp/requirements.txt
+    && pip install -r requirements.txt
 
-WORKDIR /app/gatewayApp
+EXPOSE 1234
 
 ENTRYPOINT ["python", "-m", "gateway", "--ip", "0.0.0.0"]

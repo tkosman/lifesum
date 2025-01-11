@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./nodeApp/scripts"
+    ],
+    "sarif-viewer.connectToGithubCodeScanning": "off"
+}
