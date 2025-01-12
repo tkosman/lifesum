@@ -500,7 +500,7 @@ class BlockchainManager:
         """
         Retrieves a user's reputation for a specific field from the ReputationManager contract.
 
-        !!! But use 
+        !!! But use
 
         Args:
             user (str): The nickname of the user.
@@ -521,4 +521,3 @@ class BlockchainManager:
                 return self.reputation_manager.getReputation(user, field_id)
         except Exception as e:
             raise Exception(f"Get Reputation failed: {e}")
-        

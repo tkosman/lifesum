@@ -12,21 +12,30 @@ from Message import Message, Type
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
 from blockchain_manager import BlockchainManager
 
-class UserExistsHandler(AbstractHandler):
+class OpenExpertCaseHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message, blockchain_manager: BlockchainManager) -> Message | None:
-        """Handles messages of type USREXISTS.
+        """Handles messages of type ADDPUBKEY.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            Message: Bool value whether user exists.
+            Message: Registry status.
         """
 
+        # ! not the final implementation
         try:
-            blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": true }')
+            case_id = blockchain_manager.open_expert_case(**json.loads(message.get_payload()))
+
+            data = {
+                "case_id": case_id
+            }
+
+            payload = json.dumps(data)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)
         except Exception as ex:
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": false }')
+            logger.error(ex)
+            return Message(type=Type.RETURN, status=500, payload='{ "result": "error during expert case creation" }')

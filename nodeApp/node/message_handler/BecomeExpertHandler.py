@@ -12,21 +12,23 @@ from Message import Message, Type
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
 from blockchain_manager import BlockchainManager
 
-class UserExistsHandler(AbstractHandler):
+class BecomeExpertHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message, blockchain_manager: BlockchainManager) -> Message | None:
-        """Handles messages of type USREXISTS.
+        """Handles messages of type BECOMEEXPERT.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            Message: Bool value whether user exists.
+            Message: Becoming expert status.
         """
 
+        # ! should it open an expert case?
         try:
-            blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": true }')
-        except Exception as ex:
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": false }')
+            blockchain_manager.add_expert_field(**json.loads(message.get_payload()))
+            return Message(type=Type.RETURN, status=200, payload='{ "pub_key": "Field succesfully added to user." }')
+        except Exception as e:
+            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": "Field succesfully added to user." }')
+

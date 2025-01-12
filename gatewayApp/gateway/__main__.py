@@ -127,7 +127,7 @@ def attach_endpoints(app):
         field = request.json.get("field", None)
         if not user_id or not field:
             raise ServerError("Missing user_id or field.")
-        return response.json({"success": want_to_become_expert_in_field(user_id, field)})
+        return response.json({"success": want_to_become_expert_in_field(app.ctx.node_connection_client, user_id, field)})
 
     @app.post('/expert/check')
     @protected
@@ -136,7 +136,7 @@ def attach_endpoints(app):
         field = request.json.get("field", None)
         if not user_id or not field:
             raise ServerError("Missing user_id or field.")
-        return response.json({"is_expert": check_expert_in_field(user_id, field)})
+        return response.json({"is_expert": check_expert_in_field(app.ctx.node_connection_client, user_id, field)})
 
     # Expert cases
     @app.post('/expert/case/open')
@@ -146,7 +146,7 @@ def attach_endpoints(app):
         case_name = request.json.get("case_name", None)
         if not user_id or not case_name:
             raise ServerError("Missing user_id or field.")
-        return response.json({"success": open_expert_case(user_id, case_name)})
+        return response.json({"success": open_expert_case(app.ctx.node_connection_client, user_id, case_name)})
 
     @app.get('/expert/case/all')
     @protected
@@ -154,7 +154,7 @@ def attach_endpoints(app):
         user_id = request.json.get("user_id", None)
         if not user_id:
             raise ServerError("Missing user_id.")
-        open_cases = get_open_expert_cases(user_id)
+        open_cases = get_open_expert_cases(app.ctx.node_connection_client, user_id)
         return response.json({"open_cases": open_cases})
 
 
@@ -167,12 +167,12 @@ def attach_endpoints(app):
         owner_public_key = request.json.get("owner_public_key", None)
         if not category or not item_info or not owner_public_key:
             raise ServerError("Missing category, item_info or owner_public_key.")
-        return response.json({"success": add_item(category, item_info, owner_public_key)})
+        return response.json({"success": add_item(app.ctx.node_connection_client, category, item_info, owner_public_key)})
 
     @app.get('/items/all')
     @protected
     def handle_get_items(request):
-        items = get_items()
+        items = get_items(app.ctx.node_connection_client)
         return response.json({"items": items})
 
 
