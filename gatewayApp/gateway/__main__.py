@@ -22,14 +22,18 @@ from .valid_schemas import ValidUser
 from .valid_schemas import GetUserInfo
 from .valid_schemas import ValidChallengeRequest
 from .valid_schemas import ValidAuthRequest
+from .valid_schemas import ValidVoteExpertCase
+from .valid_schemas import ValidExpertBecomeCheck
+from .valid_schemas import ValidItemAdd
 
 from .daemonize import daemonize
 
 from .node_connection import open_expert_case, want_to_become_expert_in_field
 from .node_connection import check_expert_in_field
 from .node_connection import get_open_expert_cases
+from .node_connection import vote_expert_case
 from .node_connection import add_item
-from .node_connection import get_items
+from .node_connection import get_item_by_id
 
 from .node_connection_client import NodeConnectionClient
 
@@ -121,59 +125,117 @@ def attach_endpoints(app):
 
     # Becoming expert
     @app.post('/expert/become')
-    @protected
-    def handle_become_expert(request):
-        user_id = request.json.get("user_id", None)
-        field = request.json.get("field", None)
+    # @protected
+    @openapi.definition(
+        body=ValidExpertBecomeCheck,
+        summary="Request to become an expert in a specific field.",
+        response={
+            200: {"description": "Request successful."},
+            400: {"description": "Error due to missing user_id or field."}
+        }
+    )
+    @validate(json=ValidExpertBecomeCheck)
+    def handle_become_expert(request, body: ValidExpertBecomeCheck):
+        user_id = body.user_id
+        field = body.field
         if not user_id or not field:
             raise ServerError("Missing user_id or field.")
         return response.json({"success": want_to_become_expert_in_field(app.ctx.node_connection_client, user_id, field)})
 
     @app.post('/expert/check')
-    @protected
-    def handle_check_expert(request):
-        user_id = request.json.get("user_id", None)
-        field = request.json.get("field", None)
+    # @protected
+    @openapi.definition(
+        body=ValidExpertBecomeCheck,
+        summary="Check if a user is an expert in a specific field.",
+        response={
+            200: {"description": "Check successful."},
+            400: {"description": "Error due to missing user_id or field."}
+        }
+    )
+    @validate(json=ValidExpertBecomeCheck)
+    def handle_check_expert(request, body: ValidExpertBecomeCheck):
+        user_id = body.user_id
+        field = body.field
         if not user_id or not field:
             raise ServerError("Missing user_id or field.")
         return response.json({"is_expert": check_expert_in_field(app.ctx.node_connection_client, user_id, field)})
 
     # Expert cases
-    @app.post('/expert/case/open')
-    @protected
-    def handle_open_expert_case(request):
-        user_id = request.json.get("user_id", None)
-        case_name = request.json.get("case_name", None)
-        if not user_id or not case_name:
-            raise ServerError("Missing user_id or field.")
-        return response.json({"success": open_expert_case(app.ctx.node_connection_client, user_id, case_name)})
+    @app.post('/expert/case/open/<case_type>')
+    @openapi.definition(
+        body=ValidExpertBecomeCheck,
+        summary="Open a case for an expert.",
+        response={
+            200: {"description": "Case opened successfully."},
+            400: {"description": "Error due to missing user_id or field."}
+        })
+    # @protected
+    def handle_open_expert_case(request, case_type):
+        data = request.json
+        return response.json({"success": open_expert_case(app.ctx.node_connection_client, data, case_type)})
 
-    @app.get('/expert/case/all')
-    @protected
-    def handle_get_expert_cases(request):
-        user_id = request.json.get("user_id", None)
-        if not user_id:
-            raise ServerError("Missing user_id.")
-        open_cases = get_open_expert_cases(app.ctx.node_connection_client, user_id)
-        return response.json({"open_cases": open_cases})
+    # @app.get('/expert/case/all')
+    # # @protected
+    # def handle_get_expert_cases(request):
+    #     user_id = request.json.get("user_id", None)
+    #     if not user_id:
+    #         raise ServerError("Missing user_id.")
+    #     open_cases = get_open_expert_cases(app.ctx.node_connection_client, user_id)
+    #     return response.json({"open_cases": open_cases})
 
+    @app.post('expert/case/vote')
+    @openapi.definition(
+        body=ValidVoteExpertCase,
+        summary="Vote for an expert case.",
+        response={
+            200: {"description": "Vote successful."},
+            400: {"description": "Error due to missing case_id, option or public_key."}
+        })
+    # @protected
+    @validate(json=ValidVoteExpertCase)
+    def handle_expert_case_vote(request, body: ValidVoteExpertCase):
+        ec_id = body.case_id
+        option = body.option
+        public_key = body.public_key
+        if not ec_id or not option or not public_key:
+            raise ServerError("Missing case_id, option or public_key.")
+        return response.json({"success": vote_expert_case(app.ctx.node_connection_client, ec_id, option, public_key)})
 
     # Item registry
     @app.post('/items/add')
-    @protected
+    @openapi.definition(
+        body=ValidItemAdd,
+        summary="Add an item to the registry.",
+        response={
+            200: {"description": "Item added successfully."},
+            400: {"description": "Error due to missing category, item_info or owner_public_key."}
+        })
+    # @protected
+    @validate(json=ValidItemAdd)
     def handle_add_item(request):
         category = request.json.get("category", None)
         item_info = request.json.get("item_info", None)
         owner_public_key = request.json.get("owner_public_key", None)
         if not category or not item_info or not owner_public_key:
             raise ServerError("Missing category, item_info or owner_public_key.")
-        return response.json({"success": add_item(app.ctx.node_connection_client, category, item_info, owner_public_key)})
 
-    @app.get('/items/all')
-    @protected
-    def handle_get_items(request):
-        items = get_items(app.ctx.node_connection_client)
-        return response.json({"items": items})
+        result = add_item(app.ctx.node_connection_client, category, item_info, owner_public_key)
+        if result is None:
+            raise ServerError("Error adding item.")
+        return response.json({"item_id": result})
+
+    @app.get('/items/<item_id:int>')
+    @openapi.definition(
+        body={"item_id": "int"},
+        summary="Get an item by its ID.",
+        response={
+            200: {"description": "Item retrieved successfully."},
+            400: {"description": "Error due to missing item_id."}
+        })
+    # @protected
+    def handle_get_item_by_id(request, item_id):
+        item = get_item_by_id(app.ctx.node_connection_client, item_id)
+        return response.json({"item": item})
 
 
     # Exception handling

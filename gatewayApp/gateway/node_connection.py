@@ -114,22 +114,15 @@ def check_expert_in_field(node_connection_client: NodeConnectionClient, user_id,
     else :
         return False
 
-def open_expert_case(node_connection_client: NodeConnectionClient, user_id, case_name):
+def open_expert_case(node_connection_client: NodeConnectionClient, data: dict, case_type: str):
     """Open a case for an expert."""
+    print(data)
+   #TODO Add a check for the case type
+    return True
 
-    # ? here should be another field with item_id and other parameters (maybe a list?)
-    data = {
-        "nick": user_id,
-        "case_name": case_name
-    }
+def vote_expert_case(node_connection_client: NodeConnectionClient, case_id, option, public_key):
+    """Vote for an expert case."""
 
-    payload = json.dumps(data)
-
-    node_connection_client.send(Message(type=Type.OPENEXPERTCASE, payload=payload))
-    response: Message = node_connection_client.receive()
-
-    if response.get_status() != 200:
-        return False
     return True
 
 # ! there is only a function to get details of an expert case and it takes ec_id
@@ -171,7 +164,7 @@ def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, o
     return True
 
 # ! there is only a function to get specific item and it takes item_id
-def get_items(node_connection_client: NodeConnectionClient):
+def get_item_by_id(node_connection_client: NodeConnectionClient, item_id: int):
     """Get all items from the NODE service."""
     #TODO Add limit on the number of items
 
