@@ -133,15 +133,16 @@ def attach_endpoints(app):
 
     # Becoming expert
     @app.post('/expert/become')
-    # @protected
     @openapi.definition(
         body=ValidExpertBecomeCheck,
+        secured="token",
         summary="Request to become an expert in a specific field.",
         response={
             200: {"description": "Request successful."},
             400: {"description": "Error due to missing user_id or field."}
         }
     )
+    @protected
     @validate(json=ValidExpertBecomeCheck)
     def handle_become_expert(request, body: ValidExpertBecomeCheck):
         user_id = body.user_id
@@ -151,15 +152,16 @@ def attach_endpoints(app):
         return response.json({"success": want_to_become_expert_in_field(app.ctx.node_connection_client, user_id, field)})
 
     @app.post('/expert/check')
-    # @protected
     @openapi.definition(
         body=ValidExpertBecomeCheck,
+        secured="token",
         summary="Check if a user is an expert in a specific field.",
         response={
             200: {"description": "Check successful."},
             400: {"description": "Error due to missing user_id or field."}
         }
     )
+    @protected
     @validate(json=ValidExpertBecomeCheck)
     def handle_check_expert(request, body: ValidExpertBecomeCheck):
         user_id = body.user_id
@@ -172,18 +174,19 @@ def attach_endpoints(app):
     @app.post('/expert/case/open/<case_type>')
     @openapi.definition(
         body=ValidExpertBecomeCheck,
+        secured="token",
         summary="Open a case for an expert.",
         response={
             200: {"description": "Case opened successfully."},
             400: {"description": "Error due to missing user_id or field."}
         })
-    # @protected
+    @protected
     def handle_open_expert_case(request, case_type):
         data = request.json
         return response.json({"success": open_expert_case(app.ctx.node_connection_client, data, case_type)})
 
     # @app.get('/expert/case/all')
-    # # @protected
+    # @protected
     # def handle_get_expert_cases(request):
     #     user_id = request.json.get("user_id", None)
     #     if not user_id:
@@ -194,6 +197,7 @@ def attach_endpoints(app):
     @app.post('expert/case/vote')
     @openapi.definition(
         body=ValidVoteExpertCase,
+        secured="token",
         summary="Vote for an expert case.",
         response={
             200: {"description": "Vote successful."},
@@ -213,12 +217,13 @@ def attach_endpoints(app):
     @app.post('/items/add')
     @openapi.definition(
         body=ValidItemAdd,
+        secured="token",
         summary="Add an item to the registry.",
         response={
             200: {"description": "Item added successfully."},
             400: {"description": "Error due to missing category, item_info or owner_public_key."}
         })
-    # @protected
+    @protected
     @validate(json=ValidItemAdd)
     def handle_add_item(request, body: ValidItemAdd):
         category = body.category
@@ -235,11 +240,12 @@ def attach_endpoints(app):
     @app.get('/items/<item_id:int>')
     @openapi.definition(
         summary="Get an item by its ID.",
+        secured="token",
         response={
             200: {"description": "Item retrieved successfully."},
             400: {"description": "Error due to missing item_id."}
         })
-    # @protected
+    @protected
     def handle_get_item_by_id(request, item_id):
         item = get_item_by_id(app.ctx.node_connection_client, item_id)
         return response.json({"item": item})
