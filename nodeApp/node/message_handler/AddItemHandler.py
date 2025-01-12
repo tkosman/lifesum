@@ -27,12 +27,15 @@ class AddItemHandler(AbstractHandler):
 
         # ! not the final implementation
         try:
-            registry_status = str(blockchain_manager.register_user(**json.loads(message.get_payload())))
+            item_id = str(blockchain_manager.add_item(**json.loads(message.get_payload())))
 
-            if registry_status == "0":
-                return Message(type=Type.RETURN, status=200, payload='{ "result": "register_success" }')
-            else:
-                return Message(type=Type.RETURN, status=500, payload='{ "result": "error during register" }')
+            data = {
+                "item_id": item_id
+            }
+
+            payload = json.dumps(data)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)
         except Exception as ex:
             logger.error(ex)
             return Message(type=Type.RETURN, status=500, payload='{ "result": "error during register" }')

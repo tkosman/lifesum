@@ -27,8 +27,8 @@ class BecomeExpertHandler(AbstractHandler):
 
         # ! should it open an expert case?
         try:
-            blockchain_manager.add_expert_field(**json.loads(message.get_payload()))
+            blockchain_manager.EC_become_expert(**json.loads(message.get_payload()))
             return Message(type=Type.RETURN, status=200, payload='{ "pub_key": "Field succesfully added to user." }')
         except Exception as e:
-            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": "Field succesfully added to user." }')
+            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": "Couldn\'t add field to user." }')
 
