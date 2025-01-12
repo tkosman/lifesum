@@ -53,6 +53,14 @@ def get_args():
 
 
 def attach_endpoints(app):
+    app.ext.openapi.add_security_scheme(
+        "token",
+        "http",
+        scheme="bearer",
+        bearer_format="JWT",
+    )
+
+
     """Attach endpoints to the app."""
     @app.route('/')
     def index(request: request.Request):
@@ -191,7 +199,7 @@ def attach_endpoints(app):
             200: {"description": "Vote successful."},
             400: {"description": "Error due to missing case_id, option or public_key."}
         })
-    # @protected
+    @protected
     @validate(json=ValidVoteExpertCase)
     def handle_expert_case_vote(request, body: ValidVoteExpertCase):
         ec_id = body.case_id
