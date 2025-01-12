@@ -18,4 +18,5 @@ class Type(Enum):
     OPENEXPERTCASE = 'open_expert_case'
     GETOPENEXPERTCASES = 'get_open_expert_cases'
     ADDITEM = 'add_item'
+    GETITEM = 'get_item'
     GETITEMS = 'get_items'

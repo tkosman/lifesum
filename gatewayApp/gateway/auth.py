@@ -95,6 +95,7 @@ def generate_challenge(node_connection_client, request, request_body):
 
     try:
         public_key = get_public_key(node_connection_client, user_id)
+        public_key = load_pem_public_key(public_key.encode())
         encrypted_challenge = public_key.encrypt(
             challenge.encode(),
             padding.OAEP(
@@ -128,6 +129,8 @@ def authenticate(node_connection_client, request, body):
     public_key = get_public_key(node_connection_client, user_id)
     if not public_key:
         return response.json({"eror:": "User's public key not found."})
+
+    public_key = load_pem_public_key(public_key.encode())
 
     try:
         public_key.verify(

@@ -14,6 +14,7 @@ from .IsExpertInFieldHandler import IsExpertInFieldHandler
 from .OpenExpertCaseHandler import OpenExpertCaseHandler
 from .AddItemHandler import AddItemHandler
 from .GetOpeneExpertCasesHandler import GetOpeneExpertCasesHandler
+from .GetItemHandler import GetItemHandler
 from .GetItemsHandler import GetItemsHandler
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Message')))
@@ -35,6 +36,7 @@ class MessageHandler:
         Type.OPENEXPERTCASE: OpenExpertCaseHandler,
         Type.GETOPENEXPERTCASES: GetOpeneExpertCasesHandler,
         Type.ADDITEM: AddItemHandler,
+        Type.GETITEM: GetItemHandler,
         Type.GETITEMS: GetItemsHandler,
     }
 

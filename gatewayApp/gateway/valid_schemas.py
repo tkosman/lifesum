@@ -42,6 +42,6 @@ class ValidVoteExpertCase:
 @dataclass
 class ValidItemAdd:
     """ Schema for the item addition request."""
-    user_id: str
-    item_id: str
-    owner_public_key: str
+    category: str
+    item_info: str
+    public_key: str

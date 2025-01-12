@@ -144,13 +144,13 @@ def get_open_expert_cases(node_connection_client: NodeConnectionClient, user_id)
     # TODO check if it is a list
     return json.loads(response.get_payload())
 
-def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, owner_public_key):
+def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, public_key):
     """Add an item to the NODE service."""
 
     data = {
         "category": category,
-        "itemInfo": itemInfo,
-        "owner_public_key": owner_public_key
+        "item_info": itemInfo,
+        "public_key": public_key
     }
 
     payload = json.dumps(data)
@@ -158,24 +158,31 @@ def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, o
     node_connection_client.send(Message(type=Type.ADDITEM, payload=payload))
     response: Message = node_connection_client.receive()
 
-    # ? return item_id
+    item_id = json.loads(response.get_payload()).get("item_id")
+
     if response.get_status() != 200:
         return None
-    return True
+    return item_id
 
 # ! there is only a function to get specific item and it takes item_id
 def get_item_by_id(node_connection_client: NodeConnectionClient, item_id: int):
     """Get all items from the NODE service."""
     #TODO Add limit on the number of items
 
-    node_connection_client.send(Message(type=Type.GETITEMS))
+    data = {
+        "item_id": item_id
+    }
+
+    payload = json.dumps(data)
+
+    node_connection_client.send(Message(type=Type.GETITEM, payload=payload))
     response: Message = node_connection_client.receive()
 
     if response.get_status() != 200:
         return None
 
     # TODO check if the case is working
-    return list(json.loads(response.get_payload()).get("cases"))
+    return json.loads(response.get_payload())
 
 
 def _check_key_value(response: Message, key: str, expected_value: str) -> bool:

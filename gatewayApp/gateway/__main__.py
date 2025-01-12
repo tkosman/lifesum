@@ -212,21 +212,20 @@ def attach_endpoints(app):
         })
     # @protected
     @validate(json=ValidItemAdd)
-    def handle_add_item(request):
-        category = request.json.get("category", None)
-        item_info = request.json.get("item_info", None)
-        owner_public_key = request.json.get("owner_public_key", None)
-        if not category or not item_info or not owner_public_key:
+    def handle_add_item(request, body: ValidItemAdd):
+        category = body.category
+        item_info = body.item_info
+        public_key = body.public_key
+        if not category or not item_info or not public_key:
             raise ServerError("Missing category, item_info or owner_public_key.")
 
-        result = add_item(app.ctx.node_connection_client, category, item_info, owner_public_key)
+        result = add_item(app.ctx.node_connection_client, category, item_info, public_key)
         if result is None:
             raise ServerError("Error adding item.")
         return response.json({"item_id": result})
 
     @app.get('/items/<item_id:int>')
     @openapi.definition(
-        body={"item_id": "int"},
         summary="Get an item by its ID.",
         response={
             200: {"description": "Item retrieved successfully."},

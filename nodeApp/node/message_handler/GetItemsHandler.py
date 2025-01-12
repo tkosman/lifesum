@@ -16,7 +16,7 @@ class GetItemsHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message, blockchain_manager: BlockchainManager) -> Message | None:
-        """Handles messages of type ADDPUBKEY.
+        """Handles messages of type GETITEMS.
 
         Args:
             message (Message): The message to handle.
