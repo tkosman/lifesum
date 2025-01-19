@@ -290,7 +290,7 @@ class BlockchainManager:
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-        
+
     def EC_become_expert(self, field_id, min_reputation, bot_allowed, nick, test_answers):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -311,7 +311,7 @@ class BlockchainManager:
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-        
+
     def EC_update_item_owner(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_owner):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -332,7 +332,7 @@ class BlockchainManager:
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-        
+
     def EC_update_item_info(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_item_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -353,7 +353,7 @@ class BlockchainManager:
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-        
+
     def EC_modify_user_additional_info(self, field_id, min_reputation, bot_allowed, nick, EC_info, new_additional_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -374,7 +374,7 @@ class BlockchainManager:
                 return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-    
+
 
     def cast_vote(self, ec_id, option, public_key):
         """

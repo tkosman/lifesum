@@ -12,3 +12,4 @@ tests/__pycache__/
 
 nodeApp/myenv/
 .DS_Store
+myenv/

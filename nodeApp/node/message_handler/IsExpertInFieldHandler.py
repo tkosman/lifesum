@@ -26,8 +26,11 @@ class IsExpertInFieldHandler(AbstractHandler):
         """
         # ! not the final implementation
         try:
-            blockchain_manager.open_expert_case(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "pub_key": "Field succesfully added to user." }')
+            user_info = blockchain_manager.get_user_info(**json.loads(message.get_payload()))
+
+            expert_in = json.dumps(user_info[1])
+
+            return Message(type=Type.RETURN, status=200, payload=expert_in)
         except Exception as e:
-            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": "Field succesfully added to user." }')
+            return Message(type=Type.RETURN, status=500, payload='{ "result": "Failed to retrieve user info." }')
 

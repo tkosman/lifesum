@@ -12,23 +12,27 @@ from Message import Message, Type
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../scripts')))
 from blockchain_manager import BlockchainManager
 
-class BecomeExpertHandler(AbstractHandler):
+class GetItemHandler(AbstractHandler):
 
     @classmethod
     def handle(self, message: Message, blockchain_manager: BlockchainManager) -> Message | None:
-        """Handles messages of type BECOMEEXPERT.
+        """Handles messages of type GETITEM.
 
         Args:
             message (Message): The message to handle.
 
         Returns:
-            Message: Becoming expert status.
+            Message: Registry status.
         """
 
-        # ! should it open an expert case?
         try:
-            blockchain_manager.EC_become_expert(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "pub_key": "Field succesfully added to user." }')
-        except Exception as e:
-            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": "Couldn\'t add field to user." }')
+            item_info = blockchain_manager.get_item(**json.loads(message.get_payload()))
 
+            logger.info(item_info)
+
+            payload = json.dumps(item_info)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)
+        except Exception as ex:
+            logger.error(ex)
+            return Message(type=Type.RETURN, status=500)

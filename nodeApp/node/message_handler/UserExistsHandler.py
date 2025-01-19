@@ -27,6 +27,19 @@ class UserExistsHandler(AbstractHandler):
 
         try:
             blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": true }')
+
+            data = {
+                "user_exists": True
+            }
+
+            payload = json.dumps(data)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)
         except Exception as ex:
-            return Message(type=Type.RETURN, status=200, payload='{ "user_exists": false }')
+            data = {
+                "user_exists": False
+            }
+
+            payload = json.dumps(data)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)

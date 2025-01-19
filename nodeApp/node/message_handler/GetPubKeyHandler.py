@@ -27,7 +27,14 @@ class GetPubKeyHandler(AbstractHandler):
 
         try:
             pub_key = blockchain_manager.get_user_public_key(**json.loads(message.get_payload()))
-            return Message(type=Type.RETURN, status=200, payload='{ "pub_key": ' + pub_key + '" }')
+
+            data = {
+                "pub_key": pub_key
+            }
+
+            payload = json.dumps(data)
+
+            return Message(type=Type.RETURN, status=200, payload=payload)
         except Exception as ex:
-            return Message(type=Type.RETURN, status=500, payload='{ "pub_key": null }')
+            return Message(type=Type.RETURN, status=500)
 

@@ -76,8 +76,11 @@ def want_to_become_expert_in_field(node_connection_client: NodeConnectionClient,
     """Send request to become expert in a given field."""
 
     data = {
+        "field": field,
+        "min_reputation": -1,
+        "bot_allowed": True,
         "nick": user_id,
-        "field": field
+        "test_answers": "passed",
     }
 
     payload = json.dumps(data)
@@ -93,8 +96,7 @@ def check_expert_in_field(node_connection_client: NodeConnectionClient, user_id,
     """Check if user is an expert in a given field."""
 
     data = {
-        "nick": user_id,
-        "field": field
+        "nick": user_id
     }
 
     payload = json.dumps(data)
@@ -102,28 +104,28 @@ def check_expert_in_field(node_connection_client: NodeConnectionClient, user_id,
     node_connection_client.send(Message(type=Type.ISEXPERTINFIELD, payload=payload))
     response: Message = node_connection_client.receive()
 
-    if response.get_status() != 200:
-        return False
-    return True
+    expert_in = json.loads(response.get_payload())
 
-def open_expert_case(node_connection_client: NodeConnectionClient, user_id, case_name):
+    # ! temp to check
+    print(expert_in)
+
+    if field in expert_in:
+        return True
+    else :
+        return False
+
+def open_expert_case(node_connection_client: NodeConnectionClient, data: dict, case_type: str):
     """Open a case for an expert."""
-
-    # ? here should be another field with item_id and other parameters (maybe a list?)
-    data = {
-        "nick": user_id,
-        "case_name": case_name
-    }
-
-    payload = json.dumps(data)
-
-    node_connection_client.send(Message(type=Type.OPENEXPERTCASE, payload=payload))
-    response: Message = node_connection_client.receive()
-
-    if response.get_status() != 200:
-        return False
+    print(data)
+   #TODO Add a check for the case type
     return True
 
+def vote_expert_case(node_connection_client: NodeConnectionClient, case_id, option, public_key):
+    """Vote for an expert case."""
+
+    return True
+
+# ! there is only a function to get details of an expert case and it takes ec_id
 def get_open_expert_cases(node_connection_client: NodeConnectionClient, user_id):
     """Get all open cases for an expert."""
 
@@ -139,17 +141,16 @@ def get_open_expert_cases(node_connection_client: NodeConnectionClient, user_id)
     if response.get_status() != 200:
         return None
 
-    # TODO check if the case is working
-    return list(json.loads(response.get_payload()).get("cases"))
+    # TODO check if it is a list
+    return json.loads(response.get_payload())
 
-def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, owner_public_key):
+def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, public_key):
     """Add an item to the NODE service."""
-    # Add the item to the NODE service
 
     data = {
         "category": category,
-        "itemInfo": itemInfo,
-        "owner_public_key": owner_public_key
+        "item_info": itemInfo,
+        "public_key": public_key
     }
 
     payload = json.dumps(data)
@@ -157,22 +158,31 @@ def add_item(node_connection_client: NodeConnectionClient, category, itemInfo, o
     node_connection_client.send(Message(type=Type.ADDITEM, payload=payload))
     response: Message = node_connection_client.receive()
 
+    item_id = json.loads(response.get_payload()).get("item_id")
+
     if response.get_status() != 200:
         return None
-    return True
+    return item_id
 
-def get_items(node_connection_client: NodeConnectionClient):
+# ! there is only a function to get specific item and it takes item_id
+def get_item_by_id(node_connection_client: NodeConnectionClient, item_id: int):
     """Get all items from the NODE service."""
     #TODO Add limit on the number of items
 
-    node_connection_client.send(Message(type=Type.GETITEMS))
+    data = {
+        "item_id": item_id
+    }
+
+    payload = json.dumps(data)
+
+    node_connection_client.send(Message(type=Type.GETITEM, payload=payload))
     response: Message = node_connection_client.receive()
 
     if response.get_status() != 200:
         return None
 
     # TODO check if the case is working
-    return list(json.loads(response.get_payload()).get("cases"))
+    return json.loads(response.get_payload())
 
 
 def _check_key_value(response: Message, key: str, expected_value: str) -> bool:
