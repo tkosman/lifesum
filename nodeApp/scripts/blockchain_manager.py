@@ -560,7 +560,6 @@ class BlockchainManager:
                 ITEM_ADDED_SIG = "0x9a2ee66360acc47ed8f7c49b2492e1777a6fed40c18be4eddb5b242f7098a4af"
 
                 for log in tx.logs:
-                    print(f"Processing log: {log}")
                     if "topics" in log and len(log["topics"]) > 0:
                         if log["topics"][0].hex().lower() == ITEM_ADDED_SIG:
                             # Convert HexBytes to bytes directly
