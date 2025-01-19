@@ -1,8 +1,4 @@
 from ape import accounts, project, networks
-from eth_abi import decode
-from eth_utils import to_bytes
-from eth_utils import keccak, to_hex
-
 
 class BlockchainManager:
     """
@@ -45,11 +41,9 @@ class BlockchainManager:
 
         with networks.ethereum.sepolia.use_provider("infura"):
             self.user_registry = project.UserRegistry.at(user_registry_address)
-            self.expert_case_manager = project.ExpertCaseManager.at(
-                expert_case_manager_address)
+            self.expert_case_manager = project.ExpertCaseManager.at(expert_case_manager_address)
             self.item_registry = project.ItemRegistry.at(item_registry_address)
-            self.reputation_manager = project.ReputationManager.at(
-                reputation_manager_address)
+            self.reputation_manager = project.ReputationManager.at(reputation_manager_address)
 
     def register_user(self, nick, public_key, additional_data, is_bot):
         """
@@ -71,8 +65,7 @@ class BlockchainManager:
 
         Example:
             try:
-                result = manager.register_user(
-                    "Alice", "0xPublicKeyHere", "Additional Info", False)
+                result = manager.register_user("Alice", "0xPublicKeyHere", "Additional Info", False)
                 if result == "register_success":
                     print("User registered successfully!")
             except Exception as e:
@@ -81,17 +74,14 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.registerUser(
-                    nick, public_key, additional_data, is_bot, sender=sender)
+                tx = self.user_registry.registerUser(nick, public_key, additional_data, is_bot, sender=sender)
                 return tx.return_value
         except Exception as e:
             error_message = str(e)
             if "nick_already_taken" in error_message:
-                raise Exception(
-                    "Registration failed: Nickname is already taken.")
+                raise Exception("Registration failed: Nickname is already taken.")
             elif "address_already_registered" in error_message:
-                raise Exception(
-                    "Registration failed: Public key is already registered.")
+                raise Exception("Registration failed: Public key is already registered.")
             else:
                 raise Exception(f"Registration failed: {e}")
 
@@ -122,17 +112,14 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.addExpertField(
-                    nick, field_id, sender=sender)
+                tx = self.user_registry.addExpertField(nick, field_id, sender=sender)
                 return "field_added_successfully"
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Add Expert Field failed: User does not exist.")
+                raise Exception("Add Expert Field failed: User does not exist.")
             elif "field_already_added" in error_message:
-                raise Exception(
-                    "Add Expert Field failed: Field is already added.")
+                raise Exception("Add Expert Field failed: Field is already added.")
             else:
                 raise Exception(f"Add Expert Field failed: {e}")
 
@@ -153,8 +140,7 @@ class BlockchainManager:
 
         Example:
             try:
-                result = manager.modify_user_additional_data(
-                    "Alice", "Updated Info")
+                result = manager.modify_user_additional_data("Alice", "Updated Info")
                 if result == "modify_success":
                     print("Additional data updated successfully!")
             except Exception as e:
@@ -163,14 +149,12 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.modifyUserAdditionalData(
-                    nick, new_data, sender=sender)
+                tx = self.user_registry.modifyUserAdditionalData(nick, new_data, sender=sender)
                 return "modify_success"
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Modify Additional Data failed: User does not exist.")
+                raise Exception("Modify Additional Data failed: User does not exist.")
             else:
                 raise Exception(f"Modify Additional Data failed: {e}")
 
@@ -228,8 +212,7 @@ class BlockchainManager:
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Get User Public Key failed: User does not exist.")
+                raise Exception("Get User Public Key failed: User does not exist.")
             else:
                 raise Exception(f"Get User Public Key failed: {e}")
 
@@ -304,32 +287,10 @@ class BlockchainManager:
                     flag,
                     sender=sender
                 )
-
-
-                # Keccak256 of "ExpertCaseOpened(uint256,uint256,string)"
-                # => 0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395
-                # Define the event signature string
-                event_signature = "ExpertCaseOpened(uint256,uint256,string)"
-
-                # Compute the Keccak-256 hash of the event signature
-                event_signature_hash = keccak(text=event_signature)
-
-                # Convert the hash to a hexadecimal string
-                EC_OPENED_SIG = to_hex(event_signature_hash)
-
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(
-                            ["uint256", "uint256", "string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return self.expert_case_manager.ECIdCounter()
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_become_expert(self, field_id, min_reputation, bot_allowed, nick, test_answers):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -347,20 +308,10 @@ class BlockchainManager:
                     3,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_update_item_owner(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_owner):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -378,20 +329,10 @@ class BlockchainManager:
                     0,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_update_item_info(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_item_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -409,20 +350,10 @@ class BlockchainManager:
                     1,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_modify_user_additional_info(self, field_id, min_reputation, bot_allowed, nick, EC_info, new_additional_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -440,21 +371,10 @@ class BlockchainManager:
                     2,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    print(f"Processing log: {log}")
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+    
 
     def cast_vote(self, ec_id, option, public_key):
         """
@@ -576,27 +496,32 @@ class BlockchainManager:
             raise Exception(f"Get Expert Case failed: {e}")
 
     def add_item(self, category, item_info, public_key):
+        """
+        Adds a new item to the ItemRegistry contract.
+
+        Args:
+            category (str): The category of the item.
+            item_info (str): Information/details about the item.
+            public_key (str): The public key of the user adding the item.
+
+        Returns:
+            int: The ID of the newly added item.
+
+        Raises:
+            Exception: If adding the item fails due to contract constraints.
+
+        Example:
+            try:
+                item_id = manager.add_item("Electronics", "Smartphone Model X", "0xUserPublicKey")
+                print(f"Item added successfully with ID: {item_id}")
+            except Exception as e:
+                print(f"Failed to add item: {e}")
+        """
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.item_registry.addItem(category, item_info, public_key, sender=sender)
-
-                # Event signature for ItemAdded(uint256,string,string)
-                ITEM_ADDED_SIG = "0x9a2ee66360acc47ed8f7c49b2492e1777a6fed40c18be4eddb5b242f7098a4af"
-
-                for log in tx.logs:
-                    print(f"Processing log: {log}")
-                    if "topics" in log and len(log["topics"]) > 0:
-                        if log["topics"][0].hex().lower() == ITEM_ADDED_SIG:
-                            # Convert HexBytes to bytes directly
-                            data_bytes = log["data"]
-                            decoded = decode(["uint256","uint256","string"], data_bytes)
-                            item_id = decoded[0]
-                            return item_id
-
-                # Fallback: read the on-chain counter
-                return self.item_registry.itemCounter()
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Add Item failed: {e}")
 
@@ -681,3 +606,500 @@ class BlockchainManager:
                 return self.reputation_manager.getReputation(user, field_id)
         except Exception as e:
             raise Exception(f"Get Reputation failed: {e}")
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IReputationManager {
+    function updateReputation(string memory _user, uint256 _fieldId, int8 _score) external;
+    function getReputation(string memory _user, uint256 _fieldId) external view returns (uint256);
+}
+
+interface IUserRegistry {
+    function getNickByAddress(string memory _address) external view returns (string memory);
+    function getUserInfo(string memory _nick)
+        external
+        view
+        returns (
+            string memory public_key,
+            uint256[] memory expertFields,
+            string memory additional_data,
+            bool is_bot
+        );
+    function modifyUserAdditionalData(string memory _nick, string memory _newData) external;
+    function addExpertField(string memory _nick, uint256 _fieldId) external;
+}
+
+interface IItemRegistry {
+    function updateItemOwner(uint256 _itemId, string memory _newOwner) external;
+    function updateItemInfo(uint256 _itemId, string memory _newInfo) external;
+}
+
+contract ExpertCaseManager {
+    struct ExpertCase {
+        uint256 ECId;
+        uint256 itemId;
+        uint256 fieldId;
+        uint256 minReputation;
+        bool botAllowed;
+        string ECInfo;
+        mapping(string => bool) hasVoted;
+        mapping(string => uint8) voterChoices;
+        string[] voters;
+        mapping(uint8 => uint256) votes;
+        uint8[] optionsVoted; // Added to track voted options
+        bool isOpen;
+        bool exists;
+        string nick_to_change;
+        string uniStringToModify;
+        uint256 fieldId_to_add;
+        uint256 flag;
+    }
+
+    mapping(uint256 => ExpertCase) private expertCases;
+    uint256 private ECIdCounter;
+
+    IReputationManager private reputationManager;
+    IUserRegistry private userRegistry;
+    IItemRegistry private itemRegistry;
+
+    event ExpertCaseOpened(uint256 ECId, uint256 itemId, string openedBy);
+    event VoteCast(uint256 ECId, string voter, uint8 option);
+    event ExpertCaseClosed(uint256 ECId, uint8 winningOption);
+
+    constructor(address _reputationManagerAddress, address _userRegistryAddress, address _itemRegistryAddress) {
+        reputationManager = IReputationManager(_reputationManagerAddress);
+        userRegistry = IUserRegistry(_userRegistryAddress);
+        itemRegistry = IItemRegistry(_itemRegistryAddress);
+    }
+
+    function openExpertCase(
+        uint256 _itemId,
+        uint256 _fieldId,
+        uint256 _minReputation,
+        string memory _publicKey,
+        bool _botAllowed,
+        string memory _ECInfo,
+        string memory _nick_to_change,
+        string memory _uniStringToModify,
+        uint256 _fieldId_to_add,
+        uint256 _flag 
+    ) public returns (uint256) {
+        ECIdCounter++;
+        uint256 newECId = ECIdCounter;
+
+        ExpertCase storage ec = expertCases[newECId];
+        ec.ECId = newECId;
+        ec.itemId = _itemId;
+        ec.fieldId = _fieldId;
+        ec.minReputation = _minReputation;
+        ec.botAllowed = _botAllowed;
+        ec.ECInfo = _ECInfo;
+        ec.isOpen = true;
+        ec.exists = true;
+        ec.nick_to_change = _nick_to_change;
+        ec.uniStringToModify = _uniStringToModify;
+        ec.fieldId_to_add = _fieldId_to_add;
+        ec.flag = _flag;
+
+        emit ExpertCaseOpened(newECId, _itemId, _publicKey);
+
+        return newECId;
+    }
+
+    function castVote(
+        uint256 _ECId,
+        uint8 _option,
+        string memory _publicKey
+    ) public {
+        require(expertCases[_ECId].exists, "EC_not_exist");
+        require(expertCases[_ECId].isOpen, "EC_closed");
+
+        ExpertCase storage ec = expertCases[_ECId];
+
+        // Verify voter registration
+        string memory voterNick = userRegistry.getNickByAddress(_publicKey);
+        require(bytes(voterNick).length > 0, "user_not_registered");
+
+        // Get user info
+        (
+            ,
+            uint256[] memory expertFields,
+            ,
+            bool isBot
+        ) = userRegistry.getUserInfo(voterNick);
+
+        // Check if bots are allowed
+        require(ec.botAllowed || !isBot, "bots_not_allowed");
+
+        // Check if user is an expert in the required field
+        bool isExpert = false;
+        for (uint256 i = 0; i < expertFields.length; i++) {
+            if (expertFields[i] == ec.fieldId) {
+                isExpert = true;
+                break;
+            }
+        }
+        require(isExpert, "not_expert_in_field");
+
+        // Check user's reputation
+        uint256 userReputation = reputationManager.getReputation(_publicKey, ec.fieldId);
+        require(userReputation >= ec.minReputation, "reputation_too_low");
+
+        // Check if user has already voted
+        require(!ec.hasVoted[_publicKey], "already_voted");
+
+        // Record the vote
+        ec.hasVoted[_publicKey] = true;
+        ec.votes[_option] += 1;
+        ec.voterChoices[_publicKey] = _option;
+        ec.voters.push(_publicKey);
+
+        // Add option to optionsVoted if it's the first vote for that option
+        if (ec.votes[_option] == 1) {
+            ec.optionsVoted.push(_option);
+        }
+
+        emit VoteCast(_ECId, _publicKey, _option);
+    }
+
+    function closeExpertCase(uint256 _ECId) public {
+        require(expertCases[_ECId].exists, "EC_not_exist");
+        require(expertCases[_ECId].isOpen, "EC_already_closed");
+
+        ExpertCase storage ec = expertCases[_ECId];
+        ec.isOpen = false;
+
+        // Determine the winning option
+        uint8 winningOption;
+        uint256 maxVotes = 0;
+
+        for (uint256 i = 0; i < ec.optionsVoted.length; i++) {
+            uint8 option = ec.optionsVoted[i];
+            uint256 votesForOption = ec.votes[option];
+            if (votesForOption > maxVotes) {
+                maxVotes = votesForOption;
+                winningOption = option;
+            }
+        }
+
+        uint256 winningVotersCount = 0;
+        for (uint256 i = 0; i < ec.voters.length; i++) {
+            string memory voter = ec.voters[i];
+            if (ec.voterChoices[voter] == winningOption) {
+                winningVotersCount += 1;
+            }
+        }
+
+        int256 reputationIncrementTemp = int256(ec.voters.length / winningVotersCount);
+        int8 reputationIncrement = reputationIncrementTemp > 10 ? int8(10) : int8(reputationIncrementTemp);
+
+        // Update reputation for voters
+        for (uint256 i = 0; i < ec.voters.length; i++) {
+            string memory voter = ec.voters[i];
+            uint8 voterOption = ec.voterChoices[voter];
+            uint256 fieldId = ec.fieldId;
+
+            if (voterOption == winningOption) {
+                reputationManager.updateReputation(voter, fieldId, reputationIncrement);
+            }
+            else {
+                reputationManager.updateReputation(voter, fieldId, -1);
+            }
+        }
+
+        if (winningOption == 0) {
+            if (ec.flag == 0) {
+                itemRegistry.updateItemOwner(ec.itemId, ec.uniStringToModify);
+            }
+            else if (ec.flag == 1) {
+                itemRegistry.updateItemInfo(ec.itemId, ec.uniStringToModify);
+            }
+            else if (ec.flag == 2) {
+                userRegistry.modifyUserAdditionalData(ec.nick_to_change, ec.uniStringToModify);
+            }
+            else if (ec.flag == 3) {
+                userRegistry.addExpertField(ec.nick_to_change, ec.fieldId_to_add);
+            }                                                           
+        }           
+        emit ExpertCaseClosed(_ECId, winningOption);
+    }
+
+    function getExpertCase(uint256 _ECId)
+        public
+        view
+        returns (
+            uint256 itemId,
+            uint256 fieldId,
+            uint256 minReputation,
+            bool botAllowed,
+            string memory ECInfo,
+            bool isOpen
+        )
+    {
+        require(expertCases[_ECId].exists, "EC_not_exist");
+        ExpertCase storage ec = expertCases[_ECId];
+        return (
+            ec.itemId,
+            ec.fieldId,
+            ec.minReputation,
+            ec.botAllowed,
+            ec.ECInfo,
+            ec.isOpen
+        );
+    }
+}
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ItemRegistry {
+    struct Item {
+        uint256 itemId;
+        string category;
+        string itemInfo;
+        string owner;
+        bool exists;
+    }
+
+    mapping(uint256 => Item) private items;
+    uint256 private itemCounter;
+
+    event ItemAdded(uint256 itemId, string category, string owner);
+
+    function addItem(
+        string memory _category,
+        string memory _itemInfo,
+        string memory _publicKey
+    ) public returns (uint256) {
+        itemCounter++;
+        uint256 newItemId = itemCounter;
+
+        items[newItemId] = Item({
+            itemId: newItemId,
+            category: _category,
+            itemInfo: _itemInfo,
+            owner: _publicKey,
+            exists: true
+        });
+
+        emit ItemAdded(newItemId, _category, _publicKey);
+
+        return newItemId;
+    }
+
+    function getItem(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory category,
+            string memory itemInfo,
+            string memory owner
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.category, item.itemInfo, item.owner);
+    }
+
+    function updateItemOwner(uint256 _itemId, string memory _newOwner) public {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        item.owner = _newOwner;
+    }
+
+    function updateItemInfo(uint256 _itemId, string memory _newInfo) public {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        item.itemInfo = _newInfo;
+    }
+
+    function getItemCategory(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory category
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.category);
+    }
+
+    function getItemOwner(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory owner
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.owner);
+    }
+
+    function getItemInfo(uint256 _itemId)
+        public
+        view
+        returns (
+            string memory itemInfo
+        )
+    {
+        require(items[_itemId].exists, "item_not_exist");
+        Item storage item = items[_itemId];
+        return (item.itemInfo);
+    }
+}
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ReputationManager {
+    struct Reputation {
+        int256 totalScore;
+        uint256 totalCases;
+        mapping(uint256 => int8) recentScores;
+        uint256 recentIndex;
+    }
+
+    // Use public key (string) to identify users, and fieldId (uint256) for reputation within fields
+    mapping(string => mapping(uint256 => Reputation)) private reputations;
+
+    uint256 public constant MAX_RECENT_SCORES = 100;
+
+    event ReputationUpdated(string user, uint256 indexed fieldId, int8 score);
+
+    // Update the reputation of a user identified by their public key
+    function updateReputation(
+        string memory _user,  // Public key as string
+        uint256 _fieldId,          // Field ID to track reputation in a specific area
+        int8 _score                // Score to be added (positive or negative)
+    ) external {
+        Reputation storage rep = reputations[_user][_fieldId];
+
+        // Update the total score and total cases
+        rep.totalScore += _score;
+        rep.totalCases += 1;
+
+        // Add the score to the recent scores array with circular indexing
+        rep.recentScores[rep.recentIndex % MAX_RECENT_SCORES] = _score;
+        rep.recentIndex += 1;
+
+        // Emit the ReputationUpdated event with public key and field ID
+        emit ReputationUpdated(_user, _fieldId, _score);
+    }
+
+    // Get the sum of recent reputation scores for a user in a specific field
+    function getReputation(string memory _user, uint256 _fieldId)
+        external
+        view
+        returns (int256 sumRecentScores)
+    {
+        Reputation storage rep = reputations[_user][_fieldId];
+
+        // Determine the number of recent scores to sum (based on totalCases vs. MAX_RECENT_SCORES)
+        uint256 scoresCount = rep.totalCases > MAX_RECENT_SCORES ? MAX_RECENT_SCORES : rep.totalCases;
+        sumRecentScores = 0;
+
+        // Sum up the recent scores
+        for (uint256 i = 0; i < scoresCount; i++) {
+            sumRecentScores += rep.recentScores[i];
+        }
+    }
+}
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract UserRegistry {
+    struct User {
+        string nick;
+        string public_key;
+        uint256[] expertFields;
+        mapping(uint256 => bool) hasExpertField;
+        string additional_data;
+        bool is_bot;
+        bool exists;
+    }
+
+    mapping(string => User) private users;
+    mapping(string => string) private addressToNick;
+
+    event UserRegistered(string nick, string public_key);
+    event ExpertFieldAdded(string nick, uint256 fieldId);
+
+    function registerUser(
+        string memory _nick,
+        string memory _publicKey,
+        string memory _additionalData,
+        bool _isBot
+    ) public returns (string memory) {
+        require(!users[_nick].exists, "nick_already_taken");
+        require(bytes(addressToNick[_publicKey]).length == 0, "address_already_registered");
+
+        User storage user = users[_nick];
+        user.nick = _nick;
+        user.public_key = _publicKey;
+        user.additional_data = _additionalData;
+        user.is_bot = _isBot;
+        user.exists = true;
+
+        addressToNick[_publicKey] = _nick;
+
+        emit UserRegistered(_nick, _publicKey);
+
+        return "register_success";
+    }
+
+    function addExpertField(string memory _nick, uint256 _fieldId) external {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+
+        require(!user.hasExpertField[_fieldId], "field_already_added");
+
+        user.expertFields.push(_fieldId);
+        user.hasExpertField[_fieldId] = true;
+
+        emit ExpertFieldAdded(_nick, _fieldId);
+    }
+
+    function getUserInfo(string memory _nick)
+        public
+        view
+        returns (
+            string memory public_key,
+            uint256[] memory expertFields,
+            string memory additional_data,
+            bool is_bot
+        )
+    {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+        return (
+            user.public_key,
+            user.expertFields,
+            user.additional_data,
+            user.is_bot
+        );
+    }
+
+    function getNickByAddress(string memory _address) external view returns (string memory) {
+        return addressToNick[_address];
+    }
+
+    function modifyUserAdditionalData(string memory _nick, string memory _newData) public {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+        user.additional_data = _newData;
+    }
+
+    function getUserPublicKey(string memory _nick)
+        public
+        view
+        returns (
+            string memory public_key
+        )
+    {
+        require(users[_nick].exists, "user_not_exist");
+        User storage user = users[_nick];
+        return (
+            user.public_key
+        );
+    }
+}
