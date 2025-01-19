@@ -4,4 +4,3 @@ __pycache__
 .hypothesis/
 reports/
 /node/__pycache__
-/build
