@@ -1,8 +1,4 @@
 from ape import accounts, project, networks
-from eth_abi import decode
-from eth_utils import to_bytes
-from eth_utils import keccak, to_hex
-
 
 class BlockchainManager:
     """
@@ -45,11 +41,9 @@ class BlockchainManager:
 
         with networks.ethereum.sepolia.use_provider("infura"):
             self.user_registry = project.UserRegistry.at(user_registry_address)
-            self.expert_case_manager = project.ExpertCaseManager.at(
-                expert_case_manager_address)
+            self.expert_case_manager = project.ExpertCaseManager.at(expert_case_manager_address)
             self.item_registry = project.ItemRegistry.at(item_registry_address)
-            self.reputation_manager = project.ReputationManager.at(
-                reputation_manager_address)
+            self.reputation_manager = project.ReputationManager.at(reputation_manager_address)
 
     def register_user(self, nick, public_key, additional_data, is_bot):
         """
@@ -71,8 +65,7 @@ class BlockchainManager:
 
         Example:
             try:
-                result = manager.register_user(
-                    "Alice", "0xPublicKeyHere", "Additional Info", False)
+                result = manager.register_user("Alice", "0xPublicKeyHere", "Additional Info", False)
                 if result == "register_success":
                     print("User registered successfully!")
             except Exception as e:
@@ -81,17 +74,14 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.registerUser(
-                    nick, public_key, additional_data, is_bot, sender=sender)
+                tx = self.user_registry.registerUser(nick, public_key, additional_data, is_bot, sender=sender)
                 return tx.return_value
         except Exception as e:
             error_message = str(e)
             if "nick_already_taken" in error_message:
-                raise Exception(
-                    "Registration failed: Nickname is already taken.")
+                raise Exception("Registration failed: Nickname is already taken.")
             elif "address_already_registered" in error_message:
-                raise Exception(
-                    "Registration failed: Public key is already registered.")
+                raise Exception("Registration failed: Public key is already registered.")
             else:
                 raise Exception(f"Registration failed: {e}")
 
@@ -122,17 +112,14 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.addExpertField(
-                    nick, field_id, sender=sender)
+                tx = self.user_registry.addExpertField(nick, field_id, sender=sender)
                 return "field_added_successfully"
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Add Expert Field failed: User does not exist.")
+                raise Exception("Add Expert Field failed: User does not exist.")
             elif "field_already_added" in error_message:
-                raise Exception(
-                    "Add Expert Field failed: Field is already added.")
+                raise Exception("Add Expert Field failed: Field is already added.")
             else:
                 raise Exception(f"Add Expert Field failed: {e}")
 
@@ -153,8 +140,7 @@ class BlockchainManager:
 
         Example:
             try:
-                result = manager.modify_user_additional_data(
-                    "Alice", "Updated Info")
+                result = manager.modify_user_additional_data("Alice", "Updated Info")
                 if result == "modify_success":
                     print("Additional data updated successfully!")
             except Exception as e:
@@ -163,14 +149,12 @@ class BlockchainManager:
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
-                tx = self.user_registry.modifyUserAdditionalData(
-                    nick, new_data, sender=sender)
+                tx = self.user_registry.modifyUserAdditionalData(nick, new_data, sender=sender)
                 return "modify_success"
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Modify Additional Data failed: User does not exist.")
+                raise Exception("Modify Additional Data failed: User does not exist.")
             else:
                 raise Exception(f"Modify Additional Data failed: {e}")
 
@@ -228,8 +212,7 @@ class BlockchainManager:
         except Exception as e:
             error_message = str(e)
             if "user_not_exist" in error_message:
-                raise Exception(
-                    "Get User Public Key failed: User does not exist.")
+                raise Exception("Get User Public Key failed: User does not exist.")
             else:
                 raise Exception(f"Get User Public Key failed: {e}")
 
@@ -304,32 +287,10 @@ class BlockchainManager:
                     flag,
                     sender=sender
                 )
-
-
-                # Keccak256 of "ExpertCaseOpened(uint256,uint256,string)"
-                # => 0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395
-                # Define the event signature string
-                event_signature = "ExpertCaseOpened(uint256,uint256,string)"
-
-                # Compute the Keccak-256 hash of the event signature
-                event_signature_hash = keccak(text=event_signature)
-
-                # Convert the hash to a hexadecimal string
-                EC_OPENED_SIG = to_hex(event_signature_hash)
-
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(
-                            ["uint256", "uint256", "string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return self.expert_case_manager.ECIdCounter()
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_become_expert(self, field_id, min_reputation, bot_allowed, nick, test_answers):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -347,20 +308,10 @@ class BlockchainManager:
                     3,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_update_item_owner(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_owner):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -378,20 +329,10 @@ class BlockchainManager:
                     0,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_update_item_info(self, item_id, field_id, min_reputation, bot_allowed, nick, EC_info, new_item_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -409,20 +350,10 @@ class BlockchainManager:
                     1,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+        
     def EC_modify_user_additional_info(self, field_id, min_reputation, bot_allowed, nick, EC_info, new_additional_info):
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
@@ -440,21 +371,10 @@ class BlockchainManager:
                     2,
                     sender=sender
                 )
-
-                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
-                for log in tx.logs:
-                    print(f"Processing log: {log}")
-                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
-                        data_bytes = log["data"]
-                        decoded = decode(["uint256","uint256","string"], data_bytes)
-                        ec_id = decoded[0]
-                        return ec_id
-
-                return None
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
-
+    
 
     def cast_vote(self, ec_id, option, public_key):
         """
@@ -576,26 +496,32 @@ class BlockchainManager:
             raise Exception(f"Get Expert Case failed: {e}")
 
     def add_item(self, category, item_info, public_key):
+        """
+        Adds a new item to the ItemRegistry contract.
+
+        Args:
+            category (str): The category of the item.
+            item_info (str): Information/details about the item.
+            public_key (str): The public key of the user adding the item.
+
+        Returns:
+            int: The ID of the newly added item.
+
+        Raises:
+            Exception: If adding the item fails due to contract constraints.
+
+        Example:
+            try:
+                item_id = manager.add_item("Electronics", "Smartphone Model X", "0xUserPublicKey")
+                print(f"Item added successfully with ID: {item_id}")
+            except Exception as e:
+                print(f"Failed to add item: {e}")
+        """
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.item_registry.addItem(category, item_info, public_key, sender=sender)
-
-                # Event signature for ItemAdded(uint256,string,string)
-                ITEM_ADDED_SIG = "0x9a2ee66360acc47ed8f7c49b2492e1777a6fed40c18be4eddb5b242f7098a4af"
-
-                for log in tx.logs:
-                    if "topics" in log and len(log["topics"]) > 0:
-                        if log["topics"][0].hex().lower() == ITEM_ADDED_SIG:
-                            # Convert HexBytes to bytes directly
-                            data_bytes = log["data"]
-                            decoded = decode(["uint256","uint256","string"], data_bytes)
-                            item_id = decoded[0]
-                            return item_id
-
-                # Fallback: read the on-chain counter
-                return self.item_registry.itemCounter()
-
+                return tx.return_value
         except Exception as e:
             raise Exception(f"Add Item failed: {e}")
 
