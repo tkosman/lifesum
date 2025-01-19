@@ -1,4 +1,6 @@
 from ape import accounts, project, networks
+from eth_abi import decode
+from eth_utils import to_bytes
 
 class BlockchainManager:
     """
@@ -287,7 +289,20 @@ class BlockchainManager:
                     flag,
                     sender=sender
                 )
-                return tx.return_value
+
+                # Keccak256 of "ExpertCaseOpened(uint256,uint256,string)"
+                # => 0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395
+                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
+
+                for log in tx.logs:
+                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
+                        data_bytes = log["data"]
+                        decoded = decode(["uint256","uint256","string"], data_bytes)
+                        ec_id = decoded[0]
+                        return ec_id
+
+                return None
+
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
 
@@ -308,7 +323,17 @@ class BlockchainManager:
                     3,
                     sender=sender
                 )
-                return tx.return_value
+
+                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
+                for log in tx.logs:
+                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
+                        data_bytes = log["data"]
+                        decoded = decode(["uint256","uint256","string"], data_bytes)
+                        ec_id = decoded[0]
+                        return ec_id
+
+                return None
+
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
 
@@ -329,7 +354,17 @@ class BlockchainManager:
                     0,
                     sender=sender
                 )
-                return tx.return_value
+
+                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
+                for log in tx.logs:
+                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
+                        data_bytes = log["data"]
+                        decoded = decode(["uint256","uint256","string"], data_bytes)
+                        ec_id = decoded[0]
+                        return ec_id
+
+                return None
+
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
 
@@ -350,7 +385,17 @@ class BlockchainManager:
                     1,
                     sender=sender
                 )
-                return tx.return_value
+
+                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
+                for log in tx.logs:
+                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
+                        data_bytes = log["data"]
+                        decoded = decode(["uint256","uint256","string"], data_bytes)
+                        ec_id = decoded[0]
+                        return ec_id
+
+                return None
+
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
 
@@ -371,7 +416,17 @@ class BlockchainManager:
                     2,
                     sender=sender
                 )
-                return tx.return_value
+
+                EC_OPENED_SIG = "0x9c91d7ed0909684453946115f5a9aac91319e60632291ca957558e56b5e28395"
+                for log in tx.logs:
+                    if len(log["topics"]) > 0 and log["topics"][0].hex().lower() == EC_OPENED_SIG:
+                        data_bytes = log["data"]
+                        decoded = decode(["uint256","uint256","string"], data_bytes)
+                        ec_id = decoded[0]
+                        return ec_id
+
+                return None
+
         except Exception as e:
             raise Exception(f"Open Expert Case failed: {e}")
 
@@ -496,32 +551,27 @@ class BlockchainManager:
             raise Exception(f"Get Expert Case failed: {e}")
 
     def add_item(self, category, item_info, public_key):
-        """
-        Adds a new item to the ItemRegistry contract.
-
-        Args:
-            category (str): The category of the item.
-            item_info (str): Information/details about the item.
-            public_key (str): The public key of the user adding the item.
-
-        Returns:
-            int: The ID of the newly added item.
-
-        Raises:
-            Exception: If adding the item fails due to contract constraints.
-
-        Example:
-            try:
-                item_id = manager.add_item("Electronics", "Smartphone Model X", "0xUserPublicKey")
-                print(f"Item added successfully with ID: {item_id}")
-            except Exception as e:
-                print(f"Failed to add item: {e}")
-        """
         try:
             with networks.ethereum.sepolia.use_provider("infura"):
                 sender = self.account
                 tx = self.item_registry.addItem(category, item_info, public_key, sender=sender)
-                return tx.return_value
+
+                # Event signature for ItemAdded(uint256,string,string)
+                ITEM_ADDED_SIG = "0x9a2ee66360acc47ed8f7c49b2492e1777a6fed40c18be4eddb5b242f7098a4af"
+
+                for log in tx.logs:
+                    print(f"Processing log: {log}")
+                    if "topics" in log and len(log["topics"]) > 0:
+                        if log["topics"][0].hex().lower() == ITEM_ADDED_SIG:
+                            # Convert HexBytes to bytes directly
+                            data_bytes = log["data"]
+                            decoded = decode(["uint256","string","string"], data_bytes)
+                            item_id = decoded[0]
+                            return item_id
+
+                # Fallback: read the on-chain counter
+                return self.item_registry.itemCounter()
+
         except Exception as e:
             raise Exception(f"Add Item failed: {e}")
 

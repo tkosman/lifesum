@@ -6,6 +6,7 @@ from blockchain_manager import BlockchainManager
 from get_blockchain_manager import get_blockchain_manager
 
 bm = get_blockchain_manager()
-print(bm.get_item(2))
-a = bm.add_item("test", "test", bm.get_user_public_key("a"))
-print(a)
+# a = bm.add_item("finalsuper", "finalxd", bm.get_user_public_key("a"))
+print(bm.get_item(19))
+print(bm.get_item(16))
+print(bm.get_item(4))

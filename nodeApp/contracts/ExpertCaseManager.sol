@@ -38,13 +38,18 @@ contract ExpertCaseManager {
         mapping(string => uint8) voterChoices;
         string[] voters;
         mapping(uint8 => uint256) votes;
-        uint8[] optionsVoted; // Added to track voted options
+        uint8[] optionsVoted;
         bool isOpen;
         bool exists;
         string nick_to_change;
         string uniStringToModify;
         uint256 fieldId_to_add;
         uint256 flag;
+        uint256 createdAt;
+        uint256 duration;
+        uint256 minVotesRequired;
+        uint256 maxVotesAllowed;
+        uint256 totalVotes;
     }
 
     mapping(uint256 => ExpertCase) private expertCases;
@@ -92,10 +97,34 @@ contract ExpertCaseManager {
         ec.uniStringToModify = _uniStringToModify;
         ec.fieldId_to_add = _fieldId_to_add;
         ec.flag = _flag;
+        ec.createdAt = block.timestamp;
+        ec.duration = 1 days;
+        ec.minVotesRequired = 1;
+        ec.maxVotesAllowed = 100;
+
 
         emit ExpertCaseOpened(newECId, _itemId, _publicKey);
 
         return newECId;
+    }
+
+    function shouldAutoClose(ExpertCase storage ec) internal view returns (bool) {
+        if (block.timestamp > ec.createdAt + ec.duration) {
+            return true;
+        }
+        
+        // Max votes reached
+        if (ec.totalVotes >= ec.maxVotesAllowed) {
+            return true;
+        }
+        
+        // Min votes reached and half duration passed
+        if (ec.totalVotes >= ec.minVotesRequired && 
+            block.timestamp > ec.createdAt + (ec.duration / 2)) {
+            return true;
+        }
+        
+        return false;
     }
 
     function castVote(
@@ -105,6 +134,11 @@ contract ExpertCaseManager {
     ) public {
         require(expertCases[_ECId].exists, "EC_not_exist");
         require(expertCases[_ECId].isOpen, "EC_closed");
+
+        if (shouldAutoClose(expertCases[_ECId])) {
+            closeExpertCase(_ECId);
+            return;
+        }
 
         ExpertCase storage ec = expertCases[_ECId];
 
@@ -149,6 +183,11 @@ contract ExpertCaseManager {
         // Add option to optionsVoted if it's the first vote for that option
         if (ec.votes[_option] == 1) {
             ec.optionsVoted.push(_option);
+        }
+
+        if (shouldAutoClose(expertCases[_ECId])) {
+            closeExpertCase(_ECId);
+            return;
         }
 
         emit VoteCast(_ECId, _publicKey, _option);
